@@ -1,107 +1,108 @@
 #include<string.h>
 #include<stdlib.h>
+#include<stdio.h>
 
-unsigned long hash_function(unsigned char* str) {
+unsigned long hash_function(char* str) {
     unsigned long hash = 5381;
     int c;
-    while(c = *str++) {
+    while((c = (*str++))) {
         hash = ((hash << 5) + hash) + c;
     }
     return hash;
 }
 
-template <typename T> struct HMValues {
+typedef struct HMValues {
     char* key;
-    T value;
-};
+    void* value;
+} HMValues;
 
-template <typename T> struct LinkedList{
-    HMValues<T>* val;
-    LinkedList* next;
-};
+typedef struct LinkedList{
+    HMValues* val;
+    struct LinkedList* next;
+} LinkedList;
 
-template <typename T> struct HashMap{
-    HMValues<T>** vals;
-    LinkedList<T>** collision_buckets;
+typedef struct HashMap{
+    HMValues** vals;
+    LinkedList** collision_buckets;
     int count;
     int size;
-};
+} HashMap;
 
-template <typename T> LinkedList<T>* allocate_list() {
-    LinkedList<T>* newList = (LinkedList<T>*) malloc(sizeof(LinkedList<T>));
+LinkedList* allocate_list() {
+    LinkedList* newList = (LinkedList*) malloc(sizeof(LinkedList));
     return newList;
 }
 
-template <typename T> LinkedList<T>* list_insert(LinkedList<T>* list, HMValues<T>* val) {
+LinkedList* list_insert(LinkedList* list, HMValues* val) {
     if(!list) {
-        LinkedList<T>* head = allocate_list<T>();
+        LinkedList* head = allocate_list();
         head->val = val;
         head->next = NULL;
         list = head;
         return list;
     }
-    else if(list->next = NULL){
-        LinkedList<T>* node = allocate_list<T>();
+    else if(list->next == NULL){
+        LinkedList* node = allocate_list();
         node->val = val;
         node->next = NULL;
         list->next = node;
         return list;
     }
 
-    LinkedList<T>* temp = list;
+    LinkedList* temp = list;
 
     while(temp->next->next) temp = temp->next;
-    LinkedList<T>* node = allocate_list<T>();
+    LinkedList* node = allocate_list();
     node->val = val;
     node->next = NULL;
     temp->next = node;
     return list;
 }
 
-template <typename T> LinkedList<T>** create_collision_buckets(HashMap<T>* hm) {
-    LinkedList<T>** collision_buckets = (LinkedList<T>**) calloc(hm->size, sizeof(LinkedList<T>*));
+LinkedList** create_collision_buckets(HashMap* hm) {
+    LinkedList** collision_buckets = (LinkedList**) calloc(hm->size, sizeof(LinkedList*));
     for(int i = 0;i<hm->size;i++) collision_buckets[i] = NULL;
     return collision_buckets;
 }
 
-template <typename T> HMValues<T>* create_value(char* key, T val) {
-    HMValues<T>* newVal = (HMValues<T>*) malloc(sizeof(HMValues<T>));
+HMValues* create_value(char* key, void* val) {
+    HMValues* newVal = (HMValues*) malloc(sizeof(HMValues));
     newVal->key = (char*) malloc(strlen(key) + 1);
     strcpy(newVal->key, key);
     newVal->value = val;
     return newVal;
 }
 
-template <typename T> HashMap<T>* create_table(int size){
-    HashMap<T>* newHM = (HashMap<T>*) malloc(sizeof(HashMap<T>));
+HashMap* create_table(int size){
+    HashMap* newHM = (HashMap*) malloc(sizeof(HashMap));
     newHM->size = size;
     newHM->count = 0;
-    newHM->vals = (HMValues<T>**) calloc(newHM->size, sizeof(HMValues<T>*));
+    newHM->vals = (HMValues**) calloc(newHM->size, sizeof(HMValues*));
     for(int i = 0;i<newHM->size;i++) {
         newHM->vals[i] = NULL;
     } 
-    newHM->collision_buckets = create_collision_buckets<T>(newHM);
+    newHM->collision_buckets = create_collision_buckets(newHM);
     return newHM;
 }
 
-template <typename T> void handle_collision(HashMap<T>* hm, unsigned long index, HMValues<T>* val) {
-    LinkedList<T>* head = hm->collision_buckets[index];
+void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
+    LinkedList* head = hm->collision_buckets[index];
     if(head == NULL) {
-        head = allocate_list<T>();
+        head = allocate_list();
         head->val = val;
         hm->collision_buckets[index] = head;
     }
     else{
-        hm->collision_buckets[index] = list_insert<T>(head, val);
+        hm->collision_buckets[index] = list_insert(head, val);
     }
 }
 
-template <typename T> void HM_insert(HashMap<T>* HM, char* key, T val) {
-    HMValues<T>* newVal = create_value<T>(key, val);
+void HM_insert(HashMap* HM, char* key, void* val) {
+    HMValues* newVal = create_value(key, val);
 
     int index = hash_function(key)%HM->size;
 
-    HMValues<T>* curr = HM->vals[index];
+    HMValues* curr = HM->vals[index];
 
     if(curr == NULL) {
         if(HM->count == HM->size) {
@@ -116,20 +117,20 @@ template <typename T> void HM_insert(HashMap<T>* HM, char* key, T val) {
         if(strcmp(curr->key, key) == 0) {
         }
         else{
-            handle_collision<T>(HM, index, newVal);
+            handle_collision(HM, index, newVal);
         }
     }
 }
 
-template <typename T> T HM_search(HashMap<T>* hm, char *key) {
+void* HM_search(HashMap* hm, char *key) {
     int index = hash_function(key);
-    HMValues<T>* val = hm->vals[index];
-    LinkedList<T>* head = hm->collision_buckets[index];
+    HMValues* val = hm->vals[index];
+    LinkedList* head = hm->collision_buckets[index];
 
     while(val != NULL) {
         if(strcmp(val->key, key) == 0) return val->value;
         if(head == NULL) return NULL;
-        item = head->val;
+        val = head->val;
         head = head->next;
     }
     return NULL;
