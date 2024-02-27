@@ -84,20 +84,6 @@ template <typename T> HashMap<T>* create_table(int size){
     return newHM;
 }
 
-template <typename T> void free_val(HMValues<T>* val) {
-    free(val->key);
-    free(val->value);
-    free(val);
-}
-
-template <typename T> void free_HM(HashMap<T>* HM) {
-    for(int i = 0;i<HM->size;i++) {
-        if(HM->vals[i] != NULL) free(HM->vals[i]);
-    }
-    free(HM->vals);
-    free(HM);
-}
-
 template <typename T> void handle_collision(HashMap<T>* hm, unsigned long index, HMValues<T>* val) {
     LinkedList<T>* head = hm->collision_buckets[index];
     if(head == NULL) {
