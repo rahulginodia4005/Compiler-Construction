@@ -35,7 +35,7 @@ void addRuleToNonTerminal(NonTerminals* nonTerminal, Rule* rule) {
     nonTerminal->grammar_rules[nonTerminal->size - 1] = rule;
 }
 
-void addToRule(Rule* rule, NonTerminals* nt) {
+Rule* addToRule(Rule* rule, NonTerminals* nt) {
     if(rule) {
         Rule* newRule = (Rule*) malloc(sizeof(Rule));
         newRule->nt = nt;
@@ -49,12 +49,4 @@ void addToRule(Rule* rule, NonTerminals* nt) {
         rule->next = NULL;
         return rule;
     }
-}
-
-
-int main() {
-    HashMap* strToStruct = create_table(100);
-
-
-
 }
