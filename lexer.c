@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+int currLine = 1;
+
 struct tokenDetails
 {
     char token[100];
@@ -56,10 +58,10 @@ struct tokenDetails *getNextToken(FILE *f)
     char currChar = currBuffer[TwinBuffer.fwd];
     char beginChar = currBuffer[TwinBuffer.back];
 
-    int currLine = 1;
-
     while (1)
     {
+
+        struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
 
         switch (currState)
         {
@@ -267,9 +269,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 2;
             }
+            TwinBuffer.fwd++;
+
             break;
 
         case 2: // Return Token TK_NUM
+            // int tempFwd = TwinBuffer.fwd - 1;
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_NUM");
             break;
 
         case 3:
@@ -281,23 +288,25 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 4;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 4: // Return Token TK_NUM
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_NUM");
             break;
 
-        case 5:
+            // case 5:Done
             if (currChar >= '0' && currChar <= '9')
             {
                 currState = 6;
             }
             else
             {
-                // Return Error
-                struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
-                ptr->err = true;
-                strcpy(ptr->errMessage, "Invalid Pattern");
+                return setError(ptr);
+                // return ptr;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 6:
@@ -309,14 +318,13 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 7;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 7:
             // Return Token TK_RNUM
-            struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
-            ptr->err = false;
-            strcpy(ptr->token, "TK_RNUM");
-            // Find Lexeme that is in buffer from back to fwd indexes
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_RNUM");
 
         case 8:
             if (currChar == '+' || currChar == '-')
@@ -331,14 +339,19 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 16;
             }
-
+            TwinBuffer.fwd++;
             break;
 
         case 9:
             if (currChar >= '0' && currChar <= '9')
             {
                 currState = 10;
-            } // what about else
+            }
+            else
+            {
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 10:
@@ -346,10 +359,17 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 11;
             } // what about else
+            else
+            {
+                return setError(ptr);
+                // return ptr;
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 11:
             // Return Token TK_RNUM
+            return setToken(ptr, "TK_RNUM");
             break;
 
         case 12:
@@ -361,9 +381,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 13;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 13: // Return Token TK_
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_FIELDID");
             break;
 
         case 14:
@@ -379,6 +402,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 13;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 15:
@@ -394,9 +418,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 18;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 16: // Return Token TK_RNUM
+            TwinBuffer.fwd -= 2;
+            return setToken(ptr, "TK_RNUM");
             break;
 
         case 17:
@@ -408,9 +435,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 18;
             }
+            TwinBuffer.fwd++;
             break;
 
-        case 18: // Return Token TK_
+        case 18: // Return Token TK_ID
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_ID");
             break;
 
         case 19:
@@ -427,10 +457,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 20;
             }
-
+            TwinBuffer.fwd++;
             break;
 
         case 20: // Return Token TK_LT
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_LT");
             break;
 
         case 21:
@@ -442,6 +474,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 63;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 22:
@@ -449,12 +482,20 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 23;
             } // What about else
+            else
+            {
+                // Error
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 23: // Return Token TK_ASSIGNOP
+            return setToken(ptr, "TK_ASSIGNOP");
             break;
 
         case 24: // Return Token TK_LE
+            return setToken(ptr, "TK_LE");
             break;
 
         case 25:
@@ -466,12 +507,16 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 26;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 26: // Return Token TK_GT
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_GT");
             break;
 
         case 27: // Return Token TK_GE
+            return setToken(ptr, "TK_GE");
             break;
 
         case 28:
@@ -479,9 +524,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 29;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 29: // Return Token TK_EQ
+            return setToken(ptr, "TK_EQ");
             break;
 
         case 30:
@@ -489,9 +539,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 31;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 31: // Return Token TK_NE
+            return setToken(ptr, "TK_NE");
             break;
 
         case 32:
@@ -499,6 +554,9 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 33;
             } // What about else
+            else{
+                return setError(ptr);
+            }
             break;
 
         case 33:
@@ -514,6 +572,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 35;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 34:
@@ -525,9 +584,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 35;
             }
+            TwinBuffer.fwd++;
             break;
 
-        case 35: // Return Token TK_
+        case 35: // Return Token TK_FUNID
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_FUNID");
             break;
 
         case 36:
@@ -535,6 +597,10 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 37;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 37:
@@ -546,9 +612,12 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 38;
             }
+            TwinBuffer.fwd++;
             break;
 
-        case 38: // Return Token TK_
+        case 38: // Return Token TK_RUID
+            TwinBuffer.fwd--;
+            return setToken(ptr, "TK_RUID");
             break;
 
         case 39:
@@ -556,6 +625,11 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 40;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+
+            TwinBuffer.fwd++;
 
             break;
 
@@ -564,9 +638,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 41;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 41: // Return Token TK_OR
+            return setToken(ptr, "TK_OR");
             break;
 
         case 42:
@@ -574,6 +653,10 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 43;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 43:
@@ -581,9 +664,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 44;
             } // What about else
+            else{
+                return setError(ptr);
+            }
+            TwinBuffer.fwd++;
             break;
 
         case 44: // Return Token TK_AND
+            return setToken(ptr, "TK_AND");
             break;
 
         case 45:
@@ -595,18 +683,21 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 46;
             }
+            TwinBuffer.fwd++;
             break;
 
-        case 46: // Return Token TK_
+        case 46:
+            TwinBuffer.fwd++;
             break;
 
         case 47:
+            currLine++;
             break;
 
         case 48:
             if (currChar == '/n')
             {
-                // currLine++;
+                // currLine++
                 currState = 49;
                 // return
             }
@@ -614,6 +705,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 48;
             }
+            TwinBuffer.fwd++;
             break;
 
         case 49:
@@ -623,61 +715,96 @@ struct tokenDetails *getNextToken(FILE *f)
 
         case 50:
             // Return TK_SQR
+            return setToken(ptr,"TK_SQR");
             break;
 
         case 51:
             // Return TK_SQL
+            return setToken(ptr,"TK_SQL");
             break;
 
         case 52:
             // Return TK_DOT
+            return setToken(ptr,"TK_DOT");
             break;
 
         case 53:
             // Return TK_COMMA
+            return setToken(ptr,"TK_COMMA");
             break;
 
         case 54:
             // Return TK_SEM
+            return setToken(ptr,"TK_SEM");
             break;
 
         case 55:
             // Return TK_COLON
+            return setToken(ptr,"TK_COLON");
             break;
 
         case 56:
             // Return TK_PLUS
+            return setToken(ptr,"TK_PLUS");
             break;
 
         case 57:
             // Return TK_MINUS
+            return setToken(ptr,"TK_MINUS");
             break;
 
         case 58:
             // Return TK_MUL
+            return setToken(ptr,"TK_MUL");
             break;
 
         case 59:
             // Return TK_DIV
+            return setToken(ptr,"TK_DIV");
             break;
 
         case 60:
             // Return TK_OP
+            return setToken(ptr,"TK_OP");
             break;
 
         case 61:
             // Return TK_CL
+            return setToken(ptr,"TK_CL");
             break;
 
         case 62:
             // Return TK_NOT
+            return setToken(ptr,"TK_NOT");
             break;
 
         case 63:
             // Return TK_LT
+            return setToken(ptr,"TK_LT");
             break;
         }
     }
+}
+
+struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
+{
+    ptr->err = false;
+    strcpy(ptr->token, tokenName);
+    ptr->lineNumber = currLine;
+    strcpy(ptr->lexeme, findLexeme(TwinBuffer.fwd, TwinBuffer.back));
+    TwinBuffer.back = TwinBuffer.fwd;
+    return ptr;
+}
+
+struct tokenDetails *setError(struct tokenDetails *ptr)
+{
+    ptr->err = true;
+    strcpy(ptr->errMessage, "Invalid Pattern");
+    ptr->lineNumber = currLine;
+    // TwinBuffer.fwd++;
+    TwinBuffer.back = TwinBuffer.fwd;
+    // return ptr;
+    return ptr;
 }
 
 void removeComments(char *testcaseFile)
