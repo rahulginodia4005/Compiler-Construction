@@ -29,6 +29,19 @@ struct twinBuffer *TwinBuffer;
 //     strcpy(t.tokenName, b);
 // }
 
+void* getStream(FILE *fp)
+{
+    void *ptr;
+    char ch[1024];
+    if(TwinBuffer->fwd==2047){
+        ptr = fgets(TwinBuffer->buffer, 1023, fp);
+    }
+    else{
+        ptr = fgets(TwinBuffer->buffer+1024, 1023, fp);
+    }    
+    return ptr;
+}
+
 char *findLexeme(int fwd, int back)
 {
     char *currBuffer = TwinBuffer->buffer;
