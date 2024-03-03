@@ -32,7 +32,8 @@ int getStream(FILE *fp)
     if (buffer_used==1)
     {
         char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
-        TwinBuffer->fwd = 0;
+        TwinBuffer->fwd = TwinBuffer->fwd % 2048;
+        TwinBuffer->back = TwinBuffer->back % 2048;
     }
     else
     {
@@ -76,6 +77,17 @@ struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
     strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
     strcpy(ptr->errMessage, " ");
     TwinBuffer->back = TwinBuffer->fwd;
+    return ptr;
+}
+
+struct tokenDetails *dummyToken(struct tokenDetails *ptr, char *tokenName)
+{
+    ptr->err = false;
+    strcpy(ptr->token, tokenName);
+    ptr->lineNumber = currLine;
+    strcpy(ptr->lexeme,"Dummy");
+    strcpy(ptr->errMessage, " ");
+    // TwinBuffer->back = TwinBuffer->fwd;
     return ptr;
 }
 
@@ -135,7 +147,7 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("Back pointer: %d\n", TwinBuffer->back);
 
         if((TwinBuffer->fwd==1024 && buffer_used==-1) || (TwinBuffer->fwd==2048 && buffer_used==1)){
-            return;
+            return dummyToken(ptr, "Dummy");
         }
 
         switch (currState)
@@ -590,6 +602,7 @@ struct tokenDetails *getNextToken(FILE *f)
             if (currChar == '-')
             {
                 currState = 23;
+                // return setToken(ptr, "TK_ASSIGNOP");
             } // What about else
             else
             {
@@ -966,21 +979,6 @@ int main()
     TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
-    // strcpy(TwinBuffer->buffer, "bbkj 55 %jhb\n");
-    // TwinBuffer->fwd++;
-    // printf("Fwd: %d\n", TwinBuffer->fwd);
-    // struct tokenDetails *ptr = getNextToken(NULL);
-    // struct tokenDetails *ptr2 = getNextToken(NULL);
-    // printf("Hello \n");
-    // printStruct(ptr);
-    // printTwinBuffer(TwinBuffer);
-
-    // printStruct(ptr2);
-    // printStruct(getNextToken(NULL));
-    // while(TwinBuffer->fwd<TwinBuffer->size){
-    //     struct tokenDetails *ptr = getNextToken(NULL);
-    //     printStruct(ptr);
-    // }
 
     removeComments("a.txt");
 
@@ -1010,16 +1008,18 @@ int main()
             break;
         // continue;
         while(1){
-            // printStruct(getNextToken(NULL)); // not using currently
-            getNextToken(NULL);
+            printStruct(getNextToken(NULL)); // not using currently
+            // getNextToken(NULL);
             int characters_processed = TwinBuffer->fwd - fwd_curr;
-            printf("forward pointer = %d\n", TwinBuffer->fwd);
+            printf("forward pointer = %d\t", TwinBuffer->fwd);
+            printf("back pointer = %d\n", TwinBuffer->back);
             if(characters - characters_processed <=1){
                 printf("breaking");
                 break;
             }
         }
         printf("---Done processing----\n");
+        // break;
         
     }
 
