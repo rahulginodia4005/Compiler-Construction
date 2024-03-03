@@ -47,27 +47,29 @@ char *findLexeme(int fwd, int back)
     char *currBuffer = TwinBuffer->buffer;
     char *lexeme = (char *)malloc(100 * sizeof(char));
     int i = 0;
-    if(back<fwd){
+    if (back < fwd)
+    {
         for (i = back; i < fwd; i++)
         {
             lexeme[i - back] = currBuffer[i];
         }
         lexeme[i - back] = '\0';
     }
-    else{
-        printf("using this ");
+    else
+    {
         int x = 0;
         for (i = back; i < 2048; i++)
         {
             lexeme[x++] = currBuffer[i];
         }
-        for(i = 0; i < fwd; i++){
+        for (i = 0; i < fwd; i++)
+        {
             lexeme[x++] = currBuffer[i];
         }
         lexeme[x] = '\0';
     }
     return lexeme;
-} 
+}
 
 struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
 {
@@ -135,7 +137,7 @@ struct tokenDetails *getNextToken(FILE *f)
     // printf("CurrChar: %c\n", currChar);
     // printf("BeginChar: %c\n", beginChar);
 
-    while (1)
+    while (1 || currChar != EOF)
     {
 
         // printf("IN \n");
@@ -246,12 +248,13 @@ struct tokenDetails *getNextToken(FILE *f)
             case ' ':
                 currState = 45;
                 TwinBuffer->fwd++;
-                // TwinBuffer->back++;
+                // TwinBuffer->back++;/
                 break;
 
             case '\n':
                 currState = 47;
                 TwinBuffer->fwd++;
+                // TwinBuffer->back++;
                 currLine++;
                 // Return Token
                 break;
@@ -367,11 +370,10 @@ struct tokenDetails *getNextToken(FILE *f)
                 TwinBuffer->fwd++;
                 return setError(ptr);
                 break;
-            default: 
+            default:
                 TwinBuffer->fwd++;
                 return setUnknownError(ptr);
             }
-
 
             break;
 
@@ -819,16 +821,19 @@ struct tokenDetails *getNextToken(FILE *f)
 
         case 46:
             TwinBuffer->fwd--;
-            currState=0;
+            currState = 0;
             // return;
             break;
 
         case 47:
-            if(currChar != '\n')
-                currState = 0;
+
+            currState = 0;
             currLine++;
-            TwinBuffer->fwd++;
-            TwinBuffer->back++;
+            // printf("HERE in State 47");
+
+            TwinBuffer->back = TwinBuffer->fwd;
+            // TwinBuffer->fwd++;
+            // TwinBuffer->back++;
             break;
 
         case 48:
@@ -983,11 +988,11 @@ int main()
     removeComments("a.txt");
 
 
-    FILE* fp;
+    FILE *fp;
     // Opening file in reading mode
     fp = fopen("commentRemoval.txt", "r");
-    // fp = fopen("a.txt", "r");
-    if(fp==NULL){
+    if (fp == NULL)
+    {
         printf("Can't open the file. Try again");
         return 0;
     }
@@ -1008,6 +1013,8 @@ int main()
             break;
         // continue;
         while(1){
+            printStruct(getNextToken(NULL)); // not using currently
+            // getNextToken(NULL);
             printStruct(getNextToken(NULL)); // not using currently
             // getNextToken(NULL);
             int characters_processed = TwinBuffer->fwd - fwd_curr;
