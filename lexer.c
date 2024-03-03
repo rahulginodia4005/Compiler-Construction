@@ -24,24 +24,19 @@ struct twinBuffer
 };
 
 struct twinBuffer *TwinBuffer;
-// void makeToken(struct tokenInfo t, char *a, char *b) {
-//     strcpy(t.lexeme, a);
-//     strcpy(t.tokenName, b);
-// }
 
-void *getStream(FILE *fp)
+int getStream(FILE *fp)
 {
-    void *ptr;
-    char ch[1024];
+    int char_read;
     if (TwinBuffer->fwd == 2047)
     {
-        ptr = fgets(TwinBuffer->buffer, 1023, fp);
+        char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
     }
     else
     {
-        ptr = fgets(TwinBuffer->buffer + 1024, 1023, fp);
+        char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
     }
-    return ptr;
+    return char_read;
 }
 
 char *findLexeme(int fwd, int back)
@@ -49,13 +44,26 @@ char *findLexeme(int fwd, int back)
     char *currBuffer = TwinBuffer->buffer;
     char *lexeme = (char *)malloc(100 * sizeof(char));
     int i = 0;
-    for (i = back; i < fwd; i++)
-    {
-        lexeme[i - back] = currBuffer[i];
+    if(back<fwd){
+        for (i = back; i < fwd; i++)
+        {
+            lexeme[i - back] = currBuffer[i];
+        }
+        lexeme[i - back] = '\0';
     }
-    lexeme[i - back] = '\0';
+    else{
+        int x = 0;
+        for (i = back; i < 2048; i++)
+        {
+            lexeme[x++] = currBuffer[i];
+        }
+        for(i = 0; i < fwd; i++){
+            lexeme[x++] = currBuffer[i];
+        }
+        lexeme[x] = '\0';
+    }
     return lexeme;
-}
+} 
 
 struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
 {
@@ -72,40 +80,37 @@ struct tokenDetails *setError(struct tokenDetails *ptr)
 {
     ptr->err = true;
     strcpy(ptr->errMessage, "Invalid Pattern");
+    strcpy(ptr->token, "TK_INVALID_PATTERN");
+    strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
     ptr->lineNumber = currLine;
-    // TwinBuffer->fwd++;
     TwinBuffer->back = TwinBuffer->fwd;
-    // return ptr;
+    return ptr;
+}
+
+struct tokenDetails *setUnknownError(struct tokenDetails *ptr)
+{
+    ptr->err = true;
+    strcpy(ptr->errMessage, "Unknown Character");
+    strcpy(ptr->token, "TK_UNKNOWN");
+    strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
+    ptr->lineNumber = currLine;
+    TwinBuffer->back = TwinBuffer->fwd;
     return ptr;
 }
 
 void printStruct(struct tokenDetails *ptr)
 {
-    printf("Token: %s\n", ptr->token);
-    printf("Lexeme: %s\n", ptr->lexeme);
-    printf("Line Number: %d\n", ptr->lineNumber);
-    printf("Error: %d\n", ptr->err);
-    printf("Error Message: %s\n", ptr->errMessage);
+    printf("Lexeme: ---%s---\t\t", ptr->lexeme);
+    printf("Token : %s \n", ptr->token);
+    // printf("Line Number: %d\n", ptr->lineNumber);
+    // printf("Error: %d\n", ptr->err);
+    // printf("Error Message: %s\n", ptr->errMessage);
 }
 
 struct tokenDetails *getNextToken(FILE *f)
 {
 
-    // if(B.fwd)
-    // struct tokenInfo t;
-    // makeToken(t, )
-    // return t;
-
     int currState = 0;
-    // Check in twinBuffer which buffer is active
-    // char *currBuffer;
-    // if (TwinBuffer->activeBuffer == 0)
-    // {
-    //     // char* currBuffer = TwinBuffer->buffer1;
-    //     // if(currBuffer == NULL){
-    //     //     f = getStream(f,)
-    //     // }
-    // }
 
     char *currBuffer = TwinBuffer->buffer;
 
@@ -121,18 +126,13 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("IN \n");
         struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
         currChar = currBuffer[TwinBuffer->fwd];
-        // printf("CurrChar: %c\n", currChar);
         // printf("CurrState: %d\n", currState);
+        // printf("CurrChar: %c\n", currChar);
+        // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
+        // printf("Back pointer: %d\n", TwinBuffer->back);
 
         switch (currState)
         {
-
-            // printf("CurrState: %d\n", currState);
-            printf("IN SWITCH");
-
-
-            currChar = currBuffer[TwinBuffer->fwd];
-            printf("CurrChar: %c\n", currChar);
         case 0:
             switch (currChar)
             {
@@ -227,12 +227,13 @@ struct tokenDetails *getNextToken(FILE *f)
             case ' ':
                 currState = 45;
                 TwinBuffer->fwd++;
+                // TwinBuffer->back++;
                 break;
 
             case '\n':
                 currState = 47;
                 TwinBuffer->fwd++;
-                // currLine++;
+                currLine++;
                 // Return Token
                 break;
 
@@ -318,17 +319,45 @@ struct tokenDetails *getNextToken(FILE *f)
                 TwinBuffer->fwd++;
                 // Return Token
                 break;
-            
-            default: 
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+            case 'G':
+            case 'H':
+            case 'I':
+            case 'J':
+            case 'K':
+            case 'L':
+            case 'M':
+            case 'N':
+            case 'O':
+            case 'P':
+            case 'Q':
+            case 'R':
+            case 'S':
+            case 'T':
+            case 'U':
+            case 'V':
+            case 'W':
+            case 'X':
+            case 'Y':
+            case 'Z':
                 TwinBuffer->fwd++;
                 return setError(ptr);
+                break;
+            default: 
+                TwinBuffer->fwd++;
+                return setUnknownError(ptr);
             }
 
 
             break;
 
         case 1:
-            printf("Reached Here");
+            // printf("Reached Here");
             if (currChar >= '0' && currChar <= '9')
             {
                 currState = 1;
@@ -446,7 +475,7 @@ struct tokenDetails *getNextToken(FILE *f)
             break;
 
         case 12:
-            if (currChar >= 'a' && currChar <= 'z')
+            if ((currChar >= 'a' && currChar <= 'z') || (currChar >= 'A' && currChar <= 'Z'))
             {
                 currState = 12;
             }
@@ -467,7 +496,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 12;
             }
-            else if (currChar == '2' && currChar == '7')
+            else if (currChar >= '2' && currChar <= '7')
             {
                 currState = 15;
             }
@@ -764,15 +793,22 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 46;
             }
+            TwinBuffer->back++;
             TwinBuffer->fwd++;
             break;
 
         case 46:
-            TwinBuffer->fwd++;
+            TwinBuffer->fwd--;
+            currState=0;
+            // return;
             break;
 
         case 47:
+            if(currChar != '\n')
+                currState = 0;
             currLine++;
+            TwinBuffer->fwd++;
+            TwinBuffer->back++;
             break;
 
         case 48:
@@ -922,7 +958,7 @@ int main()
     TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
-    strcpy(TwinBuffer->buffer, "_main");
+    // strcpy(TwinBuffer->buffer, "bbkj 55 %jhb\n");
     // TwinBuffer->fwd++;
     // printf("Fwd: %d\n", TwinBuffer->fwd);
     // struct tokenDetails *ptr = getNextToken(NULL);
@@ -937,7 +973,57 @@ int main()
     //     struct tokenDetails *ptr = getNextToken(NULL);
     //     printStruct(ptr);
     // }
-    printStruct(getNextToken(NULL));
+
+    // removeComments("t2.txt");
+
+
+    FILE* fp;
+    // Opening file in reading mode
+    fp = fopen("commentRemoval.txt", "r");
+    if(fp==NULL){
+        printf("Can't open the file. Try again");
+        return 0;
+    }
+
+    int characters=0;
+    int fwd_curr = TwinBuffer->fwd;
+    int i = 0;
+    while(1){
+        printf("---------Reading buffer %d time----------\n", i++);
+        characters = getStream(fp);
+        if(characters==0)
+            break;
+        while(1){
+            // printf("%d %d ", TwinBuffer->back, TwinBuffer->fwd);
+            printStruct(getNextToken(NULL));
+            int characters_processed = TwinBuffer->fwd - fwd_curr;
+            // printf("Characters processed = %d\n",characters_processed);
+            if(characters - characters_processed == 1)
+                break;
+        }
+        
+        // printf("%d ",characters);
+    }
+
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
+    // printStruct(getNextToken(NULL));
 
     // printStruct(getNextToken(NULL));
     // printStruct(getNextToken(NULL));
