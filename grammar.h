@@ -9,8 +9,8 @@ typedef struct Rule {
 
 typedef struct NonTerminals {
     Rule** grammar_rules;
-    struct NonTerminals* first_set[50], *follow_set[50];
-    int first_set_ind, follow_set_ind;
+    struct NonTerminals *nextTo[20],*first_set[20], *follow_set[20], *lhsFollow[20];
+    int first_set_ind, follow_set_ind, nextTo_ind, lhsFollow_ind;
     int size;
     char *name;
     bool terminal;
@@ -19,7 +19,7 @@ typedef struct NonTerminals {
 NonTerminals* create_nonTerminal(char* name) {
     NonTerminals* newNT = (NonTerminals*) malloc(sizeof(NonTerminals));
     newNT->size = 0;
-    newNT->first_set_ind = 0, newNT->follow_set_ind = 0;
+    newNT->first_set_ind = 0, newNT->follow_set_ind = 0, newNT->nextTo_ind = 0, newNT->lhsFollow_ind = 0;
     newNT->terminal = false;
     newNT->name = (char*) malloc(sizeof(name));
     strcpy(newNT->name, name);
@@ -29,11 +29,12 @@ NonTerminals* create_nonTerminal(char* name) {
 NonTerminals* create_terminal(char* name) {
     NonTerminals* newT = (NonTerminals*) malloc(sizeof(NonTerminals));
     newT->terminal = true;
-    newT->first_set_ind = 0, newT->follow_set_ind = 0;
+    newT->first_set_ind = 0, newT->follow_set_ind = 0, newT->nextTo_ind = 0, newT->lhsFollow_ind = 0;
     newT->name = (char*) malloc(sizeof(name));
     strcpy(newT->name, name);
     return newT;
 }
+
 
 void addRuleToNonTerminal(NonTerminals* nonTerminal, Rule* rule) {
     nonTerminal->size++;
@@ -56,4 +57,95 @@ Rule* addToRule(Rule* rule, NonTerminals* nt) {
         rule->next = NULL;
     }
     return rule;
+}
+
+bool checkDuplicacyFirstset(NonTerminals* curr,NonTerminals* child){
+    bool test = false;
+    for(int i =0;i<curr->first_set_ind;i++){
+        if(curr->first_set[i]->name==child->name){
+            test = true;
+            break;
+        }
+    }
+    return test;
+}
+
+bool checkDuplicacyFollowset(NonTerminals* curr,NonTerminals* child){
+    bool test = false;
+    for(int i =0;i<curr->follow_set_ind;i++){
+        if(curr->follow_set[i]->name==child->name){
+            test = true;
+            break;
+        }
+    }
+    return test;
+}
+
+bool checkDuplicacyNextToset(NonTerminals* curr,NonTerminals* child){
+    bool test = false;
+    for(int i =0;i<curr->nextTo_ind;i++){
+        if(curr->nextTo[i]->name==child->name){
+            test = true;
+            break;
+        }
+    }
+    return test;
+}
+
+bool checkDuplicacyLhsFollowset(NonTerminals* curr,NonTerminals* child){
+    bool test = false;
+    for(int i =0;i<curr->lhsFollow_ind;i++){
+        if(curr->lhsFollow[i]->name==child->name){
+            test = true;
+            break;
+        }
+    }
+    return test;
+}
+
+NonTerminals** generateFirstSets(NonTerminals* curr, HashMap* ruleToMapFirst) {
+    if(HM_search(ruleToMapFirst, curr->name)) return curr->first_set;
+    HM_insert(ruleToMapFirst, curr->name, true);
+    if(curr->terminal) {
+        curr->first_set[0] = curr;
+        curr->first_set_ind = 1;
+        return curr->first_set;
+    }
+    for(int i = 0;i<curr->size;i++){
+        Rule* curr_rule = curr->grammar_rules[i];
+        while(curr_rule) {
+            NonTerminals** child = generateFirstSets(curr_rule->nt, ruleToMapFirst);
+            bool eps = false;
+            int j = 0;
+            while(child[j] != NULL) {
+                if(strcmp(child[j]->name, "eps") == 0) eps = true;
+                if(!checkDuplicacyFirstset(curr, child[j])) curr->first_set[curr->first_set_ind++] = child[j++];
+            }
+            if(!eps) break;
+            curr_rule = curr_rule->next;
+        }
+    }
+    return curr->first_set;
+}
+
+void mainGenerateFirstSets(HashMap* strToStruct,HashMap* ruleToMapFirst){
+    for(int i = 0;i<ruleToMapFirst->size;i++){
+        if(ruleToMapFirst->vals[i]==NULL){
+            continue;
+        }
+        else{
+            if(HM_search(ruleToMapFirst,ruleToMapFirst->vals[i]->key)==false){
+                HM_insert(ruleToMapFirst, ruleToMapFirst->vals[i]->key, true);
+                generateFirstSets(HM_search(strToStruct,ruleToMapFirst->vals[i]->key), ruleToMapFirst);
+            }
+            // LinkedList* head = ruleToMapFirst->collision_buckets[i];
+            // while(head!=NULL){
+            //     if(HM_search(ruleToMapFirst,head->val->key)==false){
+            //         HM_insert(ruleToMapFirst, head->val->key, true);
+            //         generateFirstSets(HM_search(strToStruct,head->val->key));
+            //     }
+            //     head = head->next;
+            // }
+        }
+    }
 }

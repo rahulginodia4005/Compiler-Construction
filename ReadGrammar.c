@@ -1,36 +1,28 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include"grammar.h"
+const int MAX_SIZE = 1000;
 
-NonTerminals** generateFirstSets(NonTerminals* curr) {
-    // printf("%s\n", curr->name);
-    // printf("%d\n", curr->size);
-    if(curr->terminal) {
-        curr->first_set[0] = curr;
-        curr->first_set_ind = 1;
-        return curr->first_set;
+NonTerminals** generateFollowSets(NonTerminals* curr) {
+    if(curr->follow_set_ind != 0) return curr->follow_set;
+    for(int i = 0;i<curr->nextTo_ind;i++) {
+        NonTerminals* child = curr->nextTo[i];
+        for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
     }
-    for(int i = 0;i<curr->size;i++){
-        Rule* curr_rule = curr->grammar_rules[i];
-        while(curr_rule) {
-            NonTerminals** child = generateFirstSets(curr_rule->nt);
-            bool eps = false;
-            int j = 0;
-            while(child[j] != NULL) {
-                if(strcmp(child[j]->name, "eps") == 0) eps = true;
-                curr->first_set[curr->first_set_ind++] = child[j++];
-            }
-            if(!eps) break;
-            curr_rule = curr_rule->next;
+    for(int i = 0;i<curr->lhsFollow_ind;i++) {
+        NonTerminals* child = curr->lhsFollow[i];
+        NonTerminals** childFollow = generateFollowSets(child);
+        int j = 0;
+        while(childFollow[j] != NULL) {
+            if(!checkDuplicacyFollowset(curr, childFollow[j])) curr->follow_set[curr->follow_set_ind++] = childFollow[j++];
         }
     }
-    return curr->first_set;
 }
 
-
-
 int main() {
-    HashMap* strToStruct = create_table(1000);
+    HashMap* strToStruct = create_table(MAX_SIZE);
+    HashMap* ruleMapFirst = create_table(MAX_SIZE);
+
     FILE* fp = fopen("/Users/rahulginodia/Desktop/Compiler/grammarText.txt", "r");
     if(fp == NULL) {
         perror("Error in opening Grammar File");
@@ -43,6 +35,7 @@ int main() {
         bool lhs = false;
         NonTerminals* lhsNT;
         Rule* newRule;
+        NonTerminals* prev;
         for(int i = 0;i<1024;i++) {
             if(data[i] == '<') {
                 i++;
@@ -55,19 +48,23 @@ int main() {
                 for(int j = 0;j<non_terminal_ind;j++) {
                     newNonTerminal[j] = non_terminal[j];
                 }
+                // printf("%s\n", newNonTerminal);
                 NonTerminals* newNT;
                 if(HM_search(strToStruct, newNonTerminal) == NULL) {
                     newNT = create_nonTerminal(newNonTerminal);
                     HM_insert(strToStruct, newNonTerminal, newNT);
                 }
                 else newNT = HM_search(strToStruct, newNonTerminal);
+                // HM_insert(ruleMapFirst, newNonTerminal, false);
                 if(!lhs) {
                     lhs = true;
                     lhsNT = newNT;
                 }
                 else{
+                    if(newRule != NULL && !checkDuplicacyNextToset(prev, newNT)) prev->nextTo[prev->nextTo_ind++] = newNT;
                     newRule = addToRule(newRule, newNT);
                 }
+                prev = newNT;
                 // break;
 
             }
@@ -88,13 +85,18 @@ int main() {
                     HM_insert(strToStruct, newTerminal, newT);
                 }
                 else newT = HM_search(strToStruct, newTerminal);
+                // HM_insert(ruleMapFirst, newTerminal, false);
+                if(newRule != NULL && !checkDuplicacyNextToset(prev, newT)) prev->nextTo[prev->nextTo_ind++] = newT;
                 newRule = addToRule(newRule, newT);
+                prev = newT;
             }
             else if(data[i] == '|') {
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
             }
             else if(data[i] == '\n') {
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 lhs = false;
                 newRule = NULL;
@@ -115,8 +117,9 @@ int main() {
     // }
     // char *aa = pro->first_set[0]->name;
     // printf("%d", pro->grammar_rules[0]->nt->size);
-    generateFirstSets(HM_search(strToStruct, "program"));
-    NonTerminals* pro = HM_search(strToStruct, "parameter_list");
+    // generateFirstSets(HM_search(strToStruct, "program"), ruleMapFirst);
+    // mainGenerateFirstSets(strToStruct, ruleMapFirst);
+    NonTerminals* pro = HM_search(strToStruct, "stmts");
     for(int i = 0;i<pro->first_set_ind;i++) {
         printf("%s\n", pro->first_set[i]->name);
     }
