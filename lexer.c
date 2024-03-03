@@ -999,10 +999,10 @@ int main()
             break;
         // continue;
         while(1){
-            // printStruct(getNextToken(NULL)); // not using currently
-            getNextToken(NULL);
+            printStruct(getNextToken(NULL)); // not using currently
+            // getNextToken(NULL);
             int characters_processed = TwinBuffer->fwd - fwd_curr;
-            printf("forward pointer = %d\n", TwinBuffer->fwd);
+            // printf("forward pointer = %d\n", TwinBuffer->fwd);
             if(characters - characters_processed <=1){
                 printf("breaking");
                 break;
