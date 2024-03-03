@@ -23,7 +23,7 @@ int main() {
     HashMap* strToStruct = create_table(MAX_SIZE);
     HashMap* ruleMapFirst = create_table(MAX_SIZE);
 
-    FILE* fp = fopen("/Users/rahulginodia/Desktop/Compiler/grammarText.txt", "r");
+    FILE* fp = fopen("/Users/srijan/Desktop/BITS Pilani/Compiler/Test Cases/Compiler-Construction/grammarText.txt", "r");
     if(fp == NULL) {
         perror("Error in opening Grammar File");
         return 0;
@@ -55,7 +55,7 @@ int main() {
                     HM_insert(strToStruct, newNonTerminal, newNT);
                 }
                 else newNT = HM_search(strToStruct, newNonTerminal);
-                // HM_insert(ruleMapFirst, newNonTerminal, false);
+                HM_insert(ruleMapFirst, newNonTerminal, false);
                 if(!lhs) {
                     lhs = true;
                     lhsNT = newNT;
@@ -85,7 +85,7 @@ int main() {
                     HM_insert(strToStruct, newTerminal, newT);
                 }
                 else newT = HM_search(strToStruct, newTerminal);
-                // HM_insert(ruleMapFirst, newTerminal, false);
+                HM_insert(ruleMapFirst, newTerminal, false);
                 if(newRule != NULL && !checkDuplicacyNextToset(prev, newT)) prev->nextTo[prev->nextTo_ind++] = newT;
                 newRule = addToRule(newRule, newT);
                 prev = newT;
@@ -117,11 +117,13 @@ int main() {
     // }
     // char *aa = pro->first_set[0]->name;
     // printf("%d", pro->grammar_rules[0]->nt->size);
-    // generateFirstSets(HM_search(strToStruct, "program"), ruleMapFirst);
-    // mainGenerateFirstSets(strToStruct, ruleMapFirst);
-    NonTerminals* pro = HM_search(strToStruct, "stmts");
+    // generateFirstSets(HM_search(strToStruct, "term"), ruleMapFirst);
+    mainGenerateFirstSets(strToStruct, ruleMapFirst);
+    NonTerminals* pro = HM_search(strToStruct, "arithmeticExpression");
     for(int i = 0;i<pro->first_set_ind;i++) {
         printf("%s\n", pro->first_set[i]->name);
     }
+    // bool pro2 = HM_search(ruleMapFirst, "fieldDefinitions");
+    // printf("%d\n", pro2);
     fclose(fp);
 }

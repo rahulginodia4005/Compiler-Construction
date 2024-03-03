@@ -104,7 +104,7 @@ bool checkDuplicacyLhsFollowset(NonTerminals* curr,NonTerminals* child){
 }
 
 NonTerminals** generateFirstSets(NonTerminals* curr, HashMap* ruleToMapFirst) {
-    if(HM_search(ruleToMapFirst, curr->name)) return curr->first_set;
+    if(curr->first_set_ind != 0) return curr->first_set;
     HM_insert(ruleToMapFirst, curr->name, true);
     if(curr->terminal) {
         curr->first_set[0] = curr;
@@ -119,7 +119,8 @@ NonTerminals** generateFirstSets(NonTerminals* curr, HashMap* ruleToMapFirst) {
             int j = 0;
             while(child[j] != NULL) {
                 if(strcmp(child[j]->name, "eps") == 0) eps = true;
-                if(!checkDuplicacyFirstset(curr, child[j])) curr->first_set[curr->first_set_ind++] = child[j++];
+                if(!checkDuplicacyFirstset(curr, child[j])) curr->first_set[curr->first_set_ind++] = child[j];
+                j++;
             }
             if(!eps) break;
             curr_rule = curr_rule->next;
@@ -129,23 +130,24 @@ NonTerminals** generateFirstSets(NonTerminals* curr, HashMap* ruleToMapFirst) {
 }
 
 void mainGenerateFirstSets(HashMap* strToStruct,HashMap* ruleToMapFirst){
-    for(int i = 0;i<ruleToMapFirst->size;i++){
-        if(ruleToMapFirst->vals[i]==NULL){
+    int ct = 0;
+    for(int i = 0;i<strToStruct->size;i++){
+        if(strToStruct->vals[i]==NULL){
             continue;
         }
         else{
-            if(HM_search(ruleToMapFirst,ruleToMapFirst->vals[i]->key)==false){
-                HM_insert(ruleToMapFirst, ruleToMapFirst->vals[i]->key, true);
-                generateFirstSets(HM_search(strToStruct,ruleToMapFirst->vals[i]->key), ruleToMapFirst);
+            if(!HM_search(ruleToMapFirst,strToStruct->vals[i]->key)){
+                // NonTerminals* curr = HM_search(strToStruct,ruleToMapFirst->vals[i]->key);
+                generateFirstSets(strToStruct->vals[i]->value, ruleToMapFirst);
+                // printf("%s\n", strToStruct->vals[i]->key);
             }
-            // LinkedList* head = ruleToMapFirst->collision_buckets[i];
-            // while(head!=NULL){
-            //     if(HM_search(ruleToMapFirst,head->val->key)==false){
-            //         HM_insert(ruleToMapFirst, head->val->key, true);
-            //         generateFirstSets(HM_search(strToStruct,head->val->key));
-            //     }
-            //     head = head->next;
-            // }
+            LinkedList* head = strToStruct->collision_buckets[i];
+            while(head){
+                if(!HM_search(ruleToMapFirst,head->val->key)){
+                    generateFirstSets(head->val->value,ruleToMapFirst);
+                }
+                head = head->next;
+            }
         }
     }
 }
