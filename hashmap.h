@@ -105,16 +105,17 @@ void HM_insert(HashMap* HM, char* key, void* val) {
     HMValues* curr = HM->vals[index];
 
     if(curr == NULL) {
-        if(HM->count == HM->size) {
-            printf("Error!!! HashMap is full\n");
-            free(newVal);
-            return;
-        }
+    //     if(HM->count == HM->size) {
+    //         printf("Error!!! HashMap is full\n");
+    //         free(newVal);
+    //         return;
+    //     }
         HM->vals[index] = newVal;
         HM->count++;
     }
     else{
         if(strcmp(curr->key, key) == 0) {
+            HM->vals[index] = newVal;
         }
         else{
             handle_collision(HM, index, newVal);
@@ -123,7 +124,8 @@ void HM_insert(HashMap* HM, char* key, void* val) {
 }
 
 void* HM_search(HashMap* hm, char *key) {
-    int index = hash_function(key);
+    int index = hash_function(key)%hm->size;
+    // printf("index is: %d", index);
     HMValues* val = hm->vals[index];
     LinkedList* head = hm->collision_buckets[index];
 

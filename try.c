@@ -1,17 +1,13 @@
 #include<stdio.h>
+// #include"hashmap.h"
+#include"grammar.h"
 
 int main() {
-    if(0) {
-        #define a b
-        int b = 50;
-        a = 30;
-        printf("%d", b);
-    }
-    else{
-        int b = 60;
-        a = 30;
-        printf("%d", b);
-    }
-    int b = 70;
-    printf("%d", a);
+    HashMap* myHM = create_table(100);
+    HM_insert(myHM, "abc", 5);
+    HM_insert(myHM, "bcd", 10);
+    HM_insert(myHM, "bcd", 15);
+    HM_insert(myHM, "cde", 15);
+    // printf("index is: %d", hash_function("bcd"));
+    printf("%d", HM_search(myHM, "ghg"));
 }
