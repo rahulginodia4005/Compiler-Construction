@@ -1,2 +1,3 @@
-   // printf("CurrChar: %c\n", currChar);
-    // printf("BeginChar: %c\n", beginChar);
+ default: 
+                TwinBuffer->fwd++;
+                return setError(ptr);

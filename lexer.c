@@ -121,6 +121,8 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("IN \n");
         struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
         currChar = currBuffer[TwinBuffer->fwd];
+        // printf("CurrChar: %c\n", currChar);
+        // printf("CurrState: %d\n", currState);
 
         switch (currState)
         {
@@ -128,7 +130,9 @@ struct tokenDetails *getNextToken(FILE *f)
             // printf("CurrState: %d\n", currState);
             printf("IN SWITCH");
 
+
             currChar = currBuffer[TwinBuffer->fwd];
+            printf("CurrChar: %c\n", currChar);
         case 0:
             switch (currChar)
             {
@@ -314,11 +318,12 @@ struct tokenDetails *getNextToken(FILE *f)
                 TwinBuffer->fwd++;
                 // Return Token
                 break;
-            }
-
+            
             default: 
                 TwinBuffer->fwd++;
                 return setError(ptr);
+            }
+
 
             break;
 
@@ -914,24 +919,26 @@ void printTwinBuffer(struct twinBuffer *TwinBuffer)
 int main()
 {
     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
-    TwinBuffer->size = 9;
+    TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
-    strcpy(TwinBuffer->buffer, "11.12E");
+    strcpy(TwinBuffer->buffer, "_main");
     // TwinBuffer->fwd++;
     // printf("Fwd: %d\n", TwinBuffer->fwd);
     // struct tokenDetails *ptr = getNextToken(NULL);
     // struct tokenDetails *ptr2 = getNextToken(NULL);
     // printf("Hello \n");
     // printStruct(ptr);
-    // // printTwinBuffer(TwinBuffer);
+    // printTwinBuffer(TwinBuffer);
 
     // printStruct(ptr2);
     // printStruct(getNextToken(NULL));
-    while(TwinBuffer->fwd<TwinBuffer->size){
-        struct tokenDetails *ptr = getNextToken(NULL);
-        printStruct(ptr);
-    }
+    // while(TwinBuffer->fwd<TwinBuffer->size){
+    //     struct tokenDetails *ptr = getNextToken(NULL);
+    //     printStruct(ptr);
+    // }
+    printStruct(getNextToken(NULL));
+
     // printStruct(getNextToken(NULL));
     // printStruct(getNextToken(NULL));
     // printStruct(getNextToken(NULL));
