@@ -44,26 +44,29 @@ char *findLexeme(int fwd, int back)
     char *currBuffer = TwinBuffer->buffer;
     char *lexeme = (char *)malloc(100 * sizeof(char));
     int i = 0;
-    if(back<fwd){
+    if (back < fwd)
+    {
         for (i = back; i < fwd; i++)
         {
             lexeme[i - back] = currBuffer[i];
         }
         lexeme[i - back] = '\0';
     }
-    else{
+    else
+    {
         int x = 0;
         for (i = back; i < 2048; i++)
         {
             lexeme[x++] = currBuffer[i];
         }
-        for(i = 0; i < fwd; i++){
+        for (i = 0; i < fwd; i++)
+        {
             lexeme[x++] = currBuffer[i];
         }
         lexeme[x] = '\0';
     }
     return lexeme;
-} 
+}
 
 struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
 {
@@ -120,7 +123,7 @@ struct tokenDetails *getNextToken(FILE *f)
     // printf("CurrChar: %c\n", currChar);
     // printf("BeginChar: %c\n", beginChar);
 
-    while (1)
+    while (1 || currChar != EOF)
     {
 
         // printf("IN \n");
@@ -130,6 +133,9 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("CurrChar: %c\n", currChar);
         // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
         // printf("Back pointer: %d\n", TwinBuffer->back);
+
+        // Print CurrChar
+        // printf("CurrChar: %d\n", currChar);
 
         switch (currState)
         {
@@ -227,12 +233,13 @@ struct tokenDetails *getNextToken(FILE *f)
             case ' ':
                 currState = 45;
                 TwinBuffer->fwd++;
-                // TwinBuffer->back++;
+                // TwinBuffer->back++;/
                 break;
 
             case '\n':
                 currState = 47;
                 TwinBuffer->fwd++;
+                // TwinBuffer->back++;
                 currLine++;
                 // Return Token
                 break;
@@ -348,11 +355,10 @@ struct tokenDetails *getNextToken(FILE *f)
                 TwinBuffer->fwd++;
                 return setError(ptr);
                 break;
-            default: 
+            default:
                 TwinBuffer->fwd++;
                 return setUnknownError(ptr);
             }
-
 
             break;
 
@@ -799,16 +805,19 @@ struct tokenDetails *getNextToken(FILE *f)
 
         case 46:
             TwinBuffer->fwd--;
-            currState=0;
+            currState = 0;
             // return;
             break;
 
         case 47:
-            if(currChar != '\n')
-                currState = 0;
+
+            currState = 0;
             currLine++;
-            TwinBuffer->fwd++;
-            TwinBuffer->back++;
+            // printf("HERE in State 47");
+
+            TwinBuffer->back = TwinBuffer->fwd;
+            // TwinBuffer->fwd++;
+            // TwinBuffer->back++;
             break;
 
         case 48:
@@ -958,74 +967,43 @@ int main()
     TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
-    // strcpy(TwinBuffer->buffer, "bbkj 55 %jhb\n");
-    // TwinBuffer->fwd++;
-    // printf("Fwd: %d\n", TwinBuffer->fwd);
-    // struct tokenDetails *ptr = getNextToken(NULL);
-    // struct tokenDetails *ptr2 = getNextToken(NULL);
-    // printf("Hello \n");
-    // printStruct(ptr);
-    // printTwinBuffer(TwinBuffer);
 
-    // printStruct(ptr2);
-    // printStruct(getNextToken(NULL));
-    // while(TwinBuffer->fwd<TwinBuffer->size){
-    //     struct tokenDetails *ptr = getNextToken(NULL);
-    //     printStruct(ptr);
-    // }
+    removeComments("t2.txt");
 
-    // removeComments("t2.txt");
-
-
-    FILE* fp;
+    FILE *fp;
     // Opening file in reading mode
     fp = fopen("commentRemoval.txt", "r");
-    if(fp==NULL){
+    if (fp == NULL)
+    {
         printf("Can't open the file. Try again");
         return 0;
     }
 
-    int characters=0;
+    int characters = 0;
     int fwd_curr = TwinBuffer->fwd;
     int i = 0;
-    while(1){
+
+    // TwinBuffer[0];
+    // printf()
+
+    while (1)
+    {
         printf("---------Reading buffer %d time----------\n", i++);
         characters = getStream(fp);
-        if(characters==0)
+        // printf("%d\n",TwinBuffer->buffer[characters+1]);
+        if (characters == 0)
             break;
-        while(1){
+
+        while (1)
+        {
             // printf("%d %d ", TwinBuffer->back, TwinBuffer->fwd);
-            printStruct(getNextToken(NULL));
             int characters_processed = TwinBuffer->fwd - fwd_curr;
+            printStruct(getNextToken(NULL));
             // printf("Characters processed = %d\n",characters_processed);
-            if(characters - characters_processed == 1)
+            if (characters - characters_processed <= 0)
                 break;
         }
-        
+
         // printf("%d ",characters);
     }
-
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
-    // printStruct(getNextToken(NULL));
 }

@@ -15,7 +15,6 @@ output parameter list[real d3];
 	return [d3]; 
 end
 
-d;
 
 
 
@@ -27,5 +26,3 @@ _main
 	write(c4bd56);
 	return;
 end
-
-d;
