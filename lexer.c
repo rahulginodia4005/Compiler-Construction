@@ -4,6 +4,7 @@
 #include <string.h>
 
 int currLine = 1;
+int buffer_used  = 1;
 
 struct tokenDetails
 {
@@ -28,13 +29,14 @@ struct twinBuffer *TwinBuffer;
 int getStream(FILE *fp)
 {
     int char_read;
-    if (TwinBuffer->fwd == 2047)
+    if (buffer_used==1)
     {
         char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
+        TwinBuffer->fwd = 0;
     }
     else
     {
-        char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
+        char_read = fread(TwinBuffer->buffer+1024, 1, 1024, fp);
     }
     return char_read;
 }
@@ -134,8 +136,9 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
         // printf("Back pointer: %d\n", TwinBuffer->back);
 
-        // Print CurrChar
-        // printf("CurrChar: %d\n", currChar);
+        if((TwinBuffer->fwd==1024 && buffer_used==-1) || (TwinBuffer->fwd==2048 && buffer_used==1)){
+            return;
+        }
 
         switch (currState)
         {
@@ -950,6 +953,7 @@ void removeComments(char *testcaseFile)
     fclose(tempFile);
 
     rename("temp.txt", "commentRemoval.txt");
+    printf("done");
 }
 
 // Print Twin Buffer Structure
@@ -979,31 +983,33 @@ int main()
         return 0;
     }
 
-    int characters = 0;
-    int fwd_curr = TwinBuffer->fwd;
+    int characters=0;
     int i = 0;
-
-    // TwinBuffer[0];
-    // printf()
-
-    while (1)
-    {
+    memset(TwinBuffer->buffer, '\0', 2048*sizeof(char));
+    while(1){
         printf("---------Reading buffer %d time----------\n", i++);
         characters = getStream(fp);
-        // printf("%d\n",TwinBuffer->buffer[characters+1]);
-        if (characters == 0)
+        int fwd_curr = TwinBuffer->fwd;
+        buffer_used *= -1;
+        printf("Characters read = %d\n", characters);
+        // printf("%s", TwinBuffer->buffer);
+        printf("Fwd token = %d\n", TwinBuffer->fwd);
+        printf("back token = %d\n", TwinBuffer->back);
+        if(characters==0)
             break;
-
-        while (1)
-        {
-            // printf("%d %d ", TwinBuffer->back, TwinBuffer->fwd);
+        // continue;
+        while(1){
+            // printStruct(getNextToken(NULL)); // not using currently
+            getNextToken(NULL);
             int characters_processed = TwinBuffer->fwd - fwd_curr;
-            printStruct(getNextToken(NULL));
-            // printf("Characters processed = %d\n",characters_processed);
-            if (characters - characters_processed <= 0)
+            printf("forward pointer = %d\n", TwinBuffer->fwd);
+            if(characters - characters_processed <=1){
+                printf("breaking");
                 break;
+            }
         }
-
-        // printf("%d ",characters);
+        printf("---Done processing----\n");
+        
     }
+
 }
