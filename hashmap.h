@@ -67,7 +67,8 @@ LinkedList** create_collision_buckets(HashMap* hm) {
 
 HMValues* create_value(char* key, void* val) {
     HMValues* newVal = (HMValues*) malloc(sizeof(HMValues));
-    newVal->key = (char*) malloc(strlen(key) + 1);
+    // printf("%s\n", key);
+    newVal->key = (char*) malloc(strlen(key) * sizeof(char));
     strcpy(newVal->key, key);
     newVal->value = val;
     return newVal;
@@ -97,7 +98,8 @@ void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     }
 }
 
-void HM_insert(HashMap* HM, char* key, void* val) {
+void HM_insert(HashMap* HM, char key[], void* val) {
+    printf("%s\n", key);
     HMValues* newVal = create_value(key, val);
 
     int index = hash_function(key)%HM->size;

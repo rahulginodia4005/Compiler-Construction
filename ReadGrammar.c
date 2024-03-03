@@ -15,25 +15,30 @@ int main() {
     char data[1024];
     int line_number = 0;
     while(fgets(data, 1024, fp)) {
+        // printf("%s\n\n", data);
         line_number++;
         bool lhs = false;
         NonTerminals* lhsNT;
         Rule* newRule = NULL;
         NonTerminals* prev;
         for(int i = 0;i<1024;i++) {
+            // printf("%d ", i);
             if(data[i] == '<') {
                 i++;
-                char non_terminal[50] = "";
+                char* non_terminal = (char*) malloc(50 * sizeof(char));
+                memset(non_terminal, '\0', 50 * sizeof(char));
                 int non_terminal_ind = 0;
                 while(data[i] != '>') {
                     non_terminal[non_terminal_ind++] = data[i++];
                 }
-                char* newNonTerminal = (char*) malloc(non_terminal_ind * sizeof(char));
+                char *newNonTerminal = (char*) malloc((non_terminal_ind) * sizeof(char));
+                memset(newNonTerminal, '\0', non_terminal_ind * sizeof(char));
                 for(int j = 0;j<non_terminal_ind;j++) {
                     newNonTerminal[j] = non_terminal[j];
                 }
                 // printf("%s\n", newNonTerminal);
                 NonTerminals* newNT;
+                    // printf("%s\n", newNonTerminal);
                 if(HM_search(strToStruct, newNonTerminal) == NULL) {
                     newNT = create_nonTerminal(newNonTerminal);
                     HM_insert(strToStruct, newNonTerminal, newNT);
@@ -52,17 +57,20 @@ int main() {
 
             }
             else if(data[i] == 'T' || data[i] == 'e') {
-                char terminal[50] = "";
+                char* terminal = (char*) malloc(50 * sizeof(char));
+                memset(terminal, '\0', 50 * sizeof(char));
                 int terminal_ind = 0;
                 while(data[i] != '<' && data[i] != ' ' && data[i] != '\n') {
                     terminal[terminal_ind++] = data[i++];
                 }
                 i--;
-                char* newTerminal = (char*) malloc(terminal_ind * sizeof(char));
+                char *newTerminal = (char*) malloc((terminal_ind) * sizeof(char));
+                memset(newTerminal, '\0', terminal_ind * sizeof(char));
                 for(int j = 0;j<terminal_ind;j++) {
                     newTerminal[j] = terminal[j];
                 }
                 NonTerminals* newT;
+                    // printf("%s\n", newTerminal);
                 if(HM_search(strToStruct, newTerminal) == NULL) {
                     newT = create_terminal(newTerminal);
                     HM_insert(strToStruct, newTerminal, newT);
@@ -101,29 +109,29 @@ int main() {
     // printf("%d", pro->grammar_rules[0]->nt->size);
     // generateFirstSets(HM_search(strToStruct, "term"), ruleMapFirst);
     mainGenerateFirstSets(strToStruct, ruleMapFirst);
-    NonTerminals* pro = HM_search(strToStruct, "typeDefinitions");
-    for(int i = 0;i<pro->first_set_ind;i++) {
-        printf("%s\n", pro->first_set[i]->name);
-    }
+    // NonTerminals* pro = HM_search(strToStruct, "declarations");
+    // for(int i = 0;i<pro->first_set_ind;i++) {
+    //     printf("%s\n", pro->first_set[i]->name);
+    // }
     // bool pro2 = HM_search(ruleMapFirst, "fieldDefinitions");
     // printf("%d\n", pro2);
     NonTerminals* temp = HM_search(strToStruct, "program");
     NonTerminals* dollar = create_terminal("$");
     temp->follow_set[temp->follow_set_ind++] = dollar;
-    mainGenerateNextToSets(strToStruct);
+    // mainGenerateNextToSets(strToStruct);
     temp = HM_search(strToStruct, "actualOrRedefined");
-    generateFollowSets(temp);
-    printf("\nLHS Follow: \n");
-    for(int i = 0;i<temp->lhsFollow_ind;i++) {
-        printf("%s\n", temp->lhsFollow[i]->name);
-    }
-    printf("\nNext to: \n");
-    for(int i = 0;i<temp->nextTo_ind;i++) {
-        printf("%s\n", temp->nextTo[i]->name);
-    }
-    printf("\nFollow: \n");
-    for(int i = 0;i<temp->follow_set_ind;i++) {
-        printf("%s\n", temp->follow_set[i]->name);
-    }
+    // generateFollowSets(temp);
+    // printf("\nLHS Follow: \n");
+    // for(int i = 0;i<temp->lhsFollow_ind;i++) {
+    //     printf("%s\n", temp->lhsFollow[i]->name);
+    // }
+    // printf("\nNext to: \n");
+    // for(int i = 0;i<temp->nextTo_ind;i++) {
+    //     printf("%s\n", temp->nextTo[i]->name);
+    // }
+    // printf("\nFollow: \n");
+    // for(int i = 0;i<temp->follow_set_ind;i++) {
+    //     printf("%s\n", temp->follow_set[i]->name);
+    // }
     fclose(fp);
 }

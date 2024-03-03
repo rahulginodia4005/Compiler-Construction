@@ -23,7 +23,7 @@ NonTerminals* create_nonTerminal(char* name) {
     newNT->first_set_ind = 0, newNT->follow_set_ind = 0, newNT->nextTo_ind = 0, newNT->lhsFollow_ind = 0;
     newNT->terminal = false;
     newNT->eps_in_first = false;
-    newNT->name = (char*) malloc(sizeof(name));
+    newNT->name = (char*) malloc(strlen(name) * sizeof(char));
     strcpy(newNT->name, name);
     return newNT;
 }
@@ -33,7 +33,7 @@ NonTerminals* create_terminal(char* name) {
     newT->terminal = true;
     newT->first_set_ind = 0, newT->follow_set_ind = 0, newT->nextTo_ind = 0, newT->lhsFollow_ind = 0;
     newT->eps_in_first = false;
-    newT->name = (char*) malloc(sizeof(name));
+    newT->name = (char*) malloc(strlen(name) * sizeof(char));
     strcpy(newT->name, name);
     return newT;
 }
@@ -185,12 +185,14 @@ void mainGenerateNextToSets(HashMap* strToStruct){
         }
         else{
             NonTerminals* curr = strToStruct->vals[i]->value;
+            printf("%s\n", curr->name);
             for(int j = 0;j<curr->size;j++) {
                 generateNextToSets(curr->grammar_rules[j]);
             }
             LinkedList* head = strToStruct->collision_buckets[i];
             while(head){
                 curr = head->val->value;
+                printf("%s\n", curr->name);
                 for(int j = 0;j<curr->size;j++) {
                     generateNextToSets(curr->grammar_rules[j]);
                 }
@@ -202,8 +204,10 @@ void mainGenerateNextToSets(HashMap* strToStruct){
 
 NonTerminals** generateFollowSets(NonTerminals* curr) {
     if(curr->follow_set_ind != 0) return curr->follow_set;
+    printf("%s\n", curr->name);
     for(int i = 0;i<curr->nextTo_ind;i++) {
         NonTerminals* child = curr->nextTo[i];
+        // printf("%s\n", child->name);
         for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
     }
     for(int i = 0;i<curr->lhsFollow_ind;i++) {
