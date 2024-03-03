@@ -3,22 +3,6 @@
 #include"grammar.h"
 const int MAX_SIZE = 1000;
 
-NonTerminals** generateFollowSets(NonTerminals* curr) {
-    if(curr->follow_set_ind != 0) return curr->follow_set;
-    for(int i = 0;i<curr->nextTo_ind;i++) {
-        NonTerminals* child = curr->nextTo[i];
-        for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
-    }
-    for(int i = 0;i<curr->lhsFollow_ind;i++) {
-        NonTerminals* child = curr->lhsFollow[i];
-        NonTerminals** childFollow = generateFollowSets(child);
-        int j = 0;
-        while(childFollow[j] != NULL) {
-            if(!checkDuplicacyFollowset(curr, childFollow[j])) curr->follow_set[curr->follow_set_ind++] = childFollow[j++];
-        }
-    }
-}
-
 int main() {
     HashMap* strToStruct = create_table(MAX_SIZE);
     HashMap* ruleMapFirst = create_table(MAX_SIZE);
@@ -34,7 +18,7 @@ int main() {
         line_number++;
         bool lhs = false;
         NonTerminals* lhsNT;
-        Rule* newRule;
+        Rule* newRule = NULL;
         NonTerminals* prev;
         for(int i = 0;i<1024;i++) {
             if(data[i] == '<') {
@@ -61,7 +45,6 @@ int main() {
                     lhsNT = newNT;
                 }
                 else{
-                    if(newRule != NULL && !checkDuplicacyNextToset(prev, newNT)) prev->nextTo[prev->nextTo_ind++] = newNT;
                     newRule = addToRule(newRule, newNT);
                 }
                 prev = newNT;
@@ -86,7 +69,6 @@ int main() {
                 }
                 else newT = HM_search(strToStruct, newTerminal);
                 HM_insert(ruleMapFirst, newTerminal, false);
-                if(newRule != NULL && !checkDuplicacyNextToset(prev, newT)) prev->nextTo[prev->nextTo_ind++] = newT;
                 newRule = addToRule(newRule, newT);
                 prev = newT;
             }
@@ -119,11 +101,29 @@ int main() {
     // printf("%d", pro->grammar_rules[0]->nt->size);
     // generateFirstSets(HM_search(strToStruct, "term"), ruleMapFirst);
     mainGenerateFirstSets(strToStruct, ruleMapFirst);
-    NonTerminals* pro = HM_search(strToStruct, "arithmeticExpression");
+    NonTerminals* pro = HM_search(strToStruct, "typeDefinitions");
     for(int i = 0;i<pro->first_set_ind;i++) {
         printf("%s\n", pro->first_set[i]->name);
     }
     // bool pro2 = HM_search(ruleMapFirst, "fieldDefinitions");
     // printf("%d\n", pro2);
+    NonTerminals* temp = HM_search(strToStruct, "program");
+    NonTerminals* dollar = create_terminal("$");
+    temp->follow_set[temp->follow_set_ind++] = dollar;
+    mainGenerateNextToSets(strToStruct);
+    temp = HM_search(strToStruct, "actualOrRedefined");
+    generateFollowSets(temp);
+    printf("\nLHS Follow: \n");
+    for(int i = 0;i<temp->lhsFollow_ind;i++) {
+        printf("%s\n", temp->lhsFollow[i]->name);
+    }
+    printf("\nNext to: \n");
+    for(int i = 0;i<temp->nextTo_ind;i++) {
+        printf("%s\n", temp->nextTo[i]->name);
+    }
+    printf("\nFollow: \n");
+    for(int i = 0;i<temp->follow_set_ind;i++) {
+        printf("%s\n", temp->follow_set[i]->name);
+    }
     fclose(fp);
 }
