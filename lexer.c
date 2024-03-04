@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include"hashmap.h"
+#include "hashmap.h"
 
 int currLine = 1;
-int buffer_used  = 1;
+int buffer_used = 1;
 int currState = 0;
 bool stopFlag = false;
-HashMap* lookupTable;
+HashMap *lookupTable;
 
 struct tokenDetails
 {
@@ -33,17 +33,17 @@ struct twinBuffer *TwinBuffer;
 int getStream(FILE *fp)
 {
     int char_read;
-    if (buffer_used==1)
-    {   
-        memset(TwinBuffer->buffer, '\0', 1024*sizeof(char));
+    if (buffer_used == 1)
+    {
+        memset(TwinBuffer->buffer, '\0', 1024 * sizeof(char));
         char_read = fread(TwinBuffer->buffer, 1, 1024, fp);
         TwinBuffer->fwd = TwinBuffer->fwd % 2048;
         TwinBuffer->back = TwinBuffer->back % 2048;
     }
     else
     {
-        memset(TwinBuffer->buffer+1024, '\0', 1024*sizeof(char));
-        char_read = fread(TwinBuffer->buffer+1024, 1, 1024, fp);
+        memset(TwinBuffer->buffer + 1024, '\0', 1024 * sizeof(char));
+        char_read = fread(TwinBuffer->buffer + 1024, 1, 1024, fp);
     }
     return char_read;
 }
@@ -79,10 +79,44 @@ char *findLexeme(int fwd, int back)
 
 struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
 {
+    char *lexeme = findLexeme(TwinBuffer->fwd, TwinBuffer->back);
+    if (currState == 13)
+    {
+        char *lookupSearch = HM_search(lookupTable, lexeme);
+        if (lookupSearch == NULL)
+        {
+            HM_insert(lookupTable, lexeme, "TK_FIELDID");
+        }
+    }
+    else if (currState == 18)
+    {
+        char *lookupSearch = HM_search(lookupTable, lexeme);
+        if (lookupSearch == NULL)
+        {
+            HM_insert(lookupTable, lexeme, "TK_ID");
+        }
+    }
+    else if (currState == 35)
+    {
+        char *lookupSearch = HM_search(lookupTable, lexeme);
+        if (lookupSearch == NULL)
+        {
+            HM_insert(lookupTable, lexeme, "TK_FUNID");
+        }
+    }
+    else if (currState == 38)
+    {
+        char *lookupSearch = HM_search(lookupTable, lexeme);
+        if (lookupSearch == NULL)
+        {
+            HM_insert(lookupTable, lexeme, "TK_RUID");
+        }
+    }
+
     ptr->err = false;
     strcpy(ptr->token, tokenName);
     ptr->lineNumber = currLine;
-    strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
+    strcpy(ptr->lexeme, lexeme);
     strcpy(ptr->errMessage, " ");
     TwinBuffer->back = TwinBuffer->fwd;
     currState = 0;
@@ -94,10 +128,10 @@ struct tokenDetails *dummyToken(struct tokenDetails *ptr, char *tokenName)
     ptr->err = false;
     strcpy(ptr->token, tokenName);
     ptr->lineNumber = currLine;
-    strcpy(ptr->lexeme,"Dummy");
+    strcpy(ptr->lexeme, "Dummy");
     strcpy(ptr->errMessage, " ");
     // TwinBuffer->back = TwinBuffer->fwd;
-    // currState = 0;   
+    // currState = 0;
     return ptr;
 }
 
@@ -125,10 +159,14 @@ struct tokenDetails *setUnknownError(struct tokenDetails *ptr)
     return ptr;
 }
 
-int checkPointer(int ptr){
-    if(ptr<0){
-        return ptr+2048;
-    }else{
+int checkPointer(int ptr)
+{
+    if (ptr < 0)
+    {
+        return ptr + 2048;
+    }
+    else
+    {
         return ptr;
     }
 }
@@ -144,8 +182,6 @@ void printStruct(struct tokenDetails *ptr)
 
 struct tokenDetails *getNextToken(FILE *f)
 {
-
-    
 
     char *currBuffer = TwinBuffer->buffer;
     // currState = 0;
@@ -166,12 +202,14 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
         // printf("Back pointer: %d\n", TwinBuffer->back);
 
-        if((TwinBuffer->fwd==1024 && buffer_used==-1) || (TwinBuffer->fwd==2047 && buffer_used==1)){
+        if ((TwinBuffer->fwd == 1024 && buffer_used == -1) || (TwinBuffer->fwd == 2047 && buffer_used == 1))
+        {
             return dummyToken(ptr, "Dummy");
         }
-        if(currChar=='\0'){
+        if (currChar == '\0')
+        {
             stopFlag = true;
-            return dummyToken(ptr,"Dummy");
+            return dummyToken(ptr, "Dummy");
         }
         switch (currState)
         {
@@ -189,7 +227,7 @@ struct tokenDetails *getNextToken(FILE *f)
             case '8':
             case '9':
                 currState = 1;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
             case 'a':
             case 'e':
@@ -215,66 +253,66 @@ struct tokenDetails *getNextToken(FILE *f)
             case 'y':
             case 'z':
                 currState = 12;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case 'b':
             case 'c':
             case 'd':
                 currState = 14;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '<':
                 currState = 19;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '>':
                 currState = 25;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '=':
                 currState = 28;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '!':
                 currState = 30;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '_':
                 currState = 32;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '#':
                 currState = 36;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '@':
                 currState = 39;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '&':
                 currState = 42;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '\t':
             case ' ':
                 currState = 45;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // TwinBuffer->back++;/
                 break;
 
             case '\n':
                 currState = 47;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // TwinBuffer->back++;
                 currLine++;
                 // Return Token
@@ -282,84 +320,84 @@ struct tokenDetails *getNextToken(FILE *f)
 
             case '%':
                 currState = 48;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 break;
 
             case '[':
                 currState = 51;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case ']':
                 currState = 50;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '.':
                 currState = 52;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case ',':
                 currState = 53;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case ';':
                 currState = 54;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case ':':
                 currState = 55;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '+':
                 currState = 56;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '-':
                 currState = 57;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '*':
                 currState = 58;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '/':
                 currState = 59;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '(':
                 currState = 60;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case ')':
                 currState = 61;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
 
             case '~':
                 currState = 62;
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // Return Token
                 break;
             case 'A':
@@ -388,11 +426,11 @@ struct tokenDetails *getNextToken(FILE *f)
             case 'X':
             case 'Y':
             case 'Z':
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 return setError(ptr);
                 break;
             default:
-                TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+                TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 return setUnknownError(ptr);
             }
 
@@ -412,14 +450,14 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 2;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
 
             break;
 
         case 2: // Return Token TK_NUM
             // int tempFwd = TwinBuffer->fwd - 1;
             TwinBuffer->fwd = checkPointer(--TwinBuffer->fwd);
-            
+
             return setToken(ptr, "TK_NUM");
             break;
 
@@ -432,7 +470,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 4;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 4: // Return Token TK_NUM
@@ -451,7 +489,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 return setError(ptr);
                 // return ptr;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 6:
@@ -463,7 +501,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 7;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 7:
@@ -484,7 +522,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 16;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 9:
@@ -496,7 +534,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 10:
@@ -509,7 +547,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 return setError(ptr);
                 // return ptr;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 11:
@@ -526,7 +564,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 13;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 13: // Return Token TK_
@@ -547,7 +585,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 13;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 15:
@@ -563,7 +601,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 18;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 16: // Return Token TK_RNUM
@@ -581,7 +619,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 18;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 18: // Return Token TK_ID
@@ -603,7 +641,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 20;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 20: // Return Token TK_LT
@@ -620,7 +658,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 63;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 22:
@@ -634,7 +672,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 // Error
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 23: // Return Token TK_ASSIGNOP
@@ -654,7 +692,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 26;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 26: // Return Token TK_GT
@@ -675,7 +713,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 29: // Return Token TK_EQ
@@ -691,7 +729,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 31: // Return Token TK_NE
@@ -722,7 +760,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 35;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 34:
@@ -734,7 +772,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 35;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 35: // Return Token TK_FUNID
@@ -751,7 +789,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 37:
@@ -763,7 +801,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 38;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 38: // Return Token TK_RUID
@@ -781,7 +819,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 return setError(ptr);
             }
 
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
 
             break;
 
@@ -794,7 +832,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 41: // Return Token TK_OR
@@ -810,7 +848,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 43:
@@ -822,7 +860,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 return setError(ptr);
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 44: // Return Token TK_AND
@@ -839,7 +877,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 currState = 46;
             }
             TwinBuffer->back++;
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             // printf("Forward pointer at 45: %d\n",TwinBuffer->fwd);
             // printf("Back pointer at 45: %d\n",TwinBuffer->back);
 
@@ -873,7 +911,7 @@ struct tokenDetails *getNextToken(FILE *f)
             {
                 currState = 48;
             }
-            TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
+            TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
             break;
 
         case 49:
@@ -1005,48 +1043,49 @@ void printTwinBuffer(struct twinBuffer *TwinBuffer)
     printf("Buffer: %s\n", TwinBuffer->buffer);
 }
 
-void fillLookupTable(){
-    HM_insert(lookupTable,"_main","TK_MAIN");
-    HM_insert(lookupTable,"as","TK_AS");
-    HM_insert(lookupTable,"call","TK_CALL");
-    HM_insert(lookupTable,"definetype","TK_DEFINETYPE");
-    HM_insert(lookupTable,"else","TK_ELSE");
-    HM_insert(lookupTable,"end","TK_END");
-    HM_insert(lookupTable,"endif","TK_ENDIF");
-    HM_insert(lookupTable,"endrecord","TK_ENDRECORD");
-    HM_insert(lookupTable,"endunion","TK_ENDUNION");
-    HM_insert(lookupTable,"endwhile","TK_ENDWHILE");
-    HM_insert(lookupTable,"global","TK_GLOBAL");
-    HM_insert(lookupTable,"if","TK_IF");
-    HM_insert(lookupTable,"input","TK_INPUT");
-    HM_insert(lookupTable,"int","TK_INT");
-    HM_insert(lookupTable,"list","TK_LIST");
-    HM_insert(lookupTable,"output","TK_OUTPUT");
-    HM_insert(lookupTable,"parameter","TK_PARAMETER");
-    HM_insert(lookupTable,"parameters","TK_PARAMETERS");
-    HM_insert(lookupTable,"read","TK_READ");
-    HM_insert(lookupTable,"real","TK_REAL");
-    HM_insert(lookupTable,"record","TK_RECORD");
-    HM_insert(lookupTable,"return","TK_RETURN");
-    HM_insert(lookupTable,"then","TK_THEN");
-    HM_insert(lookupTable,"type","TK_TYPE");
-    HM_insert(lookupTable,"union","TK_UNION");
-    HM_insert(lookupTable,"while","TK_WHILE");
-    HM_insert(lookupTable,"with","TK_WITH");
-    HM_insert(lookupTable,"write","TK_WRITE");
+void fillLookupTable()
+{
+    HM_insert(lookupTable, "_main", "TK_MAIN");
+    HM_insert(lookupTable, "as", "TK_AS");
+    HM_insert(lookupTable, "call", "TK_CALL");
+    HM_insert(lookupTable, "definetype", "TK_DEFINETYPE");
+    HM_insert(lookupTable, "else", "TK_ELSE");
+    HM_insert(lookupTable, "end", "TK_END");
+    HM_insert(lookupTable, "endif", "TK_ENDIF");
+    HM_insert(lookupTable, "endrecord", "TK_ENDRECORD");
+    HM_insert(lookupTable, "endunion", "TK_ENDUNION");
+    HM_insert(lookupTable, "endwhile", "TK_ENDWHILE");
+    HM_insert(lookupTable, "global", "TK_GLOBAL");
+    HM_insert(lookupTable, "if", "TK_IF");
+    HM_insert(lookupTable, "input", "TK_INPUT");
+    HM_insert(lookupTable, "int", "TK_INT");
+    HM_insert(lookupTable, "list", "TK_LIST");
+    HM_insert(lookupTable, "output", "TK_OUTPUT");
+    HM_insert(lookupTable, "parameter", "TK_PARAMETER");
+    HM_insert(lookupTable, "parameters", "TK_PARAMETERS");
+    HM_insert(lookupTable, "read", "TK_READ");
+    HM_insert(lookupTable, "real", "TK_REAL");
+    HM_insert(lookupTable, "record", "TK_RECORD");
+    HM_insert(lookupTable, "return", "TK_RETURN");
+    HM_insert(lookupTable, "then", "TK_THEN");
+    HM_insert(lookupTable, "type", "TK_TYPE");
+    HM_insert(lookupTable, "union", "TK_UNION");
+    HM_insert(lookupTable, "while", "TK_WHILE");
+    HM_insert(lookupTable, "with", "TK_WITH");
+    HM_insert(lookupTable, "write", "TK_WRITE");
 }
 
 int main()
 {
 
     lookupTable = create_table(1000);
+    fillLookupTable();
     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
     TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
     removeComments("a.txt");
-
 
     FILE *fp;
     // Opening file in reading mode
@@ -1057,17 +1096,19 @@ int main()
         return 0;
     }
 
-    int characters=0;
+    int characters = 0;
     int i = 0;
-    memset(TwinBuffer->buffer, '\0', 2048*sizeof(char));
-    while(1&&!stopFlag){
+    memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
+    while (1 && !stopFlag)
+    {
         printf("---------Reading buffer %d time----------\n", i++);
         characters = getStream(fp);
-        if(characters<1024){
-                int where = (buffer_used==1) ? 0 : 1024;
-                // printf("%d",where+characters);
-                TwinBuffer->buffer[characters+where] = ' ';
-                characters += 1;
+        if (characters < 1024)
+        {
+            int where = (buffer_used == 1) ? 0 : 1024;
+            // printf("%d",where+characters);
+            TwinBuffer->buffer[characters + where] = ' ';
+            characters += 1;
         }
         int fwd_curr = TwinBuffer->fwd;
         buffer_used *= -1;
@@ -1075,10 +1116,11 @@ int main()
         // printf("%s", TwinBuffer->buffer);
         // printf("Fwd token = %d\n", TwinBuffer->fwd);
         // printf("back token = %d\n", TwinBuffer->back);
-        if(characters==0)
+        if (characters == 0)
             break;
         // continue;
-        while(1&&!stopFlag){
+        while (1 && !stopFlag)
+        {
             printStruct(getNextToken(NULL)); // not using currently
             // getNextToken(NULL);
             // printStruct(getNextToken(NULL)); // not using currently
@@ -1086,12 +1128,13 @@ int main()
             int characters_processed = TwinBuffer->fwd - fwd_curr;
             // printf("forward pointer = %d\t", TwinBuffer->fwd);
             // printf("back pointer = %d\n", TwinBuffer->back);
-            if(characters - characters_processed <=1){
+            if (characters - characters_processed <= 1)
+            {
                 // printf("breaking");
                 break;
             }
         }
-      
+
         // printf("%c\n",TwinBuffer->buffer[2042]);
         // printf("%c\n",TwinBuffer->buffer[2043]);
         // printf("%c\n",TwinBuffer->buffer[2044]);
@@ -1101,7 +1144,5 @@ int main()
         // printf("%c\n",TwinBuffer->buffer[204];)
         // printf("---Done processing----\n");
         // break;
-        
     }
-
 }
