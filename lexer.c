@@ -1088,7 +1088,7 @@ int main()
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
-    removeComments("a.txt");
+    removeComments("t2.txt");
 
     FILE *fp;
     // Opening file in reading mode
