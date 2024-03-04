@@ -2,15 +2,17 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-unsigned long hash_function(char* str) {
+unsigned long hash_function(char *str) {
     unsigned long hash = 5381;
     int c;
-    // char* strTemp = (char*) malloc(strlen(str) * sizeof(char));
+    // char strTemp[strlen(str)];
     // strcpy(strTemp, str);
     // printf("%s \t", str);
-    while((c = (*str++))) {
-        hash = ((hash << 5) + hash) + c;
+    // printf("%d\t%s\n", strlen(str), str);
+    for(int i = 0;i<strlen(str);i++) {
+        hash = ((hash << 5) + hash) + str[i];
     }
+    // if(strcmp(str,"booleanExpression")==0) printf("%d\n",hash);
     // printf("%s\n", str);
     return hash;
 }
@@ -69,10 +71,14 @@ LinkedList** create_collision_buckets(HashMap* hm) {
     return collision_buckets;
 }
 
-HMValues* create_value(char* key, void* val) {
+HMValues* create_value(char *key, void* val) {
     HMValues* newVal = (HMValues*) malloc(sizeof(HMValues));
-    // printf("%s\n", key);
+    // printf("%d\t%s\n", strl(key) key);
     newVal->key = (char*) malloc(strlen(key) * sizeof(char));
+    // memset(newVal->key, '\0', (strlen(key) + 1) * sizeof(char));
+    // for(int i = 0;i<sizeof(key);i++) {
+
+    // }
     strcpy(newVal->key, key);
     newVal->value = val;
     return newVal;
@@ -95,6 +101,7 @@ void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     if(head == NULL) {
         head = allocate_list();
         head->val = val;
+        // printf("%s\t%d\n", val->key, head->val->value);
         hm->collision_buckets[index] = head;
     }
     else{
@@ -102,36 +109,38 @@ void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     }
 }
 
-void HM_insert(HashMap* HM, char* key, void* val) {
+void HM_insert(HashMap* HM, char *key, void* val) {
     // printf("%d %s\n", strlen(key), key);
     HMValues* newVal = create_value(key, val);
+    // if(val == 44) printf("%s\t%d\t%s\n", newVal->key, newVal->value, key); 
 
     int index = hash_function(key)%HM->size;
+    // if(val == 43) printf("Maa Chuda %d\n", index);
+    // if(val == 44) printf("Maa Chuda %d\n", index);
 
     HMValues* curr = HM->vals[index];
-
+    // if(val==44) printf("%s",curr->key);
+    HM->count++;
     if(curr == NULL) {
-    //     if(HM->count == HM->size) {
-    //         printf("Error!!! HashMap is full\n");
-    //         free(newVal);
-    //         return;
-    //     }
         HM->vals[index] = newVal;
-        HM->count++;
     }
     else{
         if(strcmp(curr->key, key) == 0) {
             HM->vals[index] = newVal;
         }
         else{
+            // if(val==44) printf("%s",curr->key);
             handle_collision(HM, index, newVal);
         }
     }
 }
 
 void* HM_search(HashMap* hm, char *key) {
-    int index = hash_function(key)%hm->size;
     // printf("index is: %d", index);
+    // printf("%s\t", key);
+    int index = hash_function(key)%hm->size;
+    // if(index == 453) printf("%s", key);
+    // printf("%s\n", key);
     HMValues* val = hm->vals[index];
     LinkedList* head = hm->collision_buckets[index];
 

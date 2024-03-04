@@ -1,51 +1,96 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include"grammar.h"
+#include"hashmap.h"
 const int MAX_SIZE = 1000;
 
-int main() {
-    HashMap* strToStruct = create_table(MAX_SIZE);
-    HashMap* ruleMapFirst = create_table(MAX_SIZE);
+void swap(int* xp, int* yp) 
+{ 
+    int temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
+  
+// Function to perform Selection Sort 
+void selectionSort(int arr[], int n) 
+{ 
+    int i, j, min_idx; 
+  
+    // One by one move boundary of 
+    // unsorted subarray 
+    for (i = 0; i < n - 1; i++) { 
+        // Find the minimum element in 
+        // unsorted array 
+        min_idx = i; 
+        for (j = i + 1; j < n; j++) 
+            if (arr[j] < arr[min_idx]) 
+                min_idx = j; 
+  
+        // Swap the found minimum element 
+        // with the first element 
+        swap(&arr[min_idx], &arr[i]); 
+    } 
+} 
 
-    FILE* fp = fopen("/Users/srijan/Desktop/BITS Pilani/Compiler/Test Cases/Compiler-Construction/grammarText.txt", "r");
+int main() {
+    HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
+    HashMapI* ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
+    HashMapI* iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
+    FILE* fp = fopen("intAllocation.txt", "r");
     if(fp == NULL) {
-        perror("Error in opening Grammar File");
+        perror("Error in intAllocation File");
         return 0;
     }
-    char data[1024];
+    char data[200];
     int line_number = 0;
-    while(fgets(data, 1024, fp)) {
+    while(fgets(data, 200, fp)) {
+        line_number++;
+        int ind = 0;
+        while(data[ind] != '\n') ind++;
+        char *newStr = (char*) malloc((ind + 1) * sizeof(char));
+        memset(newStr, '\0', (ind + 1) * sizeof(char));
+        for(int i = 0;i<ind;i++) newStr[i] = data[i];
+        HM_insert(strToI, newStr, line_number);
+        // if(line_number == 16) printf("%s", newStr);
+        printf("%s\t%d\t%d\n", newStr, HM_search(strToI, newStr), strlen(newStr));
+    }
+    fclose(fp);
+    fp = fopen("grammarText.txt", "r");
+    if(fp == NULL) {
+        perror("Error in opening grammar file");
+        return 0;
+    }
+    line_number = 0;
+    while(fgets(data, 200, fp)) {
+        Rule* newRule = NULL;
+        bool lhs = false;
+        NonTerminals* prev = NULL, *lhsNT = NULL;
         // printf("%s\n\n", data);
         line_number++;
-        bool lhs = false;
-        NonTerminals* lhsNT;
-        Rule* newRule = NULL;
-        NonTerminals* prev;
-        for(int i = 0;i<1024;i++) {
-            // printf("%d ", i);
+        for(int i = 0;i<200;i++) {
+            int ind = 0;
             if(data[i] == '<') {
                 i++;
-                char* non_terminal = (char*) malloc(50 * sizeof(char));
+                char *non_terminal = (char*) malloc(50 * sizeof(char));
                 memset(non_terminal, '\0', 50 * sizeof(char));
                 int non_terminal_ind = 0;
                 while(data[i] != '>') {
                     non_terminal[non_terminal_ind++] = data[i++];
                 }
-                char *newNonTerminal = (char*) malloc((non_terminal_ind) * sizeof(char));
-                memset(newNonTerminal, '\0', non_terminal_ind * sizeof(char));
+                char *newNonTerminal = (char*) malloc((non_terminal_ind + 1) * sizeof(char));
+                memset(newNonTerminal, '\0', (non_terminal_ind + 1) * sizeof(char));
                 for(int j = 0;j<non_terminal_ind;j++) {
                     newNonTerminal[j] = non_terminal[j];
                 }
-                // printf("%s\n", newNonTerminal);
-                NonTerminals* newNT;
-                    // printf("%d %d %s\n", strlen(newNonTerminal), non_terminal_ind, newNonTerminal);
-                if(HM_search(strToStruct, newNonTerminal) == NULL) {
-                    newNT = create_nonTerminal(newNonTerminal);
-                    HM_insert(strToStruct, newNonTerminal, newNT);
+                int indNT = HM_search(strToI, newNonTerminal);
+                if(strcmp(newNonTerminal, "outputParameters") == 0) indNT = 31;
+                else if(strcmp(newNonTerminal, "fieldDefinitions") == 0)  indNT = 16;
+                NonTerminals* newNT = NULL;
+                if(HMI_search(iToStruct, indNT) == NULL) {
+                    newNT = create_terminal(indNT);
+                    HMI_insert(iToStruct, indNT, newNT);
                 }
-                else newNT = HM_search(strToStruct, newNonTerminal);
-                printf("%s\n", newNT->name);
-                HM_insert(ruleMapFirst, newNonTerminal, false);
+                else newNT = HMI_search(iToStruct, indNT);
                 if(!lhs) {
                     lhs = true;
                     lhsNT = newNT;
@@ -53,40 +98,43 @@ int main() {
                 else{
                     newRule = addToRule(newRule, newNT);
                 }
-                prev = newNT;
-                // break;
-
+                // printf("%d\t%d\n", indNT, newNT->name);
+                // printf("%d\t%d\n", line_number, HM_search(strToI, newNonTerminal));
+                free(non_terminal);
             }
             else if(data[i] == 'T' || data[i] == 'e') {
-                char* terminal = (char*) malloc(50 * sizeof(char));
+                char *terminal = (char*) malloc(50 * sizeof(char));
                 memset(terminal, '\0', 50 * sizeof(char));
                 int terminal_ind = 0;
-                while(data[i] != '<' && data[i] != ' ' && data[i] != '\n') {
+                while(data[i] != ' ' && data[i] != '\n') {
                     terminal[terminal_ind++] = data[i++];
                 }
                 i--;
-                char *newTerminal = (char*) malloc((terminal_ind) * sizeof(char));
+                char *newTerminal = (char*) malloc(terminal_ind * sizeof(char));
                 memset(newTerminal, '\0', terminal_ind * sizeof(char));
                 for(int j = 0;j<terminal_ind;j++) {
                     newTerminal[j] = terminal[j];
                 }
-                NonTerminals* newT;
-                if(HM_search(strToStruct, newTerminal) == NULL) {
-                    newT = create_terminal(newTerminal);
-                    // printf("%d %s\n", strlen(newTerminal), newTerminal);
-                    HM_insert(strToStruct, newTerminal, newT);
+                int indT = HM_search(strToI, newTerminal);
+                NonTerminals* newT = NULL;
+                if(HMI_search(iToStruct, indT) == NULL) {
+                    newT = create_terminal(indT);
+                    HMI_insert(iToStruct, indT, newT);
                 }
-                else newT = HM_search(strToStruct, newTerminal);
-                HM_insert(ruleMapFirst, newTerminal, false);
+                else newT = HMI_search(iToStruct, indT);
+                // printf("%d\t%d\n", indT, newT->name);
+                // printf("%d\t%d\n", line_number, HM_search(strToI, newTerminal));
                 newRule = addToRule(newRule, newT);
                 prev = newT;
+                free(terminal);
             }
             else if(data[i] == '|') {
                 if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
+
             }
-            else if(data[i] == '\n') {
+            else if(data[i] == '\n'){
                 if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 prev = NULL;
@@ -98,31 +146,28 @@ int main() {
             else continue;
         }
     }
-    // generateFirstSets(HM_search(strToStruct, "term"), ruleMapFirst);
-    // mainGenerateFirstSets(strToStruct, ruleMapFirst);
-    // NonTerminals* pro = HM_search(strToStruct, "declarations");
-    // for(int i = 0;i<pro->first_set_ind;i++) {
-    //     printf("%s\n", pro->first_set[i]->name);
+    // printf("%d", iToStruct->count);
+    // int b[200];
+    // memset(b, 1000, sizeof(b));
+    // int ind = 0;
+    // for(int i = 0;i<iToStruct->size;i++){
+    //     if(iToStruct->vals[i]==NULL){
+    //         continue;
+    //     }
+    //     else{
+    //         b[ind++] = iToStruct->vals[i]->key;
+    //         // printf("%d\n", iToStruct->vals[i]->key);
+    //         LinkedList* head = iToStruct->collision_buckets[i];
+    //         while(head){
+    //             b[ind++] = head->val->key;
+    //             // printf("%d\n",head->val->key);
+    //             head = head->next;
+    //         }
+    //     }
     // }
-    // bool pro2 = HM_search(ruleMapFirst, "fieldDefinitions");
-    // printf("%d\n", pro2);
-    NonTerminals* temp = HM_search(strToStruct, "program");
-    NonTerminals* dollar = create_terminal("$");
-    temp->follow_set[temp->follow_set_ind++] = dollar;
-    // mainGenerateNextToSets(strToStruct);
-    temp = HM_search(strToStruct, "actualOrRedefined");
-    // generateFollowSets(temp);
-    // printf("\nLHS Follow: \n");
-    // for(int i = 0;i<temp->lhsFollow_ind;i++) {
-    //     printf("%s\n", temp->lhsFollow[i]->name);
+    // selectionSort(b, 200);
+    // for(int i = 0;i<200;i++) {
+    //     printf("%d\n", b[i]);
     // }
-    // printf("\nNext to: \n");
-    // for(int i = 0;i<temp->nextTo_ind;i++) {
-    //     printf("%s\n", temp->nextTo[i]->name);
-    // }
-    // printf("\nFollow: \n");
-    // for(int i = 0;i<temp->follow_set_ind;i++) {
-    //     printf("%s\n", temp->follow_set[i]->name);
-    // }
-    fclose(fp);
+
 }
