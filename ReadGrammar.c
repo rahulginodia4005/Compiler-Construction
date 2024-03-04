@@ -139,7 +139,6 @@ int main() {
     mainGenerateNextToSets(iToStruct);
     mainGenerateFollowSets(iToStruct);
     curr = HMI_search(iToStruct, 24);
-
     ParserTable* table = create(53, 58);
     fillParserTable(table, iToStruct);
 }

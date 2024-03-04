@@ -19,10 +19,14 @@ ParserTable* create(int rows, int cols) {
 }
 
 void insert(ParserTable* pt, Rule* rule, int row, int col) {
+    if(pt->table[row][col] != NULL) return;
     pt->table[row][col] = rule;
 }
 
 void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
+    NonTerminals* syn = create_terminal(200);
+    Rule* synRule = NULL;
+    synRule = addToRule(synRule, syn);
     for(int i = 0;i<iToStruct->size;i++){
         if(iToStruct->vals[i]==NULL){
             continue;
@@ -32,8 +36,20 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
             // printf("%s\n", curr->name);
             if(!curr->terminal) {
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
+                    // printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
                     insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                }
+                if(curr->derive_eps != -1) {
+                    for(int j = 0;j<curr->follow_set_ind;j++) {
+                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, curr->derive_eps);
+                        insert(table, curr->grammar_rules[curr->derive_eps], curr->name - 1, curr->follow_set[j]->name - 54);
+                    }
+                }
+                else{
+                    for(int j = 0;j<curr->follow_set_ind;j++) {
+                        printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
+                        insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
+                    }
                 }
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
@@ -44,8 +60,20 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                     continue;
                 }
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
+                    // printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
                     insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                }
+                if(curr->derive_eps != -1) {
+                    for(int j = 0;j<curr->follow_set_ind;j++) {
+                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, curr->derive_eps);
+                        insert(table, curr->grammar_rules[curr->derive_eps], curr->name - 1, curr->follow_set[j]->name - 54);
+                    }
+                }
+                else{
+                    for(int j = 0;j<curr->follow_set_ind;j++) {
+                        printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
+                        insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
+                    }
                 }
                 head = head->next;
             }
