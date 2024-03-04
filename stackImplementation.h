@@ -15,12 +15,14 @@ typedef struct Node
 typedef struct Stack
 {
     Node *head;
+    int size;
 } Stack;
 
 Stack *createStack()
 {
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     stack->head = NULL;
+    stack->size = 0;
     return stack;
 }
 
@@ -36,6 +38,7 @@ void push( Stack* stack, int val)
 {
     Node *newNode = createNode(val, stack);
     stack->head = newNode;
+    stack->size++;
     // return newNode;
 }
 
@@ -51,6 +54,7 @@ int pop(Stack *stack)
         Node *temp = stack->head;
         stack->head = stack->head->next;
         free(temp);
+        stack->size--;
         return val;
     }
 }
