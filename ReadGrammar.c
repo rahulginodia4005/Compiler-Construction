@@ -2,35 +2,8 @@
 #include<stdio.h>
 #include"grammar.h"
 #include"hashmap.h"
+#include"ParserTable.h"
 const int MAX_SIZE = 1000;
-
-void swap(int* xp, int* yp) 
-{ 
-    int temp = *xp; 
-    *xp = *yp; 
-    *yp = temp; 
-} 
-  
-// Function to perform Selection Sort 
-void selectionSort(int arr[], int n) 
-{ 
-    int i, j, min_idx; 
-  
-    // One by one move boundary of 
-    // unsorted subarray 
-    for (i = 0; i < n - 1; i++) { 
-        // Find the minimum element in 
-        // unsorted array 
-        min_idx = i; 
-        for (j = i + 1; j < n; j++) 
-            if (arr[j] < arr[min_idx]) 
-                min_idx = j; 
-  
-        // Swap the found minimum element 
-        // with the first element 
-        swap(&arr[min_idx], &arr[i]); 
-    } 
-} 
 
 int main() {
     HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
@@ -119,7 +92,7 @@ int main() {
                 for(int j = 0;j<terminal_ind;j++) {
                     newTerminal[j] = terminal[j];
                 }
-                int indT = HM_search(strToI, newTerminal);
+                int indT = (int)HM_search(strToI, newTerminal);
                 NonTerminals* newT = NULL;
                 if(HMI_search(iToStruct, indT) == NULL) {
                     newT = create_terminal(indT);
@@ -152,58 +125,22 @@ int main() {
             else continue;
         }
     }
-    NonTerminals* curr = HMI_search(iToStruct, 12);
-    // for(int i = 0;i<curr->size;i++) {
-    //     Rule* curr_rule = curr->grammar_rules[i];
-    //     while(curr_rule) {
-    //         printf("%d\t", curr_rule->nt->name);
-    //         curr_rule = curr_rule->next;
-    //     }
-    // }
-    curr = HMI_search(iToStruct, 50);
+    HM_insert(strToI, "$", 0);
+    HMI_insert(iToStr, 0, "$");
+    NonTerminals* temp = HMI_search(iToStruct, 1);
+    NonTerminals* dollar = create_terminal(0);
+    temp->follow_set[temp->follow_set_ind++] = dollar;
+
+    NonTerminals* curr = HMI_search(iToStruct, 50);
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
     curr = HMI_search(iToStruct, 51);
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
     mainGenerateFirstSets(iToStruct, ruleMapFirst);
     mainGenerateNextToSets(iToStruct);
     mainGenerateFollowSets(iToStruct);
-    curr = HMI_search(iToStruct, 45);
-    // printf("%d\n", curr->terminal);
-    // for(int i = 0;i<curr->first_set_ind;i++) {
-    //     printf("%d\n", curr->first_set[i]->name);
-    // }
-    for(int i = 0;i<curr->follow_set_ind;i++) {
-        printf("%s\n", HMI_search(iToStr, curr->follow_set[i]->name));
-    }
-    // Rule* temptemp = curr->grammar_rules[0];
-    // while(temptemp) {
-    //     printf("%d\n", temptemp->nt->name);
-    //     temptemp = temptemp->next;
-    // }
+    curr = HMI_search(iToStruct, 24);
 
-    // printf("%d", curr->name);
-    // printf("%d", iToStruct->count);
-    // int b[200];
-    // memset(b, 1000, sizeof(b));
-    // int ind = 0;
-    // for(int i = 0;i<iToStruct->size;i++){
-    //     if(iToStruct->vals[i]==NULL){
-    //         continue;
-    //     }
-    //     else{
-    //         b[ind++] = iToStruct->vals[i]->key;
-    //         // printf("%d\n", iToStruct->vals[i]->key);
-    //         LinkedList* head = iToStruct->collision_buckets[i];
-    //         while(head){
-    //             b[ind++] = head->val->key;
-    //             // printf("%d\n",head->val->key);
-    //             head = head->next;
-    //         }
-    //     }
-    // }
-    // selectionSort(b, 200);
-    // for(int i = 0;i<200;i++) {
-    //     printf("%d\n", b[i]);
-    // }
+    struct parserTable* table;
+    table.cre
 
 }

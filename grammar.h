@@ -10,6 +10,7 @@ typedef struct Rule {
 typedef struct NonTerminals {
     Rule* grammar_rules[10];
     struct NonTerminals *nextTo[40],*first_set[40], *follow_set[40], *lhsFollow[40];
+    int first_set_to_grammar[40];
     int first_set_ind, follow_set_ind, nextTo_ind, lhsFollow_ind;
     bool follow_in_process;
     bool eps_in_first;
@@ -126,9 +127,15 @@ NonTerminals** generateFirstSets(NonTerminals* curr, HashMapI* ruleToMapFirst) {
                 if(child[j]->name == 111) {
                     eps = true;
                     curr->eps_in_first = true;
-                    if(curr_rule->next == NULL) curr->first_set[curr->first_set_ind++] = child[j];
+                    if(curr_rule->next == NULL) {
+                        curr->first_set[curr->first_set_ind] = child[j];
+                        curr->first_set_to_grammar[curr->first_set_ind++] = i;
+                    }
                 }
-                else curr->first_set[curr->first_set_ind++] = child[j];
+                else {
+                    curr->first_set[curr->first_set_ind] = child[j];
+                    curr->first_set_to_grammar[curr->first_set_ind++] = i;
+                }
                 j++;
             }
             if(!eps) break;
