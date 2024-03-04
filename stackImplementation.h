@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "parse_tree.h"
 
 typedef struct Node
 {
@@ -19,10 +20,10 @@ Stack *createStack()
     return stack;
 }
 
-Node *createNode(int val, Stack *stack)
+Node *createNode(NodeT* val, Stack *stack)
 {
     Node *newNode = (Node *)malloc(sizeof(Node));
-    newNode->val = val;
+    newNode->val = val->name_rule;
     newNode->next = stack->head;
     return newNode;
 }
@@ -67,6 +68,7 @@ void printStack(Stack* stack){
         temp = temp->next;
     }
 }
+
 
 // int main(){
 //     Stack* st = createStack();
