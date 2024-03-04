@@ -9,6 +9,7 @@ typedef struct ParserTable{
 
 ParserTable* create(int rows, int cols) {
     ParserTable* newPT = (ParserTable*) malloc(sizeof(ParserTable));
+    newPT->table = (Rule***) malloc(rows * sizeof(Rule**));
     newPT->rows = rows;
     newPT->cols = cols;
     for(int i = 0;i<rows;i++) {
@@ -31,7 +32,8 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
             // printf("%s\n", curr->name);
             if(!curr->terminal) {
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    table->insert(curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                    printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
+                    insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
@@ -42,7 +44,8 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                     continue;
                 }
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    table->insert(curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                    printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
+                    insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
                 head = head->next;
             }
