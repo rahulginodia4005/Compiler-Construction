@@ -140,7 +140,7 @@ int main() {
     mainGenerateFollowSets(iToStruct);
     curr = HMI_search(iToStruct, 24);
 
-    struct parserTable* table;
-    table.cre
+    ParserTable* table = create(53, 58);
+    fillParserTable(table, iToStruct);
 
 }

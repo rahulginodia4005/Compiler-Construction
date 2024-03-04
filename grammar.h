@@ -2,6 +2,9 @@
 #include"hashmap_int.h"
 #include<stdbool.h>
 
+#ifndef grammar
+#define grammar
+
 typedef struct Rule {
     struct NonTerminals* nt;
     struct Rule* next;
@@ -257,3 +260,5 @@ void mainGenerateFollowSets(HashMapI* iToStruct){
         }
     }
 }
+
+#endif

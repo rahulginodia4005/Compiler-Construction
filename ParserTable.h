@@ -31,7 +31,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
             // printf("%s\n", curr->name);
             if(!curr->terminal) {
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    table->insert(curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                    insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
@@ -42,7 +42,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                     continue;
                 }
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    table->insert(curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
+                    insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
                 head = head->next;
             }
