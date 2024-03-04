@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include"grammar.h"
 
+
 typedef struct ParserTable{
     Rule*** table;
     int rows, cols;
