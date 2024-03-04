@@ -36,6 +36,7 @@ int main() {
     HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
     HashMapI* ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
     HashMapI* iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
+    HashMapI* iToStr = create_table(MAX_SIZE);
     FILE* fp = fopen("intAllocation.txt", "r");
     if(fp == NULL) {
         perror("Error in intAllocation File");
@@ -51,6 +52,7 @@ int main() {
         memset(newStr, '\0', (ind + 1) * sizeof(char));
         for(int i = 0;i<ind;i++) newStr[i] = data[i];
         HM_insert(strToI, newStr, line_number);
+        HMI_insert(iToStr, line_number, newStr);
         // if(line_number == 16) printf("%s", newStr);
         // printf("%s\t%d\t%d\n", newStr, HM_search(strToI, newStr), strlen(newStr));
     }
@@ -164,17 +166,20 @@ int main() {
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
     mainGenerateFirstSets(iToStruct, ruleMapFirst);
     mainGenerateNextToSets(iToStruct);
-    // generateFollowSets(HMI_search(iToStruct, 50));
     mainGenerateFollowSets(iToStruct);
-    // generateFirstSets(HMI_search(iToStruct, 23), ruleMapFirst);
     curr = HMI_search(iToStruct, 45);
     // printf("%d\n", curr->terminal);
     // for(int i = 0;i<curr->first_set_ind;i++) {
     //     printf("%d\n", curr->first_set[i]->name);
     // }
     for(int i = 0;i<curr->follow_set_ind;i++) {
-        printf("%d\n", curr->follow_set[i]->name);
+        printf("%s\n", HMI_search(iToStr, curr->follow_set[i]->name));
     }
+    // Rule* temptemp = curr->grammar_rules[0];
+    // while(temptemp) {
+    //     printf("%d\n", temptemp->nt->name);
+    //     temptemp = temptemp->next;
+    // }
 
     // printf("%d", curr->name);
     // printf("%d", iToStruct->count);

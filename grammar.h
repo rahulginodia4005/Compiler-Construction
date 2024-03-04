@@ -159,10 +159,12 @@ void mainGenerateFirstSets(HashMapI* iToStruct,HashMapI* ruleToMapFirst){
 }
 
 void generateNextToSets(Rule* rule) {
-    Rule* temp1 = rule, *temp2 = rule->next;
+    Rule* temp1 = rule;
+    Rule* temp2 = NULL;
     while(temp1) {
+        temp2 = temp1->next;
         while(temp2) {
-            if(!checkDuplicacyNextToset(temp1->nt, temp2->nt)) temp1->nt->nextTo[temp1->nt->nextTo_ind++] = temp2->nt;
+            if(!checkDuplicacyNextToset(temp1->nt, temp2->nt) && temp2->nt->name != 111) temp1->nt->nextTo[temp1->nt->nextTo_ind++] = temp2->nt;
             if(!temp2->nt->eps_in_first) break;
             if(temp2->next == NULL) {
                 for(int i = 0;i<temp2->nt->lhsFollow_ind;i++) {
