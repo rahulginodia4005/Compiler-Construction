@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include"parser.h"
+#include"lexer.h"
 const int MAX_SIZE = 1000;
 
 void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, HashMapI* iToStr) {
@@ -155,9 +156,9 @@ int main() {
     readGrammar(strToI, ruleMapFirst, iToStruct, iToStr);
     produce_first_set(iToStruct, ruleMapFirst);
     produce_follow_set(iToStruct);
-
     ParserTable* table = create_parser_table(iToStruct, iToStr, strToI);
-    
+    // TdNode *list = createLinkedList();
+    // printLinkedList(list);
     // printf("Error,");
     // for(int j = 0;j<58;j++) {
     //     printf("%s", HMI_search(iToStr, j + 54));

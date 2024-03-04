@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "hashmap.h"
+#include "lexer.h"
 #include "token.h"
 
 int currLine = 1;
@@ -1214,11 +1214,10 @@ TdNode *createLinkedList()
     return tokenList;
 }
 
-int main()
-{
-    TdNode *list = createLinkedList();
-    printLinkedList(list);
-}
+// int main() {
+//     TdNode *list = createLinkedList();
+//     printLinkedList(list);
+// }
 
 // int main()
 // {

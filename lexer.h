@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "token.h"
+#include"hashmap.h"
 
 #ifndef Lexer
 #define Lexer
@@ -27,7 +28,7 @@ struct tokenDetails *getNextToken(FILE *f);
 
 void removeComments(char *testcaseFile);
 
-void printTwinBuffer(struct twinBuffer *TwinBuffer);
+// void printTwinBuffer(struct twinBuffer *TwinBuffer);
 
 void fillLookupTable();
 
