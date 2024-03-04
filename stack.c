@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<stdio.h>
+#include<stdbool.h>
 
 struct tokenDetails
 {
@@ -12,21 +13,21 @@ struct tokenDetails
 };
 
 typedef struct LinkedList{
-    int value
+    int value;
     struct LinkedList* next;
 } LinkedList;
 
 typedef struct Stack{
     LinkedList* list;
-}
+};
 
 LinkedList* allocate_list() {
     LinkedList* newList = (LinkedList*) malloc(sizeof(LinkedList));
     return newList;
 }
 
-Stack* allocate_stack(){
-    Stack* newStack = (Stack*) malloc(sizeof(Stack));
+struct Stack* allocate_stack(){
+    struct Stack* newStack = (struct Stack*) malloc(sizeof(struct Stack));
     return newStack;
 }
 
