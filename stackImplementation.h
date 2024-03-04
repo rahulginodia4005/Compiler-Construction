@@ -68,13 +68,13 @@ void printStack(Stack* stack){
     }
 }
 
-int main(){
-    Stack* st = createStack();
-    push(st, 1);
-    push(st, 2);
-    push(st, 3);
+// int main(){
+//     Stack* st = createStack();
+//     push(st, 1);
+//     push(st, 2);
+//     push(st, 3);
 
-    printStack(st);
-    printf("\n%d\n\n",pop(st));
-    printStack(st);
-}
+//     printStack(st);
+//     printf("\n%d\n\n",pop(st));
+//     printStack(st);
+// }
