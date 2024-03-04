@@ -52,7 +52,7 @@ int main() {
         for(int i = 0;i<ind;i++) newStr[i] = data[i];
         HM_insert(strToI, newStr, line_number);
         // if(line_number == 16) printf("%s", newStr);
-        printf("%s\t%d\t%d\n", newStr, HM_search(strToI, newStr), strlen(newStr));
+        // printf("%s\t%d\t%d\n", newStr, HM_search(strToI, newStr), strlen(newStr));
     }
     fclose(fp);
     fp = fopen("grammarText.txt", "r");
@@ -87,7 +87,7 @@ int main() {
                 else if(strcmp(newNonTerminal, "fieldDefinitions") == 0)  indNT = 16;
                 NonTerminals* newNT = NULL;
                 if(HMI_search(iToStruct, indNT) == NULL) {
-                    newNT = create_terminal(indNT);
+                    newNT = create_nonTerminal(indNT);
                     HMI_insert(iToStruct, indNT, newNT);
                 }
                 else newNT = HMI_search(iToStruct, indNT);
@@ -98,6 +98,7 @@ int main() {
                 else{
                     newRule = addToRule(newRule, newNT);
                 }
+                HMI_insert(ruleMapFirst, indNT, false);
                 // printf("%d\t%d\n", indNT, newNT->name);
                 // printf("%d\t%d\n", line_number, HM_search(strToI, newNonTerminal));
                 free(non_terminal);
@@ -126,16 +127,18 @@ int main() {
                 // printf("%d\t%d\n", line_number, HM_search(strToI, newTerminal));
                 newRule = addToRule(newRule, newT);
                 prev = newT;
+                HMI_insert(ruleMapFirst, indT, false);
                 free(terminal);
             }
             else if(data[i] == '|') {
-                if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                // printf("%d\t", prev->name);
+                // if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
 
             }
             else if(data[i] == '\n'){
-                if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                // if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 prev = NULL;
                 lhs = false;
@@ -146,6 +149,23 @@ int main() {
             else continue;
         }
     }
+    NonTerminals* curr = HMI_search(iToStruct, 12);
+    // for(int i = 0;i<curr->size;i++) {
+    //     Rule* curr_rule = curr->grammar_rules[i];
+    //     while(curr_rule) {
+    //         printf("%d\t", curr_rule->nt->name);
+    //         curr_rule = curr_rule->next;
+    //     }
+    // }
+    mainGenerateFirstSets(iToStruct, ruleMapFirst);
+    // generateFirstSets(HMI_search(iToStruct, 1), ruleMapFirst);
+    curr = HMI_search(iToStruct, 1);
+    // printf("%d\n", curr->terminal);
+    for(int i = 0;i<curr->first_set_ind;i++) {
+        printf("%d\n", curr->first_set[i]->name);
+    }
+
+    // printf("%d", curr->name);
     // printf("%d", iToStruct->count);
     // int b[200];
     // memset(b, 1000, sizeof(b));

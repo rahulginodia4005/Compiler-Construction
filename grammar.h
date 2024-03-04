@@ -8,7 +8,7 @@ typedef struct Rule {
 } Rule;
 
 typedef struct NonTerminals {
-    Rule** grammar_rules;
+    Rule* grammar_rules[10];
     struct NonTerminals *nextTo[20],*first_set[20], *follow_set[20], *lhsFollow[20];
     int first_set_ind, follow_set_ind, nextTo_ind, lhsFollow_ind;
     bool eps_in_first;
@@ -39,7 +39,7 @@ NonTerminals* create_terminal(int name) {
 
 void addRuleToNonTerminal(NonTerminals* nonTerminal, Rule* rule) {
     nonTerminal->size++;
-    nonTerminal->grammar_rules = (Rule**) realloc(nonTerminal->grammar_rules, nonTerminal->size * sizeof(Rule*));
+    // nonTerminal->grammar_rules = (Rule**) realloc(nonTerminal->grammar_rules, nonTerminal->size * sizeof(Rule*));
     nonTerminal->grammar_rules[nonTerminal->size - 1] = rule;
 }
 
@@ -104,61 +104,57 @@ bool checkDuplicacyLhsFollowset(NonTerminals* curr,NonTerminals* child){
     return test;
 }
 
-// NonTerminals** generateFirstSets(NonTerminals* curr, HashMap* ruleToMapFirst) {
-//     printf("%d\t%s\n", strlen(curr->name), curr->name);
-//     if(curr->first_set_ind != 0) return curr->first_set;
-//     HM_insert(ruleToMapFirst, curr->name, true);
-//     if(curr->terminal) {
-//         curr->first_set[0] = curr;
-//         curr->first_set_ind = 1;
-//         return curr->first_set;
-//     }
-//     for(int i = 0;i<curr->size;i++){
-//         Rule* curr_rule = curr->grammar_rules[i];
-//         while(curr_rule) {
-//             NonTerminals** child = generateFirstSets(curr_rule->nt, ruleToMapFirst);
-//             bool eps = false;
-//             int j = 0;
-//             while(child[j] != NULL) {
-//                 if(strcmp(child[j]->name, "eps") == 0) {
-//                     eps = true;
-//                     curr->eps_in_first = true;
-//                 }
-//                 if(!checkDuplicacyFirstset(curr, child[j])) curr->first_set[curr->first_set_ind++] = child[j];
-//                 j++;
-//             }
-//             if(!eps) break;
-//             curr_rule = curr_rule->next;
-//         }
-//     }
-//     return curr->first_set;
-// }
+NonTerminals** generateFirstSets(NonTerminals* curr, HashMapI* ruleToMapFirst) {
+    if(curr->first_set_ind != 0) return curr->first_set;
+    HMI_insert(ruleToMapFirst, curr->name, true);
+    if(curr->terminal) {
+        curr->first_set[0] = curr;
+        curr->first_set_ind = 1;
+        return curr->first_set;
+    }
+    for(int i = 0;i<curr->size;i++){
+        Rule* curr_rule = curr->grammar_rules[i];
+        while(curr_rule) {
+            NonTerminals** child = generateFirstSets(curr_rule->nt, ruleToMapFirst);
+            bool eps = false;
+            int j = 0;
+            while(child[j] != NULL) {
+                if(child[j]->name == 111) {
+                    eps = true;
+                    curr->eps_in_first = true;
+                }
+                curr->first_set[curr->first_set_ind++] = child[j];
+                j++;
+            }
+            if(!eps) break;
+            curr_rule = curr_rule->next;
+        }
+    }
+    return curr->first_set;
+}
 
-// void mainGenerateFirstSets(HashMap* strToStruct,HashMap* ruleToMapFirst){
-//     printf("MAA CHUDAAAAAAAA");
-//     int ct = 0;
-//     for(int i = 0;i<strToStruct->size;i++){
-//         if(strToStruct->vals[i]==NULL){
-//             continue;
-//         }
-//         else{
-//             printf("%d\t%s\n", strlen(strToStruct->vals[i]->key), strToStruct->vals[i]->key);
-//             // if(!HM_search(ruleToMapFirst,strToStruct->vals[i]->key)){
-//             //     // NonTerminals* curr = HM_search(strToStruct,ruleToMapFirst->vals[i]->key);
-//             //     // generateFirstSets(strToStruct->vals[i]->value, ruleToMapFirst);
-//             // }
-//             LinkedList* head = strToStruct->collision_buckets[i];
-//             while(head){
-//                  printf("%d\t%s\n", strlen(head->val->key), head->val->key);
-//                 // if(!HM_search(ruleToMapFirst,head->val->key)){
-//                 //     // printf("%s\n", head->val->key);
-//                 //     // generateFirstSets(head->val->value,ruleToMapFirst);
-//                 // }
-//                 head = head->next;
-//             }
-//         }
-//     }
-// }
+void mainGenerateFirstSets(HashMapI* iToStruct,HashMapI* ruleToMapFirst){
+    for(int i = 0;i<iToStruct->size;i++){
+        if(iToStruct->vals[i]==NULL){
+            continue;
+        }
+        else{
+            if(!HMI_search(ruleToMapFirst,iToStruct->vals[i]->key)){
+            //     // NonTerminals* curr = HM_search(strToStruct,ruleToMapFirst->vals[i]->key);
+                generateFirstSets(iToStruct->vals[i]->value, ruleToMapFirst);
+            }
+            LinkedListI* head = iToStruct->collision_buckets[i];
+            while(head){
+                //  printf("%d\t%s\n", strlen(head->val->key), head->val->key);
+                if(!HMI_search(ruleToMapFirst,head->val->key)){
+                //     // printf("%s\n", head->val->key);
+                    generateFirstSets(head->val->value,ruleToMapFirst);
+                }
+                head = head->next;
+            }
+        }
+    }
+}
 
 // void generateNextToSets(Rule* rule) {
 //     Rule* temp1 = rule, *temp2 = rule->next;
