@@ -159,18 +159,23 @@ int main() {
     // I need linked list of tokens.
     TdNode* ll = (TdNode*) malloc(sizeof(TdNode));
     
-    TdNode* stack_temp = ll;
+    TdNode* ll_temp = ll;
 
     //I need pareser table
     ParserTable* table = create(5,6);
 
-    while(stack_temp!=NULL){
+    while(ll_temp!=NULL){
         if(peek(st)==-1){
             printf("Stack is empty\n");
             break;
         }
-        char token_seen[50];
-        strcpy(token_seen, stack_temp->tokenDet->token);
+        int ind = 0;
+        while(ll_temp->tokenDet->token[ind]!='\0') ind++;
+        char *token_seen = (char*) malloc(ind * sizeof(char));
+        memset(token_seen, '\0', ind * sizeof(char));
+        for(int i = 0;i<ind;i++) {
+            token_seen[i] = ll_temp->tokenDet->token[i];
+        }
         int stack_top = peek(st);
         int tp = HM_search(strToI,token_seen);
         int col = tp - 54;
@@ -178,7 +183,7 @@ int main() {
         Rule* rule = table->table[row][col];
 
         if(rule == NULL) {
-            stack_temp = stack_temp->next;
+            ll_temp = ll_temp->next;
             printf("Error occured. Cannot parse %s.\n", token_seen);
             printf("--------\n");
             continue;
@@ -204,7 +209,7 @@ int main() {
                 push(st, rules[j]);
             }
             printf("--------\n");
-            stack_temp = stack_temp->next;
+            ll_temp = ll_temp->next;
         }
     }  
      

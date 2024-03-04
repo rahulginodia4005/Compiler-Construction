@@ -24,9 +24,6 @@ NodeT* createRootNodeT(){
     rootNodeT->terminal=0;
     return rootNodeT;
 }
-void connecting(NodeT* parent,NodeT* child){
-    parent->children[parent->countOfChild++] = child;
-}
 NodeT* createNodeT(int name,NodeT* parent){
     NodeT* nt = (NodeT*)malloc(sizeof(NodeT));
     nt->name_rule = name;
@@ -36,9 +33,10 @@ NodeT* createNodeT(int name,NodeT* parent){
     nt->parent=parent;
     nt->terminal=0;
     nt->countOfChild=0;
-    connecting(parent,nt);
+    parent->children[parent->countOfChild++] = nt;
     return nt;
 }
+
 NodeT* createTerminalNodeT(int name,NodeT* parent){
     NodeT* nt = (NodeT*)malloc(sizeof(NodeT));
     nt->name_rule = name;
@@ -48,7 +46,7 @@ NodeT* createTerminalNodeT(int name,NodeT* parent){
     nt->parent=parent;
     nt->terminal=1;
     nt->countOfChild=0;
-    connecting(parent,nt);
+    parent->children[parent->countOfChild++] = nt;
     return nt;
 }
 void inorder(NodeT* nt){
@@ -57,13 +55,12 @@ void inorder(NodeT* nt){
         printf("%d",nt->name_rule);
         return;
     }
+    inorder(nt->children[0]);
     printf("%d",nt->name_rule);
-    for(int i =0;i<nt->countOfChild;i++){
+    for(int i =1;i<nt->countOfChild;i++){
         //printf("yo");
         inorder(nt->children[i]);
     }
-    return;
-
 }
 
 
