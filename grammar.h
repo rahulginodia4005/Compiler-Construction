@@ -105,7 +105,8 @@ bool checkDuplicacyLhsFollowset(NonTerminals* curr,NonTerminals* child){
 }
 
 NonTerminals** generateFirstSets(NonTerminals* curr, HashMapI* ruleToMapFirst) {
-    if(curr->first_set_ind != 0) return curr->first_set;
+    // if(curr->first_set_ind != 0) return curr->first_set;
+    if(HMI_search(ruleToMapFirst, curr->name)) return curr->first_set;
     HMI_insert(ruleToMapFirst, curr->name, true);
     if(curr->terminal) {
         curr->first_set[0] = curr;
@@ -122,8 +123,9 @@ NonTerminals** generateFirstSets(NonTerminals* curr, HashMapI* ruleToMapFirst) {
                 if(child[j]->name == 111) {
                     eps = true;
                     curr->eps_in_first = true;
+                    if(curr_rule->next == NULL) curr->first_set[curr->first_set_ind++] = child[j];
                 }
-                curr->first_set[curr->first_set_ind++] = child[j];
+                else curr->first_set[curr->first_set_ind++] = child[j];
                 j++;
             }
             if(!eps) break;
@@ -140,14 +142,11 @@ void mainGenerateFirstSets(HashMapI* iToStruct,HashMapI* ruleToMapFirst){
         }
         else{
             if(!HMI_search(ruleToMapFirst,iToStruct->vals[i]->key)){
-            //     // NonTerminals* curr = HM_search(strToStruct,ruleToMapFirst->vals[i]->key);
                 generateFirstSets(iToStruct->vals[i]->value, ruleToMapFirst);
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
-                //  printf("%d\t%s\n", strlen(head->val->key), head->val->key);
                 if(!HMI_search(ruleToMapFirst,head->val->key)){
-                //     // printf("%s\n", head->val->key);
                     generateFirstSets(head->val->value,ruleToMapFirst);
                 }
                 head = head->next;

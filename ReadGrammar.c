@@ -157,9 +157,9 @@ int main() {
     //         curr_rule = curr_rule->next;
     //     }
     // }
-    mainGenerateFirstSets(iToStruct, ruleMapFirst);
-    // generateFirstSets(HMI_search(iToStruct, 1), ruleMapFirst);
-    curr = HMI_search(iToStruct, 1);
+    // mainGenerateFirstSets(iToStruct, ruleMapFirst);
+    generateFirstSets(HMI_search(iToStruct, 30), ruleMapFirst);
+    curr = HMI_search(iToStruct, 30);
     // printf("%d\n", curr->terminal);
     for(int i = 0;i<curr->first_set_ind;i++) {
         printf("%d\n", curr->first_set[i]->name);
