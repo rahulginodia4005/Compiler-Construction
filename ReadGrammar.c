@@ -38,12 +38,13 @@ int main() {
                 }
                 // printf("%s\n", newNonTerminal);
                 NonTerminals* newNT;
-                    // printf("%s\n", newNonTerminal);
+                    // printf("%d %d %s\n", strlen(newNonTerminal), non_terminal_ind, newNonTerminal);
                 if(HM_search(strToStruct, newNonTerminal) == NULL) {
                     newNT = create_nonTerminal(newNonTerminal);
                     HM_insert(strToStruct, newNonTerminal, newNT);
                 }
                 else newNT = HM_search(strToStruct, newNonTerminal);
+                printf("%s\n", newNT->name);
                 HM_insert(ruleMapFirst, newNonTerminal, false);
                 if(!lhs) {
                     lhs = true;
@@ -70,9 +71,9 @@ int main() {
                     newTerminal[j] = terminal[j];
                 }
                 NonTerminals* newT;
-                    // printf("%s\n", newTerminal);
                 if(HM_search(strToStruct, newTerminal) == NULL) {
                     newT = create_terminal(newTerminal);
+                    // printf("%d %s\n", strlen(newTerminal), newTerminal);
                     HM_insert(strToStruct, newTerminal, newT);
                 }
                 else newT = HM_search(strToStruct, newTerminal);
@@ -81,13 +82,14 @@ int main() {
                 prev = newT;
             }
             else if(data[i] == '|') {
-                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
             }
             else if(data[i] == '\n') {
-                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
+                prev = NULL;
                 lhs = false;
                 newRule = NULL;
                 lhsNT = NULL;
@@ -96,19 +98,8 @@ int main() {
             else continue;
         }
     }
-    // NonTerminals* pro = HM_search(strToStruct, "program");
-    // for(int i = 0;i<pro->size;i++) {
-    //     Rule* temp = pro->grammar_rules[i];
-    //     while(temp) {
-    //         printf("%s ", temp->nt->name);
-    //         temp = temp->next;
-    //     }
-    //     printf("\n");
-    // }
-    // char *aa = pro->first_set[0]->name;
-    // printf("%d", pro->grammar_rules[0]->nt->size);
     // generateFirstSets(HM_search(strToStruct, "term"), ruleMapFirst);
-    mainGenerateFirstSets(strToStruct, ruleMapFirst);
+    // mainGenerateFirstSets(strToStruct, ruleMapFirst);
     // NonTerminals* pro = HM_search(strToStruct, "declarations");
     // for(int i = 0;i<pro->first_set_ind;i++) {
     //     printf("%s\n", pro->first_set[i]->name);

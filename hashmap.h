@@ -5,9 +5,13 @@
 unsigned long hash_function(char* str) {
     unsigned long hash = 5381;
     int c;
+    // char* strTemp = (char*) malloc(strlen(str) * sizeof(char));
+    // strcpy(strTemp, str);
+    // printf("%s \t", str);
     while((c = (*str++))) {
         hash = ((hash << 5) + hash) + c;
     }
+    // printf("%s\n", str);
     return hash;
 }
 
@@ -98,8 +102,8 @@ void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     }
 }
 
-void HM_insert(HashMap* HM, char key[], void* val) {
-    printf("%s\n", key);
+void HM_insert(HashMap* HM, char* key, void* val) {
+    // printf("%d %s\n", strlen(key), key);
     HMValues* newVal = create_value(key, val);
 
     int index = hash_function(key)%HM->size;

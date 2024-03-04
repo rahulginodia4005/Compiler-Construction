@@ -185,14 +185,14 @@ void mainGenerateNextToSets(HashMap* strToStruct){
         }
         else{
             NonTerminals* curr = strToStruct->vals[i]->value;
-            printf("%s\n", curr->name);
+            // printf("%s\n", curr->name);
             for(int j = 0;j<curr->size;j++) {
                 generateNextToSets(curr->grammar_rules[j]);
             }
             LinkedList* head = strToStruct->collision_buckets[i];
             while(head){
                 curr = head->val->value;
-                printf("%s\n", curr->name);
+                // printf("%s\n", curr->name);
                 for(int j = 0;j<curr->size;j++) {
                     generateNextToSets(curr->grammar_rules[j]);
                 }
