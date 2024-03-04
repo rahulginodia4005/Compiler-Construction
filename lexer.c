@@ -86,6 +86,7 @@ struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
         if (lookupSearch == NULL)
         {
             HM_insert(lookupTable, lexeme, "TK_FIELDID");
+            printf("Inserted %s\n", lexeme);
         }
     }
     else if (currState == 18)
@@ -94,6 +95,7 @@ struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
         if (lookupSearch == NULL)
         {
             HM_insert(lookupTable, lexeme, "TK_ID");
+            printf("Inserted %s\n", lexeme);
         }
     }
     else if (currState == 35)
@@ -102,6 +104,7 @@ struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
         if (lookupSearch == NULL)
         {
             HM_insert(lookupTable, lexeme, "TK_FUNID");
+            printf("Inserted %s\n", lexeme);
         }
     }
     else if (currState == 38)
@@ -110,9 +113,9 @@ struct tokenDetails *setToken(struct tokenDetails *ptr, char *tokenName)
         if (lookupSearch == NULL)
         {
             HM_insert(lookupTable, lexeme, "TK_RUID");
+            printf("Inserted %s\n", lexeme);
         }
     }
-
     ptr->err = false;
     strcpy(ptr->token, tokenName);
     ptr->lineNumber = currLine;
@@ -1103,13 +1106,17 @@ int main()
     {
         printf("---------Reading buffer %d time----------\n", i++);
         characters = getStream(fp);
+        // printf("Characters read = %d\n", characters);
         if (characters < 1024)
         {
             int where = (buffer_used == 1) ? 0 : 1024;
-            // printf("%d",where+characters);
+            // printf("--%d--\n",where+characters);
             TwinBuffer->buffer[characters + where] = ' ';
+            TwinBuffer->buffer[characters + where+1] = ' ';
+            // printf("Character at end = %d\n", TwinBuffer->buffer[characters+where]);
             characters += 1;
         }
+        // printf("Characters read = %d\n", characters);
         int fwd_curr = TwinBuffer->fwd;
         buffer_used *= -1;
         // printf("Characters read = %d\n", characters);
