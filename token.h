@@ -19,4 +19,38 @@ typedef struct tdNode{
     struct tdNode* next;
 }TdNode;
 
-#endif
+TdNode* createNewLinkedList(){
+    TdNode* head = (TdNode*)malloc(sizeof(TdNode));
+    head->tokenDet = NULL;
+    head->next = NULL;
+    return head;
+}
+
+TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
+    if(strcmp(tokenDets->token,"Dummy")==0){
+        return head;
+    }
+    if(head->tokenDet == NULL){
+        head->tokenDet = tokenDets;
+        return head;
+    }else{
+        TdNode* temp = head;
+        while(temp->next!=NULL){
+            temp = temp->next;
+        }
+        TdNode* newNode = (TdNode*)malloc(sizeof(TdNode));
+        newNode->tokenDet = tokenDets;
+        newNode->next = NULL;
+        temp->next = newNode;
+        return head;
+    }
+}
+
+void printLinkedList(TdNode* head){
+    TdNode* temp = head;
+    while(temp!=NULL){
+        printf("Token: %s, Lexeme: %s,\n", temp->tokenDet->token, temp->tokenDet->lexeme);
+        temp = temp->next;
+    }
+}
+#endif  
