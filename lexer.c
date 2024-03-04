@@ -41,8 +41,11 @@ int getStream(FILE *fp)
 
 char *findLexeme(int fwd, int back)
 {
+
     char *currBuffer = TwinBuffer->buffer;
     char *lexeme = (char *)malloc(100 * sizeof(char));
+    // memset lexeme with all \0s
+    memset(lexeme, '\0', 100 * sizeof(char));
     int i = 0;
     if (back < fwd)
     {
@@ -135,11 +138,25 @@ struct tokenDetails *setToken(char *tokenName)
         strcpy(ptr->token, tokenName);
     }
 
-    if (strcmp(ptr->token, "TK_ID") && strlen(lexeme) > 20)
+    // printf("%d\n",strlen(lexeme));
+
+    if (strcmp(ptr->token, "TK_ID") == 0 && strlen(lexeme) > 20)
     {
         ptr->err = true;
         strcpy(ptr->errMessage, "Variable Identifier is longer than the prescribed length of 20 characters.");
-        strcmp(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->lexeme, lexeme);
+        TwinBuffer->back = TwinBuffer->fwd;
+        currState = 0;
+        ptr->lineNumber = currLine;
+        return ptr;
+    }
+    else if (strcmp(ptr->token, "TK_FUNID") == 0 && strlen(lexeme) > 30)
+    {
+        ptr->err = true;
+        strcpy(ptr->errMessage, "Function Identifier is longer than the prescribed length of 30 characters.");
+        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->lexeme, lexeme);
         TwinBuffer->back = TwinBuffer->fwd;
         currState = 0;
         ptr->lineNumber = currLine;
@@ -1225,84 +1242,84 @@ TdNode *createLinkedList()
     return tokenList;
 }
 
-int main()
-{
-    TdNode *list = createLinkedList();
-    printLinkedList(list);
-}
-
 // int main()
 // {
-
-//     lookupTable = create_table(1000);
-//     fillLookupTable();
-//     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
-//     TwinBuffer->size = 2048;
-//     TwinBuffer->fwd = 0;
-//     TwinBuffer->back = 0;
-
-//     removeComments("t2.txt");
-
-//     FILE *fp;
-//     // Opening file in reading mode
-//     fp = fopen("commentRemoval.txt", "r");
-//     if (fp == NULL)
-//     {
-//         printf("Can't open the file. Try again");
-//         return 0;
-//     }
-
-//     int characters = 0;
-//     int i = 0;
-//     memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
-//     while (1 && !stopFlag)
-//     {
-//         printf("---------Reading buffer %d time----------\n", i++);
-//         characters = getStream(fp);
-//         // printf("Characters read = %d\n", characters);
-//         if (characters < 1024)
-//         {
-//             int where = (buffer_used == 1) ? 0 : 1024;
-//             // printf("--%d--\n",where+characters);
-//             TwinBuffer->buffer[characters + where] = ' ';
-//             TwinBuffer->buffer[characters + where+1] = ' ';
-//             // printf("Character at end = %d\n", TwinBuffer->buffer[characters+where]);
-//             characters += 1;
-//         }
-//         // printf("Characters read = %d\n", characters);
-//         int fwd_curr = TwinBuffer->fwd;
-//         buffer_used *= -1;
-//         // printf("Characters read = %d\n", characters);
-//         // printf("%s", TwinBuffer->buffer);
-//         // printf("Fwd token = %d\n", TwinBuffer->fwd);
-//         // printf("back token = %d\n", TwinBuffer->back);
-//         if (characters == 0)
-//             break;
-//         // continue;
-//         while (1 && !stopFlag)
-//         {
-//             printStruct(getNextToken(NULL)); // not using currently
-//             // getNextToken(NULL);
-//             // printStruct(getNextToken(NULL)); // not using currently
-//             // getNextToken(NULL);
-//             int characters_processed = TwinBuffer->fwd - fwd_curr;
-//             // printf("forward pointer = %d\t", TwinBuffer->fwd);
-//             // printf("back pointer = %d\n", TwinBuffer->back);
-//             if (characters - characters_processed <= 1)
-//             {
-//                 // printf("breaking");
-//                 break;
-//             }
-//         }
-
-//         // printf("%c\n",TwinBuffer->buffer[2042]);
-//         // printf("%c\n",TwinBuffer->buffer[2043]);
-//         // printf("%c\n",TwinBuffer->buffer[2044]);
-//         // printf("%c\n",TwinBuffer->buffer[2045]);
-//         // printf("%c\n",TwinBuffer->buffer[2046]);
-//         // printf("%c\n",TwinBuffer->buffer[2047]);
-//         // printf("%c\n",TwinBuffer->buffer[204];)
-//         // printf("---Done processing----\n");
-//         // break;
-//     }
+//     TdNode *list = createLinkedList();
+//     printLinkedList(list);
 // }
+
+int main()
+{
+
+    lookupTable = create_table(1000);
+    fillLookupTable();
+    TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
+    TwinBuffer->size = 2048;
+    TwinBuffer->fwd = 0;
+    TwinBuffer->back = 0;
+
+    removeComments("t2.txt");
+
+    FILE *fp;
+    // Opening file in reading mode
+    fp = fopen("commentRemoval.txt", "r");
+    if (fp == NULL)
+    {
+        printf("Can't open the file. Try again");
+        return 0;
+    }
+
+    int characters = 0;
+    int i = 0;
+    memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
+    while (1 && !stopFlag)
+    {
+        printf("---------Reading buffer %d time----------\n", i++);
+        characters = getStream(fp);
+        // printf("Characters read = %d\n", characters);
+        if (characters < 1024)
+        {
+            int where = (buffer_used == 1) ? 0 : 1024;
+            // printf("--%d--\n",where+characters);
+            TwinBuffer->buffer[characters + where] = ' ';
+            TwinBuffer->buffer[characters + where + 1] = ' ';
+            // printf("Character at end = %d\n", TwinBuffer->buffer[characters+where]);
+            characters += 1;
+        }
+        // printf("Characters read = %d\n", characters);
+        int fwd_curr = TwinBuffer->fwd;
+        buffer_used *= -1;
+        // printf("Characters read = %d\n", characters);
+        // printf("%s", TwinBuffer->buffer);
+        // printf("Fwd token = %d\n", TwinBuffer->fwd);
+        // printf("back token = %d\n", TwinBuffer->back);
+        if (characters == 0)
+            break;
+        // continue;
+        while (1 && !stopFlag)
+        {
+            printStruct(getNextToken(NULL)); // not using currently
+            // getNextToken(NULL);
+            // printStruct(getNextToken(NULL)); // not using currently
+            // getNextToken(NULL);
+            int characters_processed = TwinBuffer->fwd - fwd_curr;
+            // printf("forward pointer = %d\t", TwinBuffer->fwd);
+            // printf("back pointer = %d\n", TwinBuffer->back);
+            if (characters - characters_processed <= 1)
+            {
+                // printf("breaking");
+                break;
+            }
+        }
+
+        // printf("%c\n",TwinBuffer->buffer[2042]);
+        // printf("%c\n",TwinBuffer->buffer[2043]);
+        // printf("%c\n",TwinBuffer->buffer[2044]);
+        // printf("%c\n",TwinBuffer->buffer[2045]);
+        // printf("%c\n",TwinBuffer->buffer[2046]);
+        // printf("%c\n",TwinBuffer->buffer[2047]);
+        // printf("%c\n",TwinBuffer->buffer[204];)
+        // printf("---Done processing----\n");
+        // break;
+    }
+}

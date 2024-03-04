@@ -2,9 +2,9 @@
 
 
 
-_sumN  input parameter list [int d5cc34] 
+_sumNauiasiduhaiudhaihdiaushdashduiahdahdasiuhdiadhasuhdiuasdhi  input parameter list [int d5cc34] 
 output parameter list[real d3];
-	type int : b5b567;
+	type int : b5b567666666666666666666662345643234563234566666;
 	b5b567 <--- 1;
 	d3 <--- 0.00;
 	while ( b5b567 <= d5cc34)
