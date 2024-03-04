@@ -15,6 +15,11 @@ ParserTable* create(int rows, int cols) {
     for(int i = 0;i<rows;i++) {
         newPT->table[i] = (Rule**) malloc(cols * sizeof(Rule*));
     }
+    for(int i = 0;i<rows;i++) {
+        for(int j = 0;j<cols;j++) {
+            newPT->table[i][j] = NULL;
+        }
+    }
     return newPT;
 }
 
@@ -27,6 +32,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
     NonTerminals* syn = create_terminal(200);
     Rule* synRule = NULL;
     synRule = addToRule(synRule, syn);
+    HMI_insert(iToStruct, 200, syn);
     for(int i = 0;i<iToStruct->size;i++){
         if(iToStruct->vals[i]==NULL){
             continue;
@@ -47,7 +53,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                 }
                 else{
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
+                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
@@ -71,7 +77,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                 }
                 else{
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
+                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }

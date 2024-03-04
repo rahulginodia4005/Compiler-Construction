@@ -141,4 +141,24 @@ int main() {
     curr = HMI_search(iToStruct, 24);
     ParserTable* table = create(53, 58);
     fillParserTable(table, iToStruct);
+    printf("Error,");
+    for(int j = 0;j<58;j++) {
+        printf("%s", HMI_search(iToStr, j + 54));
+        if(j != 57) printf(",");
+    }
+    printf("\n");
+    HMI_insert(iToStr, 200, "syn");
+    HM_insert(strToI, "syn", 200);
+    for(int i = 0;i<53;i++) {
+        printf("%s,", HMI_search(iToStr, i + 1));
+        for(int j = 0;j<58;j++) {
+            Rule* curr = table->table[i][j];
+            if(curr == NULL) {
+                printf("Error");
+            }
+            else printf("%s", HMI_search(iToStr, curr->nt->name));
+            if(j != 57) printf(",");
+        }
+        printf("\n");
+    }
 }
