@@ -9,8 +9,9 @@ typedef struct Rule {
 
 typedef struct NonTerminals {
     Rule* grammar_rules[10];
-    struct NonTerminals *nextTo[20],*first_set[20], *follow_set[20], *lhsFollow[20];
+    struct NonTerminals *nextTo[40],*first_set[40], *follow_set[40], *lhsFollow[40];
     int first_set_ind, follow_set_ind, nextTo_ind, lhsFollow_ind;
+    bool follow_in_process;
     bool eps_in_first;
     int size;
     int name;
@@ -22,6 +23,7 @@ NonTerminals* create_nonTerminal(int name) {
     newNT->size = 0;
     newNT->first_set_ind = 0, newNT->follow_set_ind = 0, newNT->nextTo_ind = 0, newNT->lhsFollow_ind = 0;
     newNT->terminal = false;
+    newNT->follow_in_process = false;
     newNT->eps_in_first = false;
     newNT->name = name;
     return newNT;
@@ -32,6 +34,7 @@ NonTerminals* create_terminal(int name) {
     newT->terminal = true;
     newT->first_set_ind = 0, newT->follow_set_ind = 0, newT->nextTo_ind = 0, newT->lhsFollow_ind = 0;
     newT->eps_in_first = false;
+    newT->follow_in_process = false;
     newT->name = name;
     return newT;
 }
@@ -155,66 +158,93 @@ void mainGenerateFirstSets(HashMapI* iToStruct,HashMapI* ruleToMapFirst){
     }
 }
 
-// void generateNextToSets(Rule* rule) {
-//     Rule* temp1 = rule, *temp2 = rule->next;
-//     while(temp1) {
-//         while(temp2) {
-//             if(!checkDuplicacyNextToset(temp1->nt, temp2->nt)) temp1->nt->nextTo[temp1->nt->nextTo_ind++] = temp2->nt;
-//             if(!temp2->nt->eps_in_first) break;
-//             if(temp2->next == NULL) {
-//                 for(int i = 0;i<temp2->nt->lhsFollow_ind;i++) {
-//                     if(!checkDuplicacyLhsFollowset(temp1->nt, temp2->nt->lhsFollow[i])) {
-//                         temp1->nt->lhsFollow[temp1->nt->lhsFollow_ind++] = temp2->nt->lhsFollow[i];
-//                     }
-//                 }
-//             }
-//             temp2 = temp2->next;
-//         }
-//         temp1 = temp1->next;
-//     }
-// }
+void generateNextToSets(Rule* rule) {
+    Rule* temp1 = rule, *temp2 = rule->next;
+    while(temp1) {
+        while(temp2) {
+            if(!checkDuplicacyNextToset(temp1->nt, temp2->nt)) temp1->nt->nextTo[temp1->nt->nextTo_ind++] = temp2->nt;
+            if(!temp2->nt->eps_in_first) break;
+            if(temp2->next == NULL) {
+                for(int i = 0;i<temp2->nt->lhsFollow_ind;i++) {
+                    if(!checkDuplicacyLhsFollowset(temp1->nt, temp2->nt->lhsFollow[i])) {
+                        temp1->nt->lhsFollow[temp1->nt->lhsFollow_ind++] = temp2->nt->lhsFollow[i];
+                    }
+                }
+            }
+            temp2 = temp2->next;
+        }
+        temp1 = temp1->next;
+    }
+}
 
-// void mainGenerateNextToSets(HashMap* strToStruct){
-//     int ct = 0;
-//     for(int i = 0;i<strToStruct->size;i++){
-//         if(strToStruct->vals[i]==NULL){
-//             continue;
-//         }
-//         else{
-//             NonTerminals* curr = strToStruct->vals[i]->value;
-//             // printf("%s\n", curr->name);
-//             for(int j = 0;j<curr->size;j++) {
-//                 generateNextToSets(curr->grammar_rules[j]);
-//             }
-//             LinkedList* head = strToStruct->collision_buckets[i];
-//             while(head){
-//                 curr = head->val->value;
-//                 // printf("%s\n", curr->name);
-//                 for(int j = 0;j<curr->size;j++) {
-//                     generateNextToSets(curr->grammar_rules[j]);
-//                 }
-//                 head = head->next;
-//             }
-//         }
-//     }
-// }
+void mainGenerateNextToSets(HashMapI* iToStruct){
+    int ct = 0;
+    for(int i = 0;i<iToStruct->size;i++){
+        if(iToStruct->vals[i]==NULL){
+            continue;
+        }
+        else{
+            NonTerminals* curr = iToStruct->vals[i]->value;
+            // printf("%s\n", curr->name);
+            for(int j = 0;j<curr->size;j++) {
+                generateNextToSets(curr->grammar_rules[j]);
+            }
+            LinkedListI* head = iToStruct->collision_buckets[i];
+            while(head){
+                curr = head->val->value;
+                // printf("%s\n", curr->name);
+                for(int j = 0;j<curr->size;j++) {
+                    generateNextToSets(curr->grammar_rules[j]);
+                }
+                head = head->next;
+            }
+        }
+    }
+}
 
-// NonTerminals** generateFollowSets(NonTerminals* curr) {
-//     if(curr->follow_set_ind != 0) return curr->follow_set;
-//     printf("%s\n", curr->name);
-//     for(int i = 0;i<curr->nextTo_ind;i++) {
-//         NonTerminals* child = curr->nextTo[i];
-//         // printf("%s\n", child->name);
-//         for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
-//     }
-//     for(int i = 0;i<curr->lhsFollow_ind;i++) {
-//         NonTerminals* child = curr->lhsFollow[i];
-//         if(strcmp(child->name, curr->name) == 0) continue;
-//         NonTerminals** childFollow = generateFollowSets(child);
-//         int j = 0;
-//         while(childFollow[j] != NULL) {
-//             if(!checkDuplicacyFollowset(curr, childFollow[j])) curr->follow_set[curr->follow_set_ind++] = childFollow[j];
-//             j++;
-//         }
-//     }
-// }
+NonTerminals** generateFollowSets(NonTerminals* curr) {
+    if(curr->follow_in_process) return curr->follow_set;
+    if(curr->follow_set_ind != 0) return curr->follow_set;
+    curr->follow_in_process = true;
+    // printf("%d\n", curr->name);
+    for(int i = 0;i<curr->nextTo_ind;i++) {
+        NonTerminals* child = curr->nextTo[i];
+        // printf("%s\n", child->name);
+        for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
+    }
+    for(int i = 0;i<curr->lhsFollow_ind;i++) {
+        NonTerminals* child = curr->lhsFollow[i];
+        if(child->name == curr->name) continue;
+        NonTerminals** childFollow = generateFollowSets(child);
+        int j = 0;
+        while(childFollow[j] != NULL) {
+            if(!checkDuplicacyFollowset(curr, childFollow[j])) curr->follow_set[curr->follow_set_ind++] = childFollow[j];
+            j++;
+        }
+    }
+    curr->follow_in_process = false;
+    return curr->follow_set;
+}
+
+void mainGenerateFollowSets(HashMapI* iToStruct){
+    int ct = 0;
+    for(int i = 0;i<iToStruct->size;i++){
+        if(iToStruct->vals[i]==NULL){
+            continue;
+        }
+        else{
+            generateFollowSets(iToStruct->vals[i]->value);
+            // printf("%s\n", curr->name);
+            LinkedListI* head = iToStruct->collision_buckets[i];
+            while(head){
+                // curr = head->val->value;
+                generateFollowSets(head->val->value);
+                // printf("%s\n", curr->name);
+                // for(int j = 0;j<curr->size;j++) {
+                //     generateNextToSets(curr->grammar_rules[j]);
+                // }
+                head = head->next;
+            }
+        }
+    }
+}

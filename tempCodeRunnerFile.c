@@ -1,7 +1,4 @@
-curr->size;i++) {
-    //     Rule* curr_rule = curr->grammar_rules[i];
-    //     while(curr_rule) {
-    //         printf("%d\t", curr_rule->nt->name);
-    //         curr_rule = curr_rule->next;
-    //     }
-    // }
+t, 50);
+    // curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
+    // curr = HMI_search(iToStruct, 51);
+    // curr->follow_set[curr->fo

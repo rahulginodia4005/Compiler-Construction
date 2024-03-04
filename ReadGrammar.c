@@ -99,6 +99,7 @@ int main() {
                     newRule = addToRule(newRule, newNT);
                 }
                 HMI_insert(ruleMapFirst, indNT, false);
+                prev = newNT;
                 // printf("%d\t%d\n", indNT, newNT->name);
                 // printf("%d\t%d\n", line_number, HM_search(strToI, newNonTerminal));
                 free(non_terminal);
@@ -132,13 +133,13 @@ int main() {
             }
             else if(data[i] == '|') {
                 // printf("%d\t", prev->name);
-                // if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
 
             }
             else if(data[i] == '\n'){
-                // if(!checkDuplicacyLhsFollowset(prev, lhsNT) && prev != lhsNT) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
+                if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 prev = NULL;
                 lhs = false;
@@ -157,12 +158,22 @@ int main() {
     //         curr_rule = curr_rule->next;
     //     }
     // }
-    // mainGenerateFirstSets(iToStruct, ruleMapFirst);
-    generateFirstSets(HMI_search(iToStruct, 30), ruleMapFirst);
-    curr = HMI_search(iToStruct, 30);
+    curr = HMI_search(iToStruct, 50);
+    curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
+    curr = HMI_search(iToStruct, 51);
+    curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
+    mainGenerateFirstSets(iToStruct, ruleMapFirst);
+    mainGenerateNextToSets(iToStruct);
+    // generateFollowSets(HMI_search(iToStruct, 50));
+    mainGenerateFollowSets(iToStruct);
+    // generateFirstSets(HMI_search(iToStruct, 23), ruleMapFirst);
+    curr = HMI_search(iToStruct, 45);
     // printf("%d\n", curr->terminal);
-    for(int i = 0;i<curr->first_set_ind;i++) {
-        printf("%d\n", curr->first_set[i]->name);
+    // for(int i = 0;i<curr->first_set_ind;i++) {
+    //     printf("%d\n", curr->first_set[i]->name);
+    // }
+    for(int i = 0;i<curr->follow_set_ind;i++) {
+        printf("%d\n", curr->follow_set[i]->name);
     }
 
     // printf("%d", curr->name);
