@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include"hashmap.h"
 
 int currLine = 1;
 int buffer_used  = 1;
 int currState = 0;
 bool stopFlag = false;
+HashMap* lookupTable;
 
 struct tokenDetails
 {
@@ -1003,8 +1005,41 @@ void printTwinBuffer(struct twinBuffer *TwinBuffer)
     printf("Buffer: %s\n", TwinBuffer->buffer);
 }
 
+void fillLookupTable(){
+    HM_insert(lookupTable,"_main","TK_MAIN");
+    HM_insert(lookupTable,"as","TK_AS");
+    HM_insert(lookupTable,"call","TK_CALL");
+    HM_insert(lookupTable,"definetype","TK_DEFINETYPE");
+    HM_insert(lookupTable,"else","TK_ELSE");
+    HM_insert(lookupTable,"end","TK_END");
+    HM_insert(lookupTable,"endif","TK_ENDIF");
+    HM_insert(lookupTable,"endrecord","TK_ENDRECORD");
+    HM_insert(lookupTable,"endunion","TK_ENDUNION");
+    HM_insert(lookupTable,"endwhile","TK_ENDWHILE");
+    HM_insert(lookupTable,"global","TK_GLOBAL");
+    HM_insert(lookupTable,"if","TK_IF");
+    HM_insert(lookupTable,"input","TK_INPUT");
+    HM_insert(lookupTable,"int","TK_INT");
+    HM_insert(lookupTable,"list","TK_LIST");
+    HM_insert(lookupTable,"output","TK_OUTPUT");
+    HM_insert(lookupTable,"parameter","TK_PARAMETER");
+    HM_insert(lookupTable,"parameters","TK_PARAMETERS");
+    HM_insert(lookupTable,"read","TK_READ");
+    HM_insert(lookupTable,"real","TK_REAL");
+    HM_insert(lookupTable,"record","TK_RECORD");
+    HM_insert(lookupTable,"return","TK_RETURN");
+    HM_insert(lookupTable,"then","TK_THEN");
+    HM_insert(lookupTable,"type","TK_TYPE");
+    HM_insert(lookupTable,"union","TK_UNION");
+    HM_insert(lookupTable,"while","TK_WHILE");
+    HM_insert(lookupTable,"with","TK_WITH");
+    HM_insert(lookupTable,"write","TK_WRITE");
+}
+
 int main()
 {
+
+    lookupTable = create_table(1000);
     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
     TwinBuffer->size = 2048;
     TwinBuffer->fwd = 0;
