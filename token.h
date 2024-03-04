@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#ifndef tokenImple
+#define tokenImple
+
 struct tokenDetails{
     char token[100];
     char lexeme[100];
@@ -15,3 +18,5 @@ typedef struct tdNode{
     struct tokenDetails* tokenDet;
     struct tdNode* next;
 }TdNode;
+
+#endif
