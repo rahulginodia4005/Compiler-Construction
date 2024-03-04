@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "parse_tree.h"
+
+#ifndef stackImple
+#define stackImple
 
 typedef struct Node
 {
@@ -28,7 +32,7 @@ Node *createNode(NodeT* val, Stack *stack)
     return newNode;
 }
 
-void push(Stack *stack, int val)
+void push(Stack *stack, NodeT* val)
 {
     Node *newNode = createNode(val, stack);
     stack->head = newNode;
@@ -80,3 +84,6 @@ void printStack(Stack* stack){
 //     printf("\n%d\n\n",pop(st));
 //     printStack(st);
 // }
+
+
+#endif 

@@ -2,6 +2,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+#ifndef parseTree
+#define parseTree
+
 typedef struct NodeT{
     int name_rule;
     struct NodeT* children[10];
@@ -64,5 +67,4 @@ void inorder(NodeT* nt){
 }
 
 
-
-
+#endif
