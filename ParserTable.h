@@ -5,23 +5,20 @@
 typedef struct ParserTable{
     Rule*** table;
     int rows, cols;
-
-    void create(int _rows, int _cols) {
-        table = (Rule***) malloc(rows * sizeof(Rule**));
-        rows = _rows;
-        cols = _cols;
-        for(int i = 0;i<rows;i++) {
-            table[i] = (Rule**) malloc(cols * sizeof(Rule*));
-        }
-    }
-
-    void insert(Rule* rule, int row, int col) {
-        table[row][col] = rule;
-    }
 } ParserTable;
 
-void create(ParserTable* table, int _rows, int _cols) {
-    
+ParserTable* create(int rows, int cols) {
+    ParserTable* newPT = (ParserTable*) malloc(sizeof(ParserTable));
+    newPT->rows = rows;
+    newPT->cols = cols;
+    for(int i = 0;i<rows;i++) {
+        newPT->table[i] = (Rule**) malloc(cols * sizeof(Rule*));
+    }
+    return newPT;
+}
+
+void insert(ParserTable* pt, Rule* rule, int row, int col) {
+    pt->table[row][col] = rule;
 }
 
 void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
