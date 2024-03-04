@@ -1,19 +1,13 @@
 #include<stdlib.h>
 #include<stdio.h>
-#include"grammar.h"
-#include"hashmap.h"
-#include"ParserTable.h"
+#include"parser.h"
 const int MAX_SIZE = 1000;
 
-int main() {
-    HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
-    HashMapI* ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
-    HashMapI* iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
-    HashMapI* iToStr = create_table(MAX_SIZE);
+void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, HashMapI* iToStr) {
     FILE* fp = fopen("intAllocation.txt", "r");
     if(fp == NULL) {
         perror("Error in intAllocation File");
-        return 0;
+        return;
     }
     char data[200];
     int line_number = 0;
@@ -33,7 +27,7 @@ int main() {
     fp = fopen("grammarText.txt", "r");
     if(fp == NULL) {
         perror("Error in opening grammar file");
-        return 0;
+        return;
     }
     line_number = 0;
     while(fgets(data, 200, fp)) {
@@ -130,16 +124,66 @@ int main() {
     NonTerminals* temp = HMI_search(iToStruct, 1);
     NonTerminals* dollar = create_terminal(0);
     temp->follow_set[temp->follow_set_ind++] = dollar;
-
     NonTerminals* curr = HMI_search(iToStruct, 50);
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
     curr = HMI_search(iToStruct, 51);
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
+}
+
+void produce_first_set(HashMapI* iToStruct, HashMapI* ruleMapFirst) {
     mainGenerateFirstSets(iToStruct, ruleMapFirst);
+}
+
+void produce_follow_set(HashMapI* iToStruct) {
     mainGenerateNextToSets(iToStruct);
     mainGenerateFollowSets(iToStruct);
-    curr = HMI_search(iToStruct, 24);
+}
 
+ParserTable* create_parser_table(HashMapI* iToStruct, HashMapI* iToStr, HashMap* strToI) {
     ParserTable* table = create(53, 58);
     fillParserTable(table, iToStruct);
+    HMI_insert(iToStr, 200, "syn");
+    HM_insert(strToI, "syn", 200);
+    return table;
+}
+
+int main() {
+    HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
+    HashMapI* ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
+    HashMapI* iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
+    HashMapI* iToStr = create_tableI(MAX_SIZE);
+    readGrammar(strToI, ruleMapFirst, iToStruct, iToStr);
+    produce_first_set(iToStruct, ruleMapFirst);
+    produce_follow_set(iToStruct);
+
+    ParserTable* table = create_parser_table(iToStruct, iToStr, strToI);
+    
+    // printf("Error,");
+    // for(int j = 0;j<58;j++) {
+    //     printf("%s", HMI_search(iToStr, j + 54));
+    //     if(j != 57) printf(",");
+    // }
+    // printf("\n");
+    
+    // for(int i = 0;i<53;i++) {
+    //     printf("%s,", HMI_search(iToStr, i + 1));
+    //     for(int j = 0;j<58;j++) {
+    //         Rule* curr = table->table[i][j];
+    //         if(curr == NULL) {
+    //             printf("Error");
+    //         }
+    //         else printf("%s", HMI_search(iToStr, curr->nt->name));
+    //         if(j != 57) printf(",");
+    //     }
+    //     printf("\n");
+    // }
+    // for(int i = 0;i<iToStruct->size;i++) {
+    //     if(iToStruct->vals[i] == NULL) continue;
+    //     else {
+    //         NonTerminals* curr = iToStruct->vals[i]->value;
+    //         for(int j = 0;j<curr->first_set_ind;j++) {
+    //             printf("%s ", curr->first_set[j])
+    //         }
+    //     }
+    // }
 }

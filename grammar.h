@@ -20,6 +20,7 @@ typedef struct NonTerminals {
     int size;
     int name;
     bool terminal;
+    int derive_eps;
 } NonTerminals;
 
 NonTerminals* create_nonTerminal(int name) {
@@ -30,6 +31,7 @@ NonTerminals* create_nonTerminal(int name) {
     newNT->follow_in_process = false;
     newNT->eps_in_first = false;
     newNT->name = name;
+    newNT->derive_eps = -1;
     return newNT;
 }
 
@@ -40,13 +42,14 @@ NonTerminals* create_terminal(int name) {
     newT->eps_in_first = false;
     newT->follow_in_process = false;
     newT->name = name;
+    newT->derive_eps = -1;
     return newT;
 }
 
 
 void addRuleToNonTerminal(NonTerminals* nonTerminal, Rule* rule) {
     nonTerminal->size++;
-    // nonTerminal->grammar_rules = (Rule**) realloc(nonTerminal->grammar_rules, nonTerminal->size * sizeof(Rule*));
+    if(rule->nt->name == 111) nonTerminal->derive_eps = nonTerminal->size - 1;
     nonTerminal->grammar_rules[nonTerminal->size - 1] = rule;
 }
 
