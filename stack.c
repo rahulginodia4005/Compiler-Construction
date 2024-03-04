@@ -34,14 +34,14 @@ struct Stack* allocate_stack(){
 LinkedList* list_insert(LinkedList* list, int value) {
     if(!list) {
         LinkedList* head = allocate_list();
-        head->val = val;
+        head->value = value;
         head->next = NULL;
         list = head;
         return list;
     }
     else if(list->next == NULL){
         LinkedList* node = allocate_list();
-        node->val = val;
+        node->value = value;
         node->next = NULL;
         list->next = node;
         return list;
@@ -51,7 +51,7 @@ LinkedList* list_insert(LinkedList* list, int value) {
 
     while(temp->next->next) temp = temp->next;
     LinkedList* node = allocate_list();
-    node->val = val;
+    node->value = value;
     node->next = NULL;
     temp->next = node;
     return list;
