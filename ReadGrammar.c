@@ -142,5 +142,4 @@ int main() {
 
     ParserTable* table = create(53, 58);
     fillParserTable(table, iToStruct);
-
 }

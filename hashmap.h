@@ -2,6 +2,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+#ifndef hashmap
+#define hashmap
+
 unsigned long hash_function(char *str) {
     unsigned long hash = 5381;
     int c;
@@ -152,3 +155,5 @@ void* HM_search(HashMap* hm, char *key) {
     }
     return NULL;
 }
+
+#endif

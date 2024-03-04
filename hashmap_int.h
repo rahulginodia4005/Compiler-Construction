@@ -2,6 +2,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+#ifndef hashmap_int
+#define hashmap_int
+
 unsigned long hash_functionI(unsigned long x) {
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
@@ -133,3 +136,5 @@ void* HMI_search(HashMapI* hm, int key) {
     }
     return NULL;
 }
+
+#endif
