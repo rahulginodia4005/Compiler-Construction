@@ -34,4 +34,7 @@ void fillLookupTable();
 
 TdNode *createLinkedList();
 
+void printTokens(char *fileName)
+
+
 #endif

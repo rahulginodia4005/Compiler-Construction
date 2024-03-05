@@ -50,8 +50,9 @@ static TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
 static void printLinkedList(TdNode* head){
     TdNode* temp = head;
     while(temp!=NULL){
-        printf("Token: %s, Lexeme: %s,\n", temp->tokenDet->token, temp->tokenDet->lexeme);
+        printf("Line No: %d \t Lexeme: %s \t Token:%s \t", temp->tokenDet->token, temp->tokenDet->lexeme, temp->tokenDet->lineNumber);
         temp = temp->next;
     }
 }
+
 #endif  

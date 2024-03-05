@@ -1164,7 +1164,7 @@ void fillLookupTable()
 //     return list;
 // }
 
-TdNode *createLinkedList()
+TdNode *createLinkedList(char *fileName)
 {
     // Create a new
     TdNode *tokenList = createNewLinkedList();
@@ -1175,7 +1175,7 @@ TdNode *createLinkedList()
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
-    removeComments("t2.txt");
+    removeComments(fileName);
 
     FILE *fp;
     // Opening file in reading mode
@@ -1234,6 +1234,13 @@ TdNode *createLinkedList()
     }
 
     return tokenList;
+}
+
+void printTokens(char *fileName)
+{
+
+    TdNode *list = createLinkedList(fileName);
+    printLinkedList(list);
 }
 
 // int main() {
