@@ -13,6 +13,8 @@ void produce_first_set();
 
 void produce_follow_set();
 
+void ComputeFirstAndFollowSets();
+
 ParserTable* create_parser_table();
 
 void parseInputSourceCode(char *fileName);

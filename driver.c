@@ -42,11 +42,14 @@ int main(int argc, char *argv[])
             // printTokens(file_name);
             printTokens(file_name);
         }
-        else if (choice == '3')
+        else if (choice == '3') {
+            ComputeFirstAndFollowSets();
+        }
+        else if (choice == '4')
         {
             printParseTree(file_name);
         }
-        else if (choice == '4')
+        else if (choice == '5')
         {
             // printTime(file_name);
         }
