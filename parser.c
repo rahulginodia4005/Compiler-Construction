@@ -197,7 +197,7 @@ ParserTable* create_parser_table() {
 }
 
 void parseInputSourceCode(char *fileName) {
-    root = createRootNodeT();
+    root = createRootNodeT(iToStr);
     NodeT* parent = root;
     Stack* st = createStack();
     push(st, root); 
@@ -266,9 +266,11 @@ void parseInputSourceCode(char *fileName) {
                 printf("--------\n");
                 continue;
             }
+            NodeT* popped = pop(st);
+            if(strcmp(HMI_search(iToStr,popped->name_rule), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,popped->name_rule), "TK_RNUM") == 0) passingLexeme(popped, ll_temp->tokenDet->lexeme, true);
+            else passingLexeme(popped, ll_temp->tokenDet->lexeme, false);
+            printf("3Terminal found: %s\n", HMI_search(iToStr, popped->name_rule));
             ll_temp = ll_temp->next;
-            int popped = pop(st)->name_rule;
-            printf("3Terminal found: %s\n", HMI_search(iToStr, popped));
             continue;
         }
 
@@ -341,13 +343,14 @@ void parseInputSourceCode(char *fileName) {
             //     reversal[j] = (NodeT*) malloc(sizeof(NodeT));
             // }
             for(int j=0;j<i;j++){
-                // printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
+                printf("4223Pushed %d\t%s\n", ll, HMI_search(iToStr, rules[j]));
                 NodeT* treeEntry;
-                if(popped->name_rule>=54){
-                    treeEntry = createTerminalNodeT(rules[j],popped);
+                if(rules[j]>=54){
+                    if(strcmp(HMI_search(iToStr,rules[j]), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,rules[j]), "TK_RNUM") == 0) treeEntry = createTerminalNodeT(rules[j],popped, iToStr, ll_temp->tokenDet->lineNumber);
+                    else treeEntry = createTerminalNodeT(rules[j],popped, iToStr, ll_temp->tokenDet->lineNumber);
                 }
                 else{
-                    treeEntry  = createNodeT(rules[j],popped);
+                    treeEntry  = createNodeT(rules[j],popped, iToStr);
                     //printf("%d\n",treeEntry->name_rule);
                 }
                 reversal[j] = treeEntry;
@@ -356,7 +359,7 @@ void parseInputSourceCode(char *fileName) {
             }
 
             for(int j =i-1;j>=0;j--){
-                printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
+                // printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
                 push(st,reversal[j]);
             }
 
@@ -423,7 +426,8 @@ void printParseTree(char *fileName) {
         total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
     }
     if(printparsetree==1){
-        inorder(root,iToStr);
+        printf("Input source code is syntactically correct...........\n");
+        inorderDriver(root,iToStr);
     }
     
 }
