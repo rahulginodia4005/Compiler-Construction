@@ -1,17 +1,9 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include"token.h"
+
+TdNode *createLinkedList();
 
 int main() {
-    if(0) {
-        #define a b
-        int b = 50;
-        a = 30;
-        printf("%d", b);
-    }
-    else{
-        int b = 60;
-        a = 30;
-        printf("%d", b);
-    }
-    int b = 70;
-    printf("%d", a);
+    TdNode* ll = createLinkedList();
 }
