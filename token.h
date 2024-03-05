@@ -7,7 +7,7 @@
 #define tokenImple
 
 typedef struct tokenDetails{
-    char token[100];
+    char token[20];
     char lexeme[100];
     int lineNumber;
     int value;

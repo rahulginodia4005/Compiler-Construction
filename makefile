@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -g
+CFLAGS = -Wall -g
 
 # Target executable
 TARGET = driver
@@ -11,7 +11,9 @@ TARGET = driver
 SRCS = lexer.c parser.c driver.c
 
 driver:
+	make clean
 	$(CC) $(CFLAGS) $(SRCS) -o $(TARGET)
 
 clean:
 	rm -f $(TARGET)
+

@@ -130,7 +130,7 @@ static void inorder(NodeT* nt,HashMapI* iToStr, FILE *fp){
 }
 
 static void inorderDriver(NodeT* nt, HashMapI* iToStr) {
-    FILE *fp = fopen("parsingOutput.txt", "w");
+    FILE *fp = fopen("parsingOutput.txt", "w+");
     if(fp == NULL) {
         printf("Error in opening output file");
         return;
