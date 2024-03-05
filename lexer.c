@@ -1164,7 +1164,7 @@ void fillLookupTable()
 //     return list;
 // }
 
-TdNode *createLinkedList(char *fileName)
+TdNode *createLinkedList(char * fileName)
 {
     // Create a new
     TdNode *tokenList = createNewLinkedList();
@@ -1175,7 +1175,7 @@ TdNode *createLinkedList(char *fileName)
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
-    removeComments(fileName);
+    removeComments("t2.txt");
 
     FILE *fp;
     // Opening file in reading mode
@@ -1238,19 +1238,22 @@ TdNode *createLinkedList(char *fileName)
 
 void printTokens(char *fileName)
 {
-
     TdNode *list = createLinkedList(fileName);
     printLinkedList(list);
 }
 
+// int main(){
+//     printTokens("t2.txt");
+// }
 // int main() {
-//     TdNode *list = createLinkedList();
+//     TdNode *list = createLinkedList("t2.txt");
 //     printLinkedList(list);
 // }
 
 // int main()
 // {
 
+//     TdNode *tokenList = createNewLinkedList();
 //     lookupTable = create_table(1000);
 //     fillLookupTable();
 //     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
@@ -1298,7 +1301,8 @@ void printTokens(char *fileName)
 //         // continue;
 //         while (1 && !stopFlag)
 //         {
-//             printStruct(getNextToken(NULL)); // not using currently
+//             TdNode* t = (getNextToken(NULL)); // not using currently
+//             tokenList = addNewNode(tokenList, t);
 //             // getNextToken(NULL);
 //             // printStruct(getNextToken(NULL)); // not using currently
 //             // getNextToken(NULL);
@@ -1322,4 +1326,6 @@ void printTokens(char *fileName)
 //         // printf("---Done processing----\n");
 //         // break;
 //     }
+
+//     printLinkedList(tokenList);
 // }
