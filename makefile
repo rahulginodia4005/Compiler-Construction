@@ -1,30 +1,17 @@
 # Compiler
 CC = gcc
 
+# Compiler flags
+CFLAGS = -g
+
 # Target executable
-TARGET = driver_exe
+TARGET = driver
 
 # Source files
 SRCS = lexer.c parser.c driver.c
 
-# Object files
-OBJS = $(SRCS:.c=.o)
-
-driver: $(TARGET)
-    ./$(TARGET)
-
-$(TARGET): $(OBJS)
-    $(CC) -o $@ $^
-
-lexer.o: lexer.c
-    $(CC) -c lexer.c
-
-parser.o: parser.c
-    $(CC) -c parser.c
-
-driver.o: driver.c
-    $(CC) -c driver.c
+driver:
+	$(CC) $(CFLAGS) $(SRCS) -o $(TARGET)
 
 clean:
-    rm -f *.o
-    rm $(TARGET)
+	rm -f $(TARGET)

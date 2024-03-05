@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     // // strcpy(file_name, argv[1]);
     char *file_name = argv[1];
     int choice;
+    printf("%s\n",file_name);
     printf("Welcome to the menu driven program\n");
     printf("Both lexical and syntax analysis modules are implemented in this project\n\n");
     printf("The team members are as follows:\n");
