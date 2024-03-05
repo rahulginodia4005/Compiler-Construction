@@ -175,7 +175,7 @@ struct tokenDetails *dummyToken(char *tokenName)
     strcpy(ptr->lexeme, "Dummy");
     strcpy(ptr->errMessage, " ");
     // TwinBuffer->back = TwinBuffer->fwd;
-    // currState = 0;
+    currState = 0;
     return ptr;
 }
 
@@ -1143,7 +1143,7 @@ TdNode *createLinkedList(char *fileName)
     else
     {
         TdNode *tokenList = createNewLinkedList();
-        lookupTable = create_table(1000);
+        lookupTable = create_table(3000);
         fillLookupTable();
         TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
         TwinBuffer->size = 2048;
@@ -1166,6 +1166,7 @@ TdNode *createLinkedList(char *fileName)
         memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
         while (1 && !stopFlag)
         {
+            printf("---------Reading buffer %d time----------\n", i++);
             characters = getStream(fp);
             if (characters < 1024)
             {
@@ -1181,7 +1182,9 @@ TdNode *createLinkedList(char *fileName)
            
             while (1 && !stopFlag)
             {
+                
                 struct TokenDetails *t = getNextToken(NULL);
+                // printStruct(t);
                 tokenList = addNewNode(tokenList, t);
                 
                 int characters_processed = TwinBuffer->fwd - fwd_curr;

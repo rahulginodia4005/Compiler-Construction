@@ -1,7 +1,7 @@
-
-
-
-
+%Testcase2: Syntactically correct testcase
+%This has more than 100 lines
+%Following program does something random
+% The following function computes the function value for the given inputs
  
 _myFunction123 input parameter list[int c7, real d2, real c3, int d4]
 output parameter list [real c5, #newtype d6];
@@ -95,7 +95,7 @@ output parameter list [real c5, #newtype d6];
 	return [c5, d6];
 end
 
-
+%This is the main function
 _main 
 	type record #finance : d5; 
 	type record #finance : c4; 
@@ -117,10 +117,10 @@ _main
 	b2.price <--- 24.95; 
 	c2.edition <--- 2; 
 	c2.price <--- 98.80; 
-	
+	% following is a valid statement as the types of d2, b2 and c2 are same 
 	d2<--- b2+ c2; 
-	
-	
+	% Note that d2<--- b2 + b7bc34; is not type correct as the language follows name equivalence. 
+	% Note that the types of b2 and b7bc34 are not same. 
 	[d2]<--- call _recordDemo with parameters[b2,c2]; 
 	write(d2);
 	read(b4d333); read(c3ddd34); 

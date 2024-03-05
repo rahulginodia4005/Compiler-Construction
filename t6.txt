@@ -19,6 +19,57 @@ output parameter  [real c6];
 
 end
 
+_sumN  input parameter list [int d5cc34] %Sum N Function
+output parameter list[real d3];
+	type int : b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; %increment the counter
+	endwhile %end of while loop
+	return [d3]; %return the sum
+end
+
+_sumN  input parameter list [int d5cc34] %Sum N Function
+output parameter list[real d3];
+	type int : b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; %increment the counter
+	endwhile %end of while loop
+	return [d3]; %return the sum
+end
+
+_sumN  input parameter list [int d5cc34] %Sum N Function
+output parameter list[real d3];
+	type int : b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; %increment the counter
+	endwhile %end of while loop
+	return [d3]; %return the sum
+end
+_sumN  input parameter list [int d5cc34] %Sum N Function
+output parameter list[real d3];
+	type int : b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; %increment the counter
+	endwhile %end of while loop
+	return [d3]; %return the sum
+end
+
 
 %The following program computes the function value for the user defined input
 _main 
@@ -35,6 +86,3 @@ _main
 	write(c3);
 	return;
 end
-
-
-

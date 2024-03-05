@@ -1,7 +1,7 @@
-
-
-
-
+%Testcase2: Syntactically correct testcase
+%This has more than 100 lines
+%Following program does something random
+% The following function computes the function value for the given inputs
  
 _myFunction123 input parameter list[int c7, real d2, real c3, int d4]
 output parameter list [real c5, #newtype d6];
@@ -29,18 +29,18 @@ end
 
 _function1 input parameter list [int c2, int d2cd] 
 output parameter list [int b5d, int d3]; 
-	type int: b4d333; 
-	type int : c3ddd34; type int:c2d3; type int c2d4; 
 	b5d<---c2+234-d2cd; 
 	d3<---b5d+20; 
-	
-	read(b4d333); read(c3ddd34); 
-	[c2d3, c2d4]<--- call _function1 with parameters [b4d333, c3ddd34]; 
-	write(c2d3); write(c2d4); 
-
 	return [b5d, d3]; 
-end
+end 
 
+_main 
+end 
+type int: b4d333; 
+type int : c3ddd34; type int:c2d3; type int c2d4; 
+read(b4d333); read(c3ddd34); 
+[c2d3, c2d4]<--- call _function1 with parameters [b4d333, c3ddd34]; 
+write(c2d3); write(c2d4); 
 
 _newFunction input parameter list[int c7, real d2, real c3, int d4]
 output parameter list [real c5, #newtype d6];
@@ -56,46 +56,8 @@ output parameter list [real c5, #newtype d6];
 	return [c5, d6];
 end
 
-_anotherFunction input parameter list[int c7, real d2, real c3, int d4, real c3, int d4]
-output parameter list [real c5, #newtype d6];
-	type real : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		b4dd <--- (4+5.55E+10);
-		b2 <--- b5c;
-		if (~((b4 >= c5) &&& (~((b4 >= c5) &&& (c4bd55==d4cc)))))
-		then
-			while(d5.b != d4cc)
-				if(c7>=d2dc) 
-				then 
-					write(c7); 
-				else 
-					write (d2dc);
-				endif  
-			endwhile
-		endif
-	endwhile
-	return [c5, d6];
-end
 
-_yet another input parameter list[int c7]
-output parameter list [real c5, #newtype d6];
-	type real : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		while(c2d3 <=d2c3) 
-			c2d3 = c2d3+1; 
-			write (c2d3); 
-		endwhile 
-	endwhile
-	return [c5, d6];
-end
-
-
+%This is the main function
 _main 
 	type record #finance : d5; 
 	type record #finance : c4; 
@@ -117,10 +79,10 @@ _main
 	b2.price <--- 24.95; 
 	c2.edition <--- 2; 
 	c2.price <--- 98.80; 
-	
+	% following is a valid statement as the types of d2, b2 and c2 are same 
 	d2<--- b2+ c2; 
-	
-	
+	% Note that d2<--- b2 + b7bc34; is not type correct as the language follows name equivalence. 
+	% Note that the types of b2 and b7bc34 are not same. 
 	[d2]<--- call _recordDemo with parameters[b2,c2]; 
 	write(d2);
 	read(b4d333); read(c3ddd34); 
@@ -130,3 +92,4 @@ _main
 	write(c3);
 	return;
 end
+
