@@ -182,9 +182,14 @@ struct tokenDetails *setError()
 {
     struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
     ptr->err = true;
-    strcpy(ptr->errMessage, "Invalid Pattern");
     strcpy(ptr->token, "TK_INVALID_PATTERN");
-    strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
+    char *currLexeme = findLexeme(TwinBuffer->fwd, TwinBuffer->back);
+    char *tempLexeme = (char *)malloc(100 * sizeof(char));
+    strcpy(tempLexeme, "Unknown Pattern <");
+    strcat(tempLexeme, currLexeme);
+    strcat(tempLexeme, ">");
+    strcpy(ptr->errMessage, tempLexeme);
+    strcpy(ptr->lexeme, currLexeme);
     ptr->lineNumber = currLine;
     TwinBuffer->back = TwinBuffer->fwd;
     currState = 0;
@@ -195,9 +200,14 @@ struct tokenDetails *setUnknownError()
 {
     struct tokenDetails *ptr = (struct tokenDetails *)malloc(sizeof(struct tokenDetails));
     ptr->err = true;
-    strcpy(ptr->errMessage, "Unknown Character");
+    char *currLexeme = findLexeme(TwinBuffer->fwd, TwinBuffer->back);
+    char *tempLexeme = (char *)malloc(100 * sizeof(char));
+    strcpy(tempLexeme, "Unknown Symbol <");
+    strcat(tempLexeme, currLexeme);
+    strcat(tempLexeme, ">");
+    strcpy(ptr->errMessage, tempLexeme);
     strcpy(ptr->token, "TK_UNKNOWN");
-    strcpy(ptr->lexeme, findLexeme(TwinBuffer->fwd, TwinBuffer->back));
+    strcpy(ptr->lexeme, tempLexeme);
     ptr->lineNumber = currLine;
     TwinBuffer->back = TwinBuffer->fwd;
     currState = 0;
@@ -1164,7 +1174,7 @@ void fillLookupTable()
 //     return list;
 // }
 
-TdNode *createLinkedList(char * fileName)
+TdNode *createLinkedList(char *fileName)
 {
     // Create a new
     TdNode *tokenList = createNewLinkedList();
