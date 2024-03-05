@@ -29,7 +29,7 @@ static void insert(ParserTable* pt, Rule* rule, int row, int col) {
     pt->table[row][col] = rule;
 }
 
-static void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
+static void fillParserTable(ParserTable* table, HashMapI* iToStruct, int *synAdd) {
     NonTerminals* syn = create_terminal(200);
     Rule* synRule = NULL;
     synRule = addToRule(synRule, syn);
@@ -53,11 +53,16 @@ static void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                     }
                 }
                 else{
+                    for(int j = 0;j<9;j++) {
+                        printf("%d ", synAdd[j]);
+                        insert(table, synRule, curr->name - 1, synAdd[j]);
+                    }
                     for(int j = 0;j<curr->follow_set_ind;j++) {
                         // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
+
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
@@ -77,6 +82,10 @@ static void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                     }
                 }
                 else{
+                    for(int j = 0;j<9;j++) {
+                        insert(table, synRule, curr->name - 1, synAdd[j]);
+                        printf("%d ", synAdd[j]);
+                    }
                     for(int j = 0;j<curr->follow_set_ind;j++) {
                         // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);

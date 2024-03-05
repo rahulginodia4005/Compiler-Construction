@@ -80,7 +80,7 @@ struct tokenDetails *setToken(char *tokenName)
             HM_insert(lookupTable, lexeme, "TK_FIELDID");
             // strcpy(ptr->token, lookupSearch);
             strcpy(ptr->token, tokenName);
-            printf("Inserted %s\n", lexeme);
+            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -94,7 +94,7 @@ struct tokenDetails *setToken(char *tokenName)
         {
             HM_insert(lookupTable, lexeme, "TK_ID");
             strcpy(ptr->token, tokenName);
-            printf("Inserted %s\n", lexeme);
+            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -109,7 +109,7 @@ struct tokenDetails *setToken(char *tokenName)
             HM_insert(lookupTable, lexeme, "TK_FUNID");
             strcpy(ptr->token, tokenName);
 
-            printf("Inserted %s\n", lexeme);
+            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -123,7 +123,7 @@ struct tokenDetails *setToken(char *tokenName)
         {
             HM_insert(lookupTable, lexeme, "TK_RUID");
             strcpy(ptr->token, tokenName);
-            printf("Inserted %s\n", lexeme);
+            // printf("Inserted %s\n", lexeme);
         }
         else
         {

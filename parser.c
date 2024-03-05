@@ -5,11 +5,17 @@
 #include"token.h"
 #include"parse_tree.h"
 #include"stackImplementation.h"
+#include<time.h>
 const int MAX_SIZE = 1000;
 
 HashMap *strToI;
-HashMapI *iToStr, *iToStruct, *ruleMapFirst;
+HashMapI *iToStr = NULL, *iToStruct, *ruleMapFirst;
 ParserTable* table;
+NodeT* root;
+bool printparsetree = 1;
+
+clock_t start_time, end_time;
+double total_CPU_time, total_CPU_time_in_seconds;
 
 void readGrammar() {
     FILE* fp = fopen("intAllocation.txt", "r");
@@ -174,25 +180,27 @@ void ComputeFirstAndFollowSets() {
 
 ParserTable* create_parser_table() {
     ParserTable* table = create(53, 58);
-    fillParserTable(table, iToStruct);
     HMI_insert(iToStr, 200, "syn");
     HM_insert(strToI, "syn", 200);
+    int synAdd[9] = {28, 10, 31, 46, 13, 36, 47, 22, 33};
+    fillParserTable(table, iToStruct, synAdd);
     return table;
 }
 
 void parseInputSourceCode(char *fileName) {
-    NodeT* root = createRootNodeT();
+    root = createRootNodeT();
     NodeT* parent = root;
     Stack* st = createStack();
-    push(st, root);
+    push(st, root); 
+    // printf("%d", table->table[1][10]->nt->name);
 
     // I need linked list of tokens.
     TdNode* ll = createLinkedList(fileName);
     
-    TdNode* ll_temp = ll;
-    bool printparsetree = 1;
+    TdNode* ll_temp = NULL;
+    printparsetree = 0;
     //I need pareser table
-
+    bool syn_needed = false;
     while(ll_temp!=NULL){
         if(peek(st)==-1){
             printf("Stack is empty\n");
@@ -206,8 +214,8 @@ void parseInputSourceCode(char *fileName) {
             token_seen[i] = ll_temp->tokenDet->token[i];
         }
         int stack_top = peek(st);
-        //printf("%d\n",stack_top);
         int tp = HM_search(strToI,token_seen);
+        // printf("Top of stack: %d\n",stack_top);
         if(peek(st) >= 54) {
             if(peek(st) == 111) {
                 int popped = pop(st)->name_rule;
@@ -215,41 +223,107 @@ void parseInputSourceCode(char *fileName) {
                 printf("1Terminal found: %s\n", HMI_search(iToStr, popped));
                 continue;
             }
-            ll_temp = ll_temp->next;
+            char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+            memset(prevToken,'\0',sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+            for(int i=0;i<strlen(ll_temp->tokenDet->lexeme);i++){
+                prevToken[i]=ll_temp->tokenDet->lexeme[i];
+            }
+            
             if(peek(st) != tp) {
-                printf("2Error occured. Cannot parse %s.\n", token_seen);
+                //printf("%s-----\t", prevToken);
+                if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_SIZE")==0){
+                    printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber ,ll_temp->tokenDet->errMessage);
+                    ll_temp=ll_temp->next;
+                    printparsetree=0;
+                    continue;
+                }
+                else if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
+                    printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                    ll_temp=ll_temp->next;
+                    printparsetree=0;
+                    continue;
+                }
+                else if(strcmp(ll_temp->tokenDet->token, "TK_UNKNOWN")==0){
+                    printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                    ll_temp=ll_temp->next;
+                    printparsetree=0;
+                    continue;
+                }
+                else{
+                    printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n", ll_temp->tokenDet->lineNumber,token_seen, prevToken, HMI_search(iToStr,peek(st)));
+                }
+                pop(st);
                 printparsetree=0;
                 printf("--------\n");
                 continue;
             }
+            ll_temp = ll_temp->next;
             int popped = pop(st)->name_rule;
             printf("3Terminal found: %s\n", HMI_search(iToStr, popped));
             continue;
         }
+
+        printf("Top of stack: %d\n",stack_top);
         int col = tp - 54;
         int row = stack_top - 1;
         Rule* rule = table->table[row][col];
-
-        if(rule == NULL) {
-            ll_temp = ll_temp->next;
-            printf("4Error occured. Cannot parse %s.\n", token_seen);
+        // if(col<0||col>58){
+        //     if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
+        //         printf("Error: %s\n",ll_temp->tokenDet->errMessage);
+        //         ll_temp=ll_temp->next;
+        //     }
+        // }
+        if(rule == NULL || syn_needed) {
+            if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                ll_temp=ll_temp->next;
+            }
+            else if(strcmp(ll_temp->tokenDet->token,"TK_UNKNOWN")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                ll_temp=ll_temp->next;
+            }
+            else if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_SIZE")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                ll_temp=ll_temp->next;
+            }
+            else{
+                char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+                memset(prevToken,'\0',sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+                for(int i=0;i<strlen(ll_temp->tokenDet->lexeme);i++){
+                    prevToken[i]=ll_temp->tokenDet->lexeme[i];
+                }
+                ll_temp = ll_temp->next;
+                syn_needed = true;
+                // printf("4Error occured. Cannot parse %s.\n", token_seen);
+                printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
+            } 
             printparsetree=0;
             // printf("--------\n");
             continue;
         }
         else if(rule->nt->name == 200){
+            syn_needed = false;
             int popped = pop(st)->name_rule;
             // printf("MisMatched with: %s\n", token_seen);
             // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
-            // printf("--------\n");
+            printf("Line %d\tError: Invalid token %s encountered with value %s stack top %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->token,ll_temp->tokenDet->lexeme,HMI_search(iToStr,popped));
+            printf("--------\n");
             printparsetree=0;
             continue;
         }
         else{
             Rule* temp_rule = rule;
+            
+            if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
+                    printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+                    ll_temp=ll_temp->next;
+                    printparsetree=0;
+                    continue;
+                //printf("row-%d col-%d",row,col);
+            }
             NodeT* popped = pop(st);
-            //printf("Matched with: %s\n", token_seen);
-            //printf("Rule found. Popped %d\t%s\n", popped->name_rule, HMI_search(iToStr, popped->name_rule));
+            printf("Matched with: %s\n", token_seen);
+            printf("Rule found. Popped %d\t%s\n", popped->name_rule, HMI_search(iToStr, popped->name_rule));
             int rules[10];
             int i=0;
             while(temp_rule!=NULL){
@@ -261,7 +335,7 @@ void parseInputSourceCode(char *fileName) {
             //     reversal[j] = (NodeT*) malloc(sizeof(NodeT));
             // }
             for(int j=0;j<i;j++){
-                //printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
+                // printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
                 NodeT* treeEntry;
                 if(popped->name_rule>=54){
                     treeEntry = createTerminalNodeT(rules[j],popped);
@@ -276,7 +350,7 @@ void parseInputSourceCode(char *fileName) {
             }
 
             for(int j =i-1;j>=0;j--){
-                //printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
+                printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
                 push(st,reversal[j]);
             }
 
@@ -285,12 +359,9 @@ void parseInputSourceCode(char *fileName) {
             //     // ll_temp = ll_temp->next;
             // }
             free(token_seen);
-            // printf("--------\n");
+            printf("--------\n");
         }
     }
-    if(printparsetree==1){
-        inorder(root,iToStr);
-    }  
 }
 
 void init(char *fileName) {
@@ -299,13 +370,44 @@ void init(char *fileName) {
     iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
     iToStr = create_tableI(MAX_SIZE);
     readGrammar();
-    produce_first_set();
-    produce_follow_set();
+    if(table == NULL) {
+        produce_first_set();
+        produce_follow_set();
+    } 
     // ComputeFirstAndFollowSets();
     table = create_parser_table();
     parseInputSourceCode(fileName);
+    // free(strToI);
+    // free(ruleMapFirst);
+    // free(iToStruct);
+    // free(iToStr);
+    // free(root);
+    // free(table);
 }
 
 void printParseTree(char *fileName) {
-    init(fileName);
+    if(iToStr == NULL) {
+        start_time = clock();
+        init(fileName);
+        end_time = clock();
+        total_CPU_time = (double)(end_time - start_time);
+        total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    }
+    if(printparsetree==1){
+        inorder(root,iToStr);
+    }
+    
 }
+
+void PrintTime(char *fileName) {
+    if(iToStr == NULL) {
+        start_time = clock();
+        init(fileName);
+        end_time = clock();
+        total_CPU_time = (double)(end_time - start_time);
+        total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    }
+    printf("Total CPU time: %f\n", total_CPU_time);
+    printf("Total CPU time in seconds: %f\n", total_CPU_time_in_seconds);
+}
+

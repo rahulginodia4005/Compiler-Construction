@@ -23,4 +23,6 @@ void init(char *fileName);
 
 void printParseTree(char *fileName);
 
+void PrintTime(char *fileName);
+
 #endif

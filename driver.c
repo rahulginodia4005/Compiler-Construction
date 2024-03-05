@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
 #include "parser.h"
 #include "lexer.h"
 
@@ -13,7 +12,7 @@ int main(int argc, char *argv[])
     // // memset(file_name, '\0', 100);
     // // strcpy(file_name, argv[1]);
     char *file_name = argv[1];
-    char choice;
+    int choice;
     printf("Welcome to the menu driven program\n");
     printf("Both lexical and syntax analysis modules are implemented in this project\n\n");
     printf("The team members are as follows:\n");
@@ -25,58 +24,51 @@ int main(int argc, char *argv[])
     printf("6. Srijan Khatri(2020B4A70836P)\n\n");
     printf("Welcome to the menu driven program\n");
     printf("Enter your choice:\n");
-    printf("0 : For exit \n");
+    printf("0. For exit \n");
     printf("1. Remove comments\n");
     printf("2. Print tokens\n");
-    printf("3.Print Errors and parse tree\n");
-    printf("4. Print time\n");
-    scanf("%c", &choice);
-    while (choice != '0')
+    printf("3. Compute and print First and Follow\n");
+    printf("4. Print Errors and parse tree\n");
+    printf("5. Print time\n");
+    scanf("%d", &choice);
+    while (choice != 0)
     {
-
-        if (choice == '1')
+        if (choice == 1)
         {
             removeComments(file_name);
         }
-        else if (choice == '2')
+        else if (choice == 2)
         {
-            // printTokens(file_name);
             printTokens(file_name);
+            // printTokens(file_name);
         }
-        else if (choice == '3') {
+        else if (choice == 3) {
             ComputeFirstAndFollowSets();
         }
-        else if (choice == '4')
+        else if (choice == 4)
         {
             printParseTree(file_name);
         }
-        else if (choice == '5')
+        else if (choice == 5)
         {
-            // printTime(file_name);
-            clock_t start_time, end_time;
-            double total_CPU_time, total_CPU_time_in_seconds;
-
-            start_time = clock();
+            PrintTime(file_name);
+            
             // call parser and lexer
-
-            end_time = clock();
-            total_CPU_time = (double)(end_time - start_time);
-            total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
-
-            printf("Total CPU time: %f\n", total_CPU_time);
-            printf("Total CPU time in seconds: %f\n", total_CPU_time_in_seconds);
+            // PrintTime(file_name);
         }
         else
         {
-            printf("Invalid choice\n");
+
+            printf("Invalid choice %d\n", choice);
         }
 
         printf("Enter your choice:\n");
-        printf("0 : For exit \n");
+        printf("0. For exit \n");
         printf("1. Remove comments\n");
         printf("2. Print tokens\n");
-        printf("3.Print Errors and parse tree\n");
-        printf("4. Print time\n");
-        scanf("%c", &choice);
+        printf("3. Compute and print First and Follow\n");
+        printf("4. Print Errors and parse tree\n");
+        printf("5. Print time\n");
+        scanf("%d", &choice);
     }
 }
