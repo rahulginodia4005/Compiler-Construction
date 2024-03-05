@@ -44,7 +44,7 @@ static NodeT* createNodeT(int name,NodeT* parent,HashMapI* iToStr){
     node->valueIfNumber = "---";
     node->lexeme = "---";
     node->token_name = "---"; 
-    node->lineNo = -2;
+    node->lineNo = -1;
     parent->children[parent->countOfChild++] = node;
     for(int i =0;i<10;i++){
         node->children[i] = NULL;

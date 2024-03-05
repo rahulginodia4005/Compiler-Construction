@@ -12,8 +12,8 @@ typedef struct Rule {
 
 typedef struct NonTerminals {
     Rule* grammar_rules[10];
-    struct NonTerminals *nextTo[40],*first_set[40], *follow_set[40], *lhsFollow[40];
-    int first_set_to_grammar[40];
+    struct NonTerminals *nextTo[20],*first_set[20], *follow_set[20], *lhsFollow[20];
+    int first_set_to_grammar[20];
     int first_set_ind, follow_set_ind, nextTo_ind, lhsFollow_ind;
     bool follow_in_process;
     bool eps_in_first;
@@ -46,7 +46,6 @@ static NonTerminals* create_terminal(int name) {
     return newT;
 }
 
-
 static void addRuleToNonTerminal(NonTerminals* nonTerminal, Rule* rule) {
     nonTerminal->size++;
     if(rule->nt->name == 111) nonTerminal->derive_eps = nonTerminal->size - 1;
@@ -71,52 +70,47 @@ static Rule* addToRule(Rule* rule, NonTerminals* nt) {
 }
 
 static bool checkDuplicacyFirstset(NonTerminals* curr,NonTerminals* child){
-    bool test = false;
     for(int i =0;i<curr->first_set_ind;i++){
         if(curr->first_set[i]->name==child->name){
-            test = true;
-            break;
+            return true;
         }
     }
-    return test;
+    return false;
 }
 
 static bool checkDuplicacyFollowset(NonTerminals* curr,NonTerminals* child){
     bool test = false;
     for(int i =0;i<curr->follow_set_ind;i++){
         if(curr->follow_set[i]->name==child->name){
-            test = true;
-            break;
+            return true;
         }
     }
-    return test;
+    return false;
 }
 
 static bool checkDuplicacyNextToset(NonTerminals* curr,NonTerminals* child){
     bool test = false;
     for(int i =0;i<curr->nextTo_ind;i++){
         if(curr->nextTo[i]->name==child->name){
-            test = true;
-            break;
+            return true;
         }
     }
-    return test;
+    return false;
 }
 
 static bool checkDuplicacyLhsFollowset(NonTerminals* curr,NonTerminals* child){
     bool test = false;
     for(int i =0;i<curr->lhsFollow_ind;i++){
         if(curr->lhsFollow[i]->name==child->name){
-            test = true;
-            break;
+            return true;
         }
     }
-    return test;
+    return false;
 }
 
 static NonTerminals** generateFirstSets(NonTerminals* curr, HashMapI* ruleToMapFirst) {
     // if(curr->first_set_ind != 0) return curr->first_set;
-    if(HMI_search(ruleToMapFirst, curr->name)) return curr->first_set;
+    if(HMI_search(ruleToMapFirst, curr->name) == true) return curr->first_set;
     HMI_insert(ruleToMapFirst, curr->name, true);
     if(curr->terminal) {
         curr->first_set[0] = curr;
@@ -157,12 +151,12 @@ static void mainGenerateFirstSets(HashMapI* iToStruct,HashMapI* ruleToMapFirst){
             continue;
         }
         else{
-            if(!HMI_search(ruleToMapFirst,iToStruct->vals[i]->key)){
+            if(HMI_search(ruleToMapFirst,iToStruct->vals[i]->key) == false){
                 generateFirstSets(iToStruct->vals[i]->value, ruleToMapFirst);
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
-                if(!HMI_search(ruleToMapFirst,head->val->key)){
+                if(HMI_search(ruleToMapFirst,head->val->key) == false){
                     generateFirstSets(head->val->value,ruleToMapFirst);
                 }
                 head = head->next;

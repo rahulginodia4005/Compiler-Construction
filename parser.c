@@ -6,7 +6,7 @@
 #include"parse_tree.h"
 #include"stackImplementation.h"
 #include<time.h>
-const int MAX_SIZE = 1000;
+const int MAX_SIZE = 2000;
 
 HashMap *strToI;
 HashMapI *iToStr = NULL, *iToStruct, *ruleMapFirst;
@@ -153,30 +153,6 @@ void produce_follow_set() {
     mainGenerateFollowSets(iToStruct);
 }
 
-void ComputeFirstAndFollowSets(char *fileName) {
-    if(iToStr == NULL) {
-        start_time = clock();
-        init(fileName);
-        end_time = clock();
-        total_CPU_time = (double)(end_time - start_time);
-        total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
-    }
-    for(int i = 1;i<=53;i++) {
-        NonTerminals* curr = HMI_search(iToStruct, i);
-        printf("FIRST SET: %s = {", HMI_search(iToStr, i));
-        for(int j = 0;j<curr->first_set_ind;j++) {
-            printf("%s", HMI_search(iToStr, curr->first_set[j]->name));
-            if(j != curr->first_set_ind - 1) printf(",");
-        }
-        printf("}\n");
-        printf("FOLLOW SET: %s = {", HMI_search(iToStr, i));
-        for(int j = 0;j<curr->follow_set_ind;j++) {
-            printf("%s", HMI_search(iToStr, curr->follow_set[j]->name));
-            if(j != curr->follow_set_ind - 1) printf(",");
-        }
-        printf("}\n\n");
-    }
-}
 
 ParserTable* create_parser_table() {
     ParserTable* table = create(53, 58);
@@ -201,13 +177,11 @@ void parseInputSourceCode(char *fileName) {
     NodeT* parent = root;
     Stack* st = createStack();
     push(st, root); 
-    printf("%d", table->table[27][28]->nt->name);
 
     // I need linked list of tokens.
     TdNode* ll = createLinkedList(fileName);
     
     TdNode* ll_temp = ll;
-    printparsetree = 1;
     //I need pareser table
     bool syn_needed = false;
     while(ll_temp!=NULL){
@@ -263,7 +237,6 @@ void parseInputSourceCode(char *fileName) {
                 }
                 pop(st);
                 printparsetree=0;
-                printf("--------\n");
                 continue;
             }
             NodeT* popped = pop(st);
@@ -307,7 +280,6 @@ void parseInputSourceCode(char *fileName) {
             // printf("MisMatched with: %s\n", token_seen);
             // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
             printf("Line %d\tError: Invalid token %s encountered with value %s stack top %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->token,ll_temp->tokenDet->lexeme,HMI_search(iToStr,popped));
-            printf("--------\n");
             printparsetree=0;
             continue;
         }
@@ -345,7 +317,6 @@ void parseInputSourceCode(char *fileName) {
                 push(st,reversal[j]);
             }
             free(token_seen);
-            printf("--------\n");
         }
         else{
             if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
@@ -369,6 +340,31 @@ void parseInputSourceCode(char *fileName) {
             ll_temp = ll_temp->next;
             printparsetree=0;
         }
+    }
+}
+void ComputeFirstAndFollowSets(char *fileName) {
+    if(iToStr == NULL) {
+        start_time = clock();
+        init(fileName);
+        end_time = clock();
+        total_CPU_time = (double)(end_time - start_time);
+        total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    }
+    for(int i = 1;i<=53;i++) {
+        NonTerminals* curr = HMI_search(iToStruct, i);
+        printf("FIRST SET: %s = {", HMI_search(iToStr, i));
+        for(int j = 0;j<curr->first_set_ind;j++) {
+            printf("%s", HMI_search(iToStr, curr->first_set[j]->name));
+            if(j != curr->first_set_ind - 1) printf(",");
+        }
+        printf("}\n");
+        printf("FOLLOW SET: %s = {", HMI_search(iToStr, i));
+        for(int j = 0;j<curr->follow_set_ind;j++) {
+            if(strcmp(HMI_search(iToStr, curr->follow_set[j]->name), "eps") == 0) continue;
+            printf("%s", HMI_search(iToStr, curr->follow_set[j]->name));
+            if(j != curr->follow_set_ind - 1) printf(",");
+        }
+        printf("}\n\n");
     }
 }
 

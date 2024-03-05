@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -g
+CFLAGS = -w -g
 
 # Target executable
 TARGET = driver
