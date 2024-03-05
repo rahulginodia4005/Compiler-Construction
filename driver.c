@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 #include "parser.h"
 #include "lexer.h"
 
@@ -52,6 +53,18 @@ int main(int argc, char *argv[])
         else if (choice == '5')
         {
             // printTime(file_name);
+            clock_t start_time, end_time;
+            double total_CPU_time, total_CPU_time_in_seconds;
+
+            start_time = clock();
+            // call parser and lexer
+
+            end_time = clock();
+            total_CPU_time = (double)(end_time - start_time);
+            total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+
+            printf("Total CPU time: %f\n", total_CPU_time);
+            printf("Total CPU time in seconds: %f\n", total_CPU_time_in_seconds);
         }
         else
         {
