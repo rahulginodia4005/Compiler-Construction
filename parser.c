@@ -2,6 +2,9 @@
 #include<stdio.h>
 #include"parser.h"
 #include"lexer.h"
+#include"token.h"
+#include"parse_tree.h"
+#include"stackImplementation.h"
 const int MAX_SIZE = 1000;
 
 void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, HashMapI* iToStr) {
@@ -187,4 +190,70 @@ int main() {
     //         }
     //     }
     // }
+
+    NodeT* root = createRootNodeT();
+    Stack* st = createStack();
+    push(st, root->name_rule); 
+
+    // I need linked list of tokens.
+    TdNode* ll = createLinkedList();
+    
+    TdNode* ll_temp = ll;
+
+    //I need pareser table
+
+    while(ll_temp!=NULL){
+        if(peek(st)==-1){
+            printf("Stack is empty\n");
+            break;
+        }
+        int ind = 0;
+        while(ll_temp->tokenDet->token[ind]!='\0') ind++;
+        char *token_seen = (char*) malloc(ind * sizeof(char));
+        memset(token_seen, '\0', ind * sizeof(char));
+        for(int i = 0;i<ind;i++) {
+            token_seen[i] = ll_temp->tokenDet->token[i];
+        }
+        int stack_top = peek(st);
+        int tp = HM_search(strToI,token_seen);
+        int col = tp - 54;
+        int row = stack_top - 1;
+        Rule* rule = table->table[row][col];
+
+        if(rule == NULL) {
+            ll_temp = ll_temp->next;
+            printf("Error occured. Cannot parse %s.\n", token_seen);
+            printf("--------\n");
+            continue;
+        }
+        else if(rule->nt->name == 200){
+            int popped = pop(st);
+            printf("MisMatched with: %s\n", token_seen);
+            printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
+            printf("--------\n");
+            continue;
+        }
+        else{
+            Rule* temp_rule = rule;
+            int popped = pop(st);
+            // printf("Matched with: %s\n", token_seen);
+            printf("Rule found. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
+            int rules[10];
+            int i=0;
+            while(temp_rule!=NULL){
+                rules[i++] = temp_rule->nt->name;
+                temp_rule = temp_rule->next;
+            }
+            for(int j=i-1;j>=0;j--){
+                printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
+                push(st, rules[j]);
+            }
+
+            if(peek(st) == tp) {
+                printf("Matched with: %s\n", token_seen);
+                ll_temp = ll_temp->next;
+            }
+            printf("--------\n");
+        }
+    }  
 }

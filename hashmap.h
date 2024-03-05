@@ -5,7 +5,7 @@
 #ifndef hashmap
 #define hashmap
 
-unsigned long hash_function(char *str) {
+static unsigned long hash_function(char *str) {
     unsigned long hash = 5381;
     int c;
     // char strTemp[strlen(str)];
@@ -37,12 +37,12 @@ typedef struct HashMap{
     int size;
 } HashMap;
 
-LinkedList* allocate_list() {
+static LinkedList* allocate_list() {
     LinkedList* newList = (LinkedList*) malloc(sizeof(LinkedList));
     return newList;
 }
 
-LinkedList* list_insert(LinkedList* list, HMValues* val) {
+static LinkedList* list_insert(LinkedList* list, HMValues* val) {
     if(!list) {
         LinkedList* head = allocate_list();
         head->val = val;
@@ -68,13 +68,13 @@ LinkedList* list_insert(LinkedList* list, HMValues* val) {
     return list;
 }
 
-LinkedList** create_collision_buckets(HashMap* hm) {
+static LinkedList** create_collision_buckets(HashMap* hm) {
     LinkedList** collision_buckets = (LinkedList**) calloc(hm->size, sizeof(LinkedList*));
     for(int i = 0;i<hm->size;i++) collision_buckets[i] = NULL;
     return collision_buckets;
 }
 
-HMValues* create_value(char *key, void* val) {
+static HMValues* create_value(char *key, void* val) {
     HMValues* newVal = (HMValues*) malloc(sizeof(HMValues));
     // printf("%d\t%s\n", strl(key) key);
     newVal->key = (char*) malloc(strlen(key) * sizeof(char));
@@ -87,7 +87,7 @@ HMValues* create_value(char *key, void* val) {
     return newVal;
 }
 
-HashMap* create_table(int size){
+static HashMap* create_table(int size){
     HashMap* newHM = (HashMap*) malloc(sizeof(HashMap));
     newHM->size = size;
     newHM->count = 0;
@@ -99,7 +99,7 @@ HashMap* create_table(int size){
     return newHM;
 }
 
-void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
+static void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     LinkedList* head = hm->collision_buckets[index];
     if(head == NULL) {
         head = allocate_list();
@@ -112,7 +112,7 @@ void handle_collision(HashMap* hm, unsigned long index, HMValues* val) {
     }
 }
 
-void HM_insert(HashMap* HM, char *key, void* val) {
+static void HM_insert(HashMap* HM, char *key, void* val) {
     // printf("%d %s\n", strlen(key), key);
     HMValues* newVal = create_value(key, val);
     // if(val == 44) printf("%s\t%d\t%s\n", newVal->key, newVal->value, key); 
@@ -138,7 +138,7 @@ void HM_insert(HashMap* HM, char *key, void* val) {
     }
 }
 
-void* HM_search(HashMap* hm, char *key) {
+static void* HM_search(HashMap* hm, char *key) {
     // printf("index is: %d", index);
     // printf("%s\t", key);
     int index = hash_function(key)%hm->size;

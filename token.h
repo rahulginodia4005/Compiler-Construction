@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include<string.h>
 
 #ifndef tokenImple
 #define tokenImple
@@ -19,14 +20,14 @@ typedef struct tdNode{
     struct tdNode* next;
 }TdNode;
 
-TdNode* createNewLinkedList(){
+static TdNode* createNewLinkedList(){
     TdNode* head = (TdNode*)malloc(sizeof(TdNode));
     head->tokenDet = NULL;
     head->next = NULL;
     return head;
 }
 
-TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
+static TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
     if(strcmp(tokenDets->token,"Dummy")==0){
         return head;
     }
@@ -46,7 +47,7 @@ TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
     }
 }
 
-void printLinkedList(TdNode* head){
+static void printLinkedList(TdNode* head){
     TdNode* temp = head;
     while(temp!=NULL){
         printf("Token: %s, Lexeme: %s,\n", temp->tokenDet->token, temp->tokenDet->lexeme);
