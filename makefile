@@ -1,16 +1,30 @@
+# Compiler
 CC = gcc
-CFLAGS = -Wall -g
 
-SRCS = driver.c parser.c lexer.c
+# Target executable
+TARGET = driver_exe
+
+# Source files
+SRCS = lexer.c parser.c driver.c
+
+# Object files
 OBJS = $(SRCS:.c=.o)
-TARGET = myprogram
+
+driver: $(TARGET)
+    ./$(TARGET)
 
 $(TARGET): $(OBJS)
-    $(CC) $(CFLAGS) -o $@ $^
+    $(CC) -o $@ $^
 
-%.o: %.c
-    $(CC) $(CFLAGS) -c -o $@ $<
+lexer.o: lexer.c
+    $(CC) -c lexer.c
 
-.PHONY: clean
+parser.o: parser.c
+    $(CC) -c parser.c
+
+driver.o: driver.c
+    $(CC) -c driver.c
+
 clean:
-    $(RM) $(TARGET) $(OBJS)
+    rm -f *.o
+    rm $(TARGET)
