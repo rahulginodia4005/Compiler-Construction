@@ -134,6 +134,28 @@ struct tokenDetails *setToken(char *tokenName)
     {
         strcpy(ptr->token, tokenName);
     }
+    if (strcmp(ptr->token, "TK_ID") == 0 && strlen(lexeme) > 20)
+    {
+        ptr->err = true;
+        strcpy(ptr->errMessage, "Variable Identifier is longer than the prescribed length of 20 characters.");
+        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->lexeme, lexeme);
+        TwinBuffer->back = TwinBuffer->fwd;
+        currState = 0;
+        ptr->lineNumber = currLine;
+        return ptr;
+    }
+    else if (strcmp(ptr->token, "TK_FUNID") == 0 && strlen(lexeme) > 30)
+    {
+        ptr->err = true;
+        strcpy(ptr->errMessage, "Function Identifier is longer than the prescribed length of 30 characters.");
+        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->lexeme, lexeme);
+        TwinBuffer->back = TwinBuffer->fwd;
+        currState = 0;
+        ptr->lineNumber = currLine;
+        return ptr;
+    }
     ptr->err = false;
     ptr->lineNumber = currLine;
     strcpy(ptr->lexeme, lexeme);

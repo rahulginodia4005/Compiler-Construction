@@ -6,7 +6,7 @@
 #ifndef tokenImple
 #define tokenImple
 
-struct tokenDetails{
+typedef struct tokenDetails{
     char token[100];
     char lexeme[100];
     int lineNumber;
