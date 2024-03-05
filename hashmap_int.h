@@ -1,3 +1,11 @@
+// Group Number : 22
+// ID : 2020B3A70838P		Name : AYUSH GUPTA
+// ID : 2020B3A71425P 		Name : BHAVISHYA GARG
+// ID : 2020B3A70880P		Name : KARTIK DANG
+// ID : 2020B3A70841P		Name : MAYANK VERMA
+// ID : 2020B3A70784P		Name : RAHUL GINODIA
+// ID : 2020B4A70836P		Name : SRIJAN KHATRI
+
 #include<string.h>
 #include<stdlib.h>
 #include<stdio.h>
