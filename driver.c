@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         else if (choice == 2)
         {
             printTokens(file_name);
-            // printTokens(file_name);
+            
         }
         else if (choice == 3) {
             ComputeFirstAndFollowSets(file_name);
@@ -56,8 +56,7 @@ int main(int argc, char *argv[])
         {
             PrintTime(file_name);
             
-            // call parser and lexer
-            // PrintTime(file_name);
+            
         }
         else
         {

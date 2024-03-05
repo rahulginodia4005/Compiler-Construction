@@ -107,7 +107,6 @@ static void handle_collisionI(HashMapI* hm, unsigned long index, HMIValues* val)
 }
 
 static void HMI_insert(HashMapI* HM, int key, void* val) {
-    // printf("%d %s\n", strlen(key), key);
     HMIValues* newVal = create_valueI(key, val);
 
     int index = hash_functionI(key)%HM->size;
@@ -129,10 +128,7 @@ static void HMI_insert(HashMapI* HM, int key, void* val) {
 }
 
 static void* HMI_search(HashMapI* hm, int key) {
-    // printf("index is: %d", index);
-    // printf("%s\t", key);
     int index = hash_functionI(key)%hm->size;
-    // printf("%s\n", key);
     HMIValues* val = hm->vals[index];
     LinkedListI* head = hm->collision_buckets[index];
 
