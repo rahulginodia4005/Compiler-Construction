@@ -13,11 +13,11 @@ void produce_first_set();
 
 void produce_follow_set();
 
-void ComputeFirstAndFollowSets();
+void ComputeFirstAndFollowSets(char *fileName);
 
 ParserTable* create_parser_table();
 
-void parseInputSourceCode(char *fileName);
+bool parseInputSourceCode(char *fileName);
 
 void init(char *fileName);
 

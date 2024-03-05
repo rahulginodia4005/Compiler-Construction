@@ -169,11 +169,10 @@ ParserTable* create_parser_table() {
             insert(table, synRule, i, synAdd[j]);
         }
     }
-    printf("%d", table->table[26][28]->nt->name);
     return table;
 }
 
-void parseInputSourceCode(char *fileName) {
+bool parseInputSourceCode(char *fileName) {
     root = createRootNodeT(iToStr);
     NodeT* parent = root;
     Stack* st = createStack();
@@ -218,26 +217,26 @@ void parseInputSourceCode(char *fileName) {
                 if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_SIZE")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber ,ll_temp->tokenDet->errMessage);
                     ll_temp=ll_temp->next;
-                    printparsetree=0;
+                    printparsetree=false;
                     continue;
                 }
                 else if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
                     ll_temp=ll_temp->next;
-                    printparsetree=0;
+                    printparsetree=false;
                     continue;
                 }
                 else if(strcmp(ll_temp->tokenDet->token, "TK_UNKNOWN")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
                     ll_temp=ll_temp->next;
-                    printparsetree=0;
+                    printparsetree=false;
                     continue;
                 }
                 else{
                     printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n", ll_temp->tokenDet->lineNumber,token_seen, prevToken, HMI_search(iToStr,peek(st)));
                 }
                 pop(st);
-                printparsetree=0;
+                printparsetree=false;
                 continue;
             }
             NodeT* popped = pop(st);
@@ -271,7 +270,7 @@ void parseInputSourceCode(char *fileName) {
                 printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
             } 
             ll_temp = ll_temp->next;
-            printparsetree=0;
+            printparsetree=false;
             // printf("--------\n");
             continue;
         }
@@ -281,13 +280,13 @@ void parseInputSourceCode(char *fileName) {
             // printf("MisMatched with: %s\n", token_seen);
             // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
             printf("Line %d\tError: Invalid token %s encountered with value %s stack top %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->token,ll_temp->tokenDet->lexeme,HMI_search(iToStr,popped));
-            printparsetree=0;
+            printparsetree=false;
             continue;
         }
         else if(syn_needed && rule->nt->name == 111) {
             syn_needed = false;
             int popped = pop(st)->name_rule;
-            printparsetree=0;
+            printparsetree=false;
             continue;
         }
         else if(!syn_needed) {
@@ -295,7 +294,7 @@ void parseInputSourceCode(char *fileName) {
             if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
                     ll_temp=ll_temp->next;
-                    printparsetree=0;
+                    printparsetree=false;
                     continue;
                 //printf("row-%d col-%d",row,col);
             }
@@ -345,9 +344,10 @@ void parseInputSourceCode(char *fileName) {
                 printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
             } 
             ll_temp = ll_temp->next;
-            printparsetree=0;
+            printparsetree=false;
         }
     }
+    if(printparsetree == false) return false;
 }
 void ComputeFirstAndFollowSets(char *fileName) {
     if(iToStr == NULL) {
@@ -386,8 +386,7 @@ void init(char *fileName) {
         produce_follow_set();
     } 
     // ComputeFirstAndFollowSets();
-    table = create_parser_table();
-    parseInputSourceCode(fileName);
+    
     // free(strToI);
     // free(ruleMapFirst);
     // free(iToStruct);
@@ -404,7 +403,11 @@ void printParseTree(char *fileName) {
         total_CPU_time = (double)(end_time - start_time);
         total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
     }
-    if(printparsetree==true){
+    if(table == NULL) {
+        table = create_parser_table();
+        printparsetree = parseInputSourceCode(fileName);
+    }
+    if(printparsetree == true){
         printf("Input source code is syntactically correct...........\n");
         inorderDriver(root,iToStr);
     }
@@ -418,6 +421,14 @@ void PrintTime(char *fileName) {
         end_time = clock();
         total_CPU_time = (double)(end_time - start_time);
         total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    }
+    if(table == NULL) {
+        table = create_parser_table();
+        printparsetree = parseInputSourceCode(fileName);
+    }
+    if(printparsetree == true){
+        printf("Input source code is syntactically correct...........\n");
+        inorderDriver(root,iToStr);
     }
     printf("Total CPU time: %f\n", total_CPU_time);
     printf("Total CPU time in seconds: %f\n", total_CPU_time_in_seconds);

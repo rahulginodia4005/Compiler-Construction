@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
             // printTokens(file_name);
         }
         else if (choice == 3) {
-            ComputeFirstAndFollowSets();
+            ComputeFirstAndFollowSets(file_name);
         }
         else if (choice == 4)
         {
