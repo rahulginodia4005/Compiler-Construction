@@ -24,6 +24,7 @@ static NodeT* createRootNodeT(HashMapI* iToStr){
     rootNodeT->name_rule=1;
     rootNodeT->nodeSymbol = HMI_search(iToStr,rootNodeT->name_rule);
     rootNodeT->parentNodeSymbol = "ROOT";
+    rootNodeT->valueIfNumber = "---";
     rootNodeT->lexeme = "---";
     rootNodeT->token_name = "---"; 
     rootNodeT->lineNo = -1;
@@ -40,6 +41,7 @@ static NodeT* createNodeT(int name,NodeT* parent,HashMapI* iToStr){
     node->name_rule = name;
     node->nodeSymbol = HMI_search(iToStr,name);
     node->parentNodeSymbol = parent->nodeSymbol;
+    node->valueIfNumber = "---";
     node->lexeme = "---";
     node->token_name = "---"; 
     node->lineNo = -2;
@@ -58,6 +60,8 @@ static NodeT* createTerminalNodeT(int name, NodeT* parent, HashMapI* iToStr, int
     node->name_rule = name;
     node->nodeSymbol = HMI_search(iToStr,name);
     node->parentNodeSymbol = parent->nodeSymbol;
+    node->valueIfNumber = "---";
+    node->lexeme = "---";
     node->token_name = node->nodeSymbol; 
     parent->children[parent->countOfChild++] = node;
     node->lineNo = lineNo;
@@ -87,14 +91,26 @@ static void passingLexeme(NodeT* nt, char* lexeme, bool num) {
 
 static void giveValuesToFile(FILE* fp, NodeT* nt) {
     fprintf(fp, "\t");
-    fprintf(fp, "%s\t\t", nt->lexeme);
-    fprintf(fp, "%d\t\t", nt->lineNo);
-    fprintf(fp, "%s\t\t", nt->token_name);
-    fprintf(fp, "%s\t\t", nt->valueIfNumber);
-    fprintf(fp, "%s\t\t", nt->parentNodeSymbol);
-    if(nt->isLeafNode) fprintf(fp, "Yes\t\t");
-    else fprintf(fp, "No\t\t");
-    fprintf(fp, "%s\n", nt->nodeSymbol);
+    fprintf(fp, "%s", nt->lexeme);
+    for(int i = 0;i<50 - strlen(nt->lexeme);i++) fprintf(fp, " ");
+    fprintf(fp, "%d", nt->lineNo);
+    for(int i = 0;i<25 - 2;i++) fprintf(fp, " ");
+    fprintf(fp, "%s", nt->token_name);
+    for(int i = 0;i<25 - strlen(nt->token_name);i++) fprintf(fp, " ");
+    fprintf(fp, "%s", nt->valueIfNumber);
+    for(int i = 0;i<30 - strlen(nt->valueIfNumber);i++) fprintf(fp, " ");
+    fprintf(fp, "%s", nt->parentNodeSymbol);
+    for(int i = 0;i<25 - strlen(nt->parentNodeSymbol);i++) fprintf(fp, " ");
+    if(nt->isLeafNode) {
+        fprintf(fp, "Yes");
+        for(int i = 0;i<25 - 3;i++) fprintf(fp, " ");
+    }
+    else{
+        fprintf(fp, "No");
+        for(int i = 0;i<25 - 2;i++) fprintf(fp, " ");
+    }
+    fprintf(fp, "%s", nt->nodeSymbol);
+    fprintf(fp, "\n");
 }
 
 static void inorder(NodeT* nt,HashMapI* iToStr, FILE *fp){
@@ -120,13 +136,21 @@ static void inorderDriver(NodeT* nt, HashMapI* iToStr) {
         return;
     }
     fprintf(fp, "\t");
-    fprintf(fp, "Lexeme\t\t");
-    fprintf(fp, "Line Number\t\t");
-    fprintf(fp, "Token Name\t\t");
-    fprintf(fp, "ValueIfNumber\t\t");
-    fprintf(fp, "ParentNodeSymbol\t\t");
-    fprintf(fp, "isLeafNode\t\t");
-    fprintf(fp, "NodeSymbol\n");
+    fprintf(fp, "Lexeme");
+    for(int i = 0;i<50 - 6;i++) fprintf(fp, " ");
+    fprintf(fp, "Line Number");
+    for(int i = 0;i<25 - 14;i++) fprintf(fp, " ");
+    fprintf(fp, "Token Name");
+    for(int i = 0;i<25 - 13;i++) fprintf(fp, " ");
+    fprintf(fp, "ValueIfNumber");
+    for(int i = 0;i<35 - 16;i++) fprintf(fp, " ");
+    fprintf(fp, "ParentNodeSymbol");
+    for(int i = 0;i<25 - 19;i++) fprintf(fp, " ");
+    fprintf(fp, "isLeafNode");
+    for(int i = 0;i<32 - 13;i++) fprintf(fp, " ");
+    fprintf(fp, "NodeSymbol");
+    fprintf(fp, "\n");
+    fprintf(fp, "\n");
     // printf("\t\t");
     // printf("Lexeme\t\t");
     // printf("Line Number\t\t");

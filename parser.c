@@ -343,7 +343,7 @@ void parseInputSourceCode(char *fileName) {
             //     reversal[j] = (NodeT*) malloc(sizeof(NodeT));
             // }
             for(int j=0;j<i;j++){
-                printf("4223Pushed %d\t%s\n", ll, HMI_search(iToStr, rules[j]));
+                printf("4223Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
                 NodeT* treeEntry;
                 if(rules[j]>=54){
                     if(strcmp(HMI_search(iToStr,rules[j]), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,rules[j]), "TK_RNUM") == 0) treeEntry = createTerminalNodeT(rules[j],popped, iToStr, ll_temp->tokenDet->lineNumber);
