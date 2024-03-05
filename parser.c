@@ -153,14 +153,14 @@ void produce_follow_set() {
     mainGenerateFollowSets(iToStruct);
 }
 
-void ComputeFirstAndFollowSets() {
-    strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
-    ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
-    iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
-    iToStr = create_tableI(MAX_SIZE);
-    readGrammar();
-    produce_first_set();
-    produce_follow_set();
+void ComputeFirstAndFollowSets(char *fileName) {
+    if(iToStr == NULL) {
+        start_time = clock();
+        init(fileName);
+        end_time = clock();
+        total_CPU_time = (double)(end_time - start_time);
+        total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    }
     for(int i = 1;i<=53;i++) {
         NonTerminals* curr = HMI_search(iToStruct, i);
         printf("FIRST SET: %s = {", HMI_search(iToStr, i));
@@ -212,7 +212,7 @@ void parseInputSourceCode(char *fileName) {
     bool syn_needed = false;
     while(ll_temp!=NULL){
         if(peek(st)==-1){
-            printf("Stack is empty\n");
+            // printf("Stack is empty\n");
             break;
         }
         int ind = 0;
@@ -229,7 +229,7 @@ void parseInputSourceCode(char *fileName) {
             if(peek(st) == 111) {
                 int popped = pop(st)->name_rule;
                 //NodeT* popped = pop(st);
-                printf("1Terminal found: %s\n", HMI_search(iToStr, popped));
+                // printf("1Terminal found: %s\n", HMI_search(iToStr, popped));
                 continue;
             }
             char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
@@ -269,21 +269,13 @@ void parseInputSourceCode(char *fileName) {
             NodeT* popped = pop(st);
             if(strcmp(HMI_search(iToStr,popped->name_rule), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,popped->name_rule), "TK_RNUM") == 0) passingLexeme(popped, ll_temp->tokenDet->lexeme, true);
             else passingLexeme(popped, ll_temp->tokenDet->lexeme, false);
-            printf("3Terminal found: %s\n", HMI_search(iToStr, popped->name_rule));
+            // printf("3Terminal found: %s\n", HMI_search(iToStr, popped->name_rule));
             ll_temp = ll_temp->next;
             continue;
         }
-
-        printf("Top of stack: %d\n",stack_top);
         int col = tp - 54;
         int row = stack_top - 1;
         Rule* rule = table->table[row][col];
-        // if(col<0||col>58){
-        //     if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
-        //         printf("Error: %s\n",ll_temp->tokenDet->errMessage);
-        //         ll_temp=ll_temp->next;
-        //     }
-        // }
         if(rule == NULL) {
             if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
                 printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
@@ -330,8 +322,6 @@ void parseInputSourceCode(char *fileName) {
             }
             Rule* temp_rule = rule;
             NodeT* popped = pop(st);
-            printf("Matched with: %s\n", token_seen);
-            printf("Rule found. Popped %d\t%s\n", popped->name_rule, HMI_search(iToStr, popped->name_rule));
             int rules[10];
             int i=0;
             while(temp_rule!=NULL){
@@ -339,11 +329,7 @@ void parseInputSourceCode(char *fileName) {
                 temp_rule = temp_rule->next;
             }
             NodeT* reversal[i];
-            // for(int j=0;j<i;j++){
-            //     reversal[j] = (NodeT*) malloc(sizeof(NodeT));
-            // }
             for(int j=0;j<i;j++){
-                printf("4223Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
                 NodeT* treeEntry;
                 if(rules[j]>=54){
                     if(strcmp(HMI_search(iToStr,rules[j]), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,rules[j]), "TK_RNUM") == 0) treeEntry = createTerminalNodeT(rules[j],popped, iToStr, ll_temp->tokenDet->lineNumber);
@@ -351,22 +337,13 @@ void parseInputSourceCode(char *fileName) {
                 }
                 else{
                     treeEntry  = createNodeT(rules[j],popped, iToStr);
-                    //printf("%d\n",treeEntry->name_rule);
                 }
                 reversal[j] = treeEntry;
-                
-                //push(st, treeEntry);
             }
 
             for(int j =i-1;j>=0;j--){
-                // printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
                 push(st,reversal[j]);
             }
-
-            // if(peek(st) == tp) {
-            //     // printf("Matched with: %s\n", token_seen);
-            //     // ll_temp = ll_temp->next;
-            // }
             free(token_seen);
             printf("--------\n");
         }
@@ -387,7 +364,6 @@ void parseInputSourceCode(char *fileName) {
                     prevToken[i]=ll_temp->tokenDet->lexeme[i];
                 }
                 syn_needed = true;
-                // printf("4Error occured. Cannot parse %s.\n", token_seen);
                 printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
             } 
             ll_temp = ll_temp->next;
