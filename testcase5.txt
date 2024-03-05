@@ -1,0 +1,61 @@
+%Test Case 3: Syntactically correct testcase
+%Following program computes the average marks obtained by students in three subjects
+
+%Following function reads marks of a student in all subjects and returns as a record variable
+% Note that the variable b7 is not used anywhere but it is the syntactic requirement to have 
+% atleast one input parameter
+output parameter list [ record #marks b3c45];
+	read(b3c45.maths)
+	read(b3c45.physics);
+	read(b3c45.chemistry);
+	return [b3c45];
+end
+% Notice here that  your compiler recognizes the type definition of marks even before it is 
+% declared. This will be handled at the semantic analyzer phase.
+
+_sumN  input parameter list [int d5cc34] %Sum N Function
+output parameter list[real d3];
+	type int  b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; %increment the counter
+	endwhile %end of while loop
+	return [d3] %return the sum
+_main 
+	record #one
+		type real:x;
+		type real:y;
+	endrecord	
+	definetype record #one as #point
+	definetype record #two as #line
+	union #four
+		type #line : ln; 
+		type #point: pt; 
+		type #traingle:tr;
+	endunion
+        definetype record #three as #triangle  
+	record #three 
+		type #line: base;
+		type #line: height;
+	endrecord
+	definetype union #four as #shape
+	record #variantrecord
+		type int: tag;
+		type #shape: s;
+	endrecord
+
+	type record #variantrecord : d4;
+	type int : b5;
+	type int : d5cb34567;
+	type record #variantrecord: b5c6;
+	b5c6 <--- b5c6.tag + d4.s.ln.beginpoint.x - b5c6.s.tr.base.beginpoint.y; 
+	b5 <--- b5 +1;
+	d4 <--- b5c6 / d5cb34567;
+	write(d4);
+	write(d4.s.ln.beginpoint.x );
+	write(b5c6.tag );
+	return;
+end

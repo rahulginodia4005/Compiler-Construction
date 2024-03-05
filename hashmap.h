@@ -12,7 +12,7 @@ static unsigned long hash_function(char *str) {
     // strcpy(strTemp, str);
     // printf("%s \t", str);
     // printf("%d\t%s\n", strlen(str), str);
-    for(int i = 0;i<strlen(str);i++) {
+    for(short int i = 0;i<strlen(str);i++) {
         hash = ((hash << 5) + hash) + str[i];
     }
     // if(strcmp(str,"booleanExpression")==0) printf("%d\n",hash);
@@ -148,7 +148,9 @@ static void* HM_search(HashMap* hm, char *key) {
     LinkedList* head = hm->collision_buckets[index];
 
     while(val != NULL) {
-        if(strcmp(val->key, key) == 0) return val->value;
+        if(strcmp(val->key, key) == 0) {
+            return val->value;
+        }
         if(head == NULL) return NULL;
         val = head->val;
         head = head->next;

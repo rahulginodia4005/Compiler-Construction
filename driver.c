@@ -1,0 +1,69 @@
+#include <stdlib.h>
+#include <stdbool.h>
+#include "parser.h"
+#include "lexer.h"
+
+int main(int argc, char *argv[])
+{
+    char *file_name = argv[1];
+    int choice;
+    printf("%s\n",file_name);
+    printf("Welcome to the menu driven program\n");
+    printf("Both lexical and syntax analysis modules are implemented in this project\n\n");
+    printf("The team members are as follows:\n");
+    printf("1.Ayush Gupta (2020B3A70838P) \n");
+    printf("2.Bhavishya Garg(2020B3A71425P) \n");
+    printf("3.Kartik Dang(2020B3A70880P) \n");
+    printf("4.Mayank Verma(2020B3A70841P) \n");
+    printf("5.Rahul Ginodia(2020B3A70784P) \n");
+    printf("6. Srijan Khatri(2020B4A70836P)\n\n");
+    printf("Welcome to the menu driven program\n");
+    printf("Enter your choice:\n");
+    printf("0. For exit \n");
+    printf("1. Remove comments\n");
+    printf("2. Print tokens\n");
+    printf("3. Compute and print First and Follow\n");
+    printf("4. Print Errors and parse tree\n");
+    printf("5. Print time\n");
+    scanf("%d", &choice);
+    while (choice != 0)
+    {
+        if (choice == 1)
+        {
+            removeComments(file_name);
+        }
+        else if (choice == 2)
+        {
+            printTokens(file_name);
+            // printTokens(file_name);
+        }
+        else if (choice == 3) {
+            ComputeFirstAndFollowSets(file_name);
+        }
+        else if (choice == 4)
+        {
+            printParseTree(file_name);
+        }
+        else if (choice == 5)
+        {
+            PrintTime(file_name);
+            
+            // call parser and lexer
+            // PrintTime(file_name);
+        }
+        else
+        {
+
+            printf("Invalid choice %d\n", choice);
+        }
+
+        printf("Enter your choice:\n");
+        printf("0. For exit \n");
+        printf("1. Remove comments\n");
+        printf("2. Print tokens\n");
+        printf("3. Compute and print First and Follow\n");
+        printf("4. Print Errors and parse tree\n");
+        printf("5. Print time\n");
+        scanf("%d", &choice);
+    }
+}

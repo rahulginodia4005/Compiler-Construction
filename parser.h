@@ -2,17 +2,27 @@
 #include<stdio.h>
 #include"grammar.h"
 #include"lexer.h"
-#include"ParserTable.h"
+#include"parserDef.h"
 
 #ifndef parser
 #define parser
 
-void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, HashMapI* iToStr);
+void readGrammar();
 
-void produce_first_set(HashMapI* iToStruct, HashMapI* ruleMapFirst);
+void produce_first_set();
 
-void produce_follow_set(HashMapI* iToStruct);
+void produce_follow_set();
 
-ParserTable* create_parser_table(HashMapI* iToStruct, HashMapI* iToStr, HashMap* strToI);
+void ComputeFirstAndFollowSets(char *fileName);
+
+ParserTable* create_parser_table();
+
+bool parseInputSourceCode(char *fileName);
+
+void init(char *fileName);
+
+void printParseTree(char *fileName);
+
+void PrintTime(char *fileName);
 
 #endif

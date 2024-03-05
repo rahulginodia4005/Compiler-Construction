@@ -1,0 +1,41 @@
+
+%Testcase1: Syntactically correct testcase
+%Following program computes an arithmetic expression 
+
+% The following function computes the function value for the given inputs 
+_myFunction123 input parameter list[int c7, real d2, real c3, int d4]
+output parameter list [real c5, #newtype d6];
+	type real : d4cbcd5677;
+	type real : c4bbb;
+	c6 <--- 5000.79;
+	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
+	while(d7cbc>10)
+		b4dd <--- (4+5.55E+10);
+		b2 <--- b5c;
+		if (~((b4 >= c5) @@@ (c4bd55==d4cc)))
+		then
+			while(d5.b != d4cc)
+				b4dd <--- ((c3cc + d4)-(c5dd-5))*4.45E-45;
+			endwhile
+		endif
+	endwhile
+	return [c5, d6];
+end
+
+
+%This is the main function
+_main 
+	record #marks
+		type int : maths; 
+		type #fbdbs: pfbn; 
+		type #fgnd: chevnsonSV;
+	endrecord
+	b5 <--- 1;
+	read(d5cb34567);
+	read(b3b444);
+	[c3] <--- call _myFunction123 with parameters [b5bcd, d5cb367];
+	[b5cd] <--- call _myFunn123 with parameters [b5bcd];
+	write(c3);
+	return;
+end
+

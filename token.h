@@ -7,7 +7,7 @@
 #define tokenImple
 
 typedef struct tokenDetails{
-    char token[100];
+    char token[20];
     char lexeme[100];
     int lineNumber;
     int value;
@@ -50,8 +50,9 @@ static TdNode* addNewNode(TdNode* head, struct tokenDetails* tokenDets){
 static void printLinkedList(TdNode* head){
     TdNode* temp = head;
     while(temp!=NULL){
-        printf("Token: %s, Lexeme: %s,\n", temp->tokenDet->token, temp->tokenDet->lexeme);
+        printf("Line No: %d \t Lexeme: %s \t Token:%s \t\n", temp->tokenDet->lineNumber, temp->tokenDet->lexeme, temp->tokenDet->token, temp->tokenDet->errMessage);
         temp = temp->next;
     }
 }
+
 #endif  

@@ -32,6 +32,9 @@ void removeComments(char *testcaseFile);
 
 void fillLookupTable();
 
-TdNode *createLinkedList();
+TdNode *createLinkedList(char* fileName);
+
+void printTokens(char *fileName);
+
 
 #endif

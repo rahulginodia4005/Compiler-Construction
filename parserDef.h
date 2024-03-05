@@ -2,13 +2,16 @@
 #include<stdio.h>
 #include"grammar.h"
 
+#ifndef parserTable
+#define parserTable
+
 
 typedef struct ParserTable{
     Rule*** table;
     int rows, cols;
 } ParserTable;
 
-ParserTable* create(int rows, int cols) {
+static ParserTable* create(int rows, int cols) {
     ParserTable* newPT = (ParserTable*) malloc(sizeof(ParserTable));
     newPT->table = (Rule***) malloc(rows * sizeof(Rule**));
     newPT->rows = rows;
@@ -24,16 +27,13 @@ ParserTable* create(int rows, int cols) {
     return newPT;
 }
 
-void insert(ParserTable* pt, Rule* rule, int row, int col) {
+static void insert(ParserTable* pt, Rule* rule, int row, int col) {
     if(pt->table[row][col] != NULL) return;
     pt->table[row][col] = rule;
 }
 
-void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
-    NonTerminals* syn = create_terminal(200);
-    Rule* synRule = NULL;
-    synRule = addToRule(synRule, syn);
-    HMI_insert(iToStruct, 200, syn);
+static void fillParserTable(ParserTable* table, HashMapI* iToStruct, Rule* synRule) {
+    
     for(int i = 0;i<iToStruct->size;i++){
         if(iToStruct->vals[i]==NULL){
             continue;
@@ -58,6 +58,7 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
+
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
@@ -87,3 +88,6 @@ void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
         }
     }
 }
+
+
+#endif

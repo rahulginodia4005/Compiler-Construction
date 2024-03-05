@@ -8,7 +8,7 @@
 
 typedef struct Node
 {
-    int val;
+    struct NodeT* val;
     struct Node *next;
 } Node;
 
@@ -26,15 +26,16 @@ Stack *createStack()
     return stack;
 }
 
-Node *createNode(int val, Stack *stack)
+Node *createNode(NodeT* treeNode, Stack *stack)
 {
     Node *newNode = (Node *)malloc(sizeof(Node));
-    newNode->val = val;
+    newNode->val = treeNode;
+    //newNode->val = val->name_rule;
     newNode->next = stack->head;
     return newNode;
 }
 
-void push( Stack* stack, int val)
+void push( Stack* stack, NodeT* val)
 {
     Node *newNode = createNode(val, stack);
     stack->head = newNode;
@@ -42,7 +43,7 @@ void push( Stack* stack, int val)
     // return newNode;
 }
 
-int pop(Stack *stack)
+NodeT* pop(Stack *stack)
 {
     if (stack->head == NULL)
     {
@@ -50,12 +51,12 @@ int pop(Stack *stack)
     }
     else
     {
-        int val = stack->head->val;
+        NodeT* treeNode = stack->head->val;
         Node *temp = stack->head;
         stack->head = stack->head->next;
         free(temp);
         stack->size--;
-        return val;
+        return treeNode;
     }
 }
 
@@ -65,14 +66,14 @@ int peek(Stack *stack)
     {
         return -1;
     }else{
-        return stack->head->val;
+        return stack->head->val->name_rule;
     }
 }
 
 void printStack(Stack* stack){
     Node* temp = stack->head;
     while(temp){
-        printf("%d\n", temp->val);
+        printf("%d\n", temp->val->name_rule);
         temp = temp->next;
     }
 }
@@ -90,4 +91,4 @@ void printStack(Stack* stack){
 // }
 
 
-#endif 
+#endif
