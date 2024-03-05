@@ -164,7 +164,7 @@ void parseInputSourceCode(char *fileName) {
     NodeT* root = createRootNodeT();
     NodeT* parent = root;
     Stack* st = createStack();
-    push(st, root); 
+    push(st, root);
 
     // I need linked list of tokens.
     TdNode* ll = createLinkedList(fileName);
