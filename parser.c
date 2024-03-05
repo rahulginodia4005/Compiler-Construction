@@ -12,7 +12,7 @@ HashMap *strToI;
 HashMapI *iToStr = NULL, *iToStruct, *ruleMapFirst;
 ParserTable* table;
 NodeT* root;
-bool printparsetree = 1;
+bool printparsetree = true;
 
 clock_t start_time, end_time;
 double total_CPU_time, total_CPU_time_in_seconds;
@@ -169,6 +169,7 @@ ParserTable* create_parser_table() {
             insert(table, synRule, i, synAdd[j]);
         }
     }
+    printf("%d", table->table[26][28]->nt->name);
     return table;
 }
 
@@ -280,6 +281,12 @@ void parseInputSourceCode(char *fileName) {
             // printf("MisMatched with: %s\n", token_seen);
             // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
             printf("Line %d\tError: Invalid token %s encountered with value %s stack top %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->token,ll_temp->tokenDet->lexeme,HMI_search(iToStr,popped));
+            printparsetree=0;
+            continue;
+        }
+        else if(syn_needed && rule->nt->name == 111) {
+            syn_needed = false;
+            int popped = pop(st)->name_rule;
             printparsetree=0;
             continue;
         }
@@ -397,7 +404,7 @@ void printParseTree(char *fileName) {
         total_CPU_time = (double)(end_time - start_time);
         total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
     }
-    if(printparsetree==1){
+    if(printparsetree==true){
         printf("Input source code is syntactically correct...........\n");
         inorderDriver(root,iToStr);
     }
