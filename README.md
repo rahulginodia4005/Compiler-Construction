@@ -29,3 +29,14 @@ To run the project, use the following command and replace <input_file name> with
 ```bash
 ./Driver <input_file name>
 ```
+
+## Project Menu
+1. Remove comments
+2. Print tokens
+3. Compute and print First and Follow
+4. Print Errors and parse tree
+5. Print time
+
+## Project Output
+Output for Remove Comments -> commentRemoval.txt
+Output for Parse Tree -> parseOutput.txt
