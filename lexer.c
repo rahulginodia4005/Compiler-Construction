@@ -971,6 +971,8 @@ struct tokenDetails *getNextToken(FILE *f)
 
         case 49:
             currLine++;
+            currState = 0;
+            TwinBuffer->back = TwinBuffer->fwd;
             break;
             // Increase Line
 
@@ -1132,7 +1134,7 @@ void fillLookupTable()
 
 // void createLinkedList
 
-// struct tokenDetails{
+// struct tokenDetails{ 
 //     char token[100];
 //     char lexeme[100];
 //     int lineNumber;
@@ -1185,11 +1187,11 @@ TdNode *createLinkedList(char *fileName)
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
-    removeComments(fileName);
+    // removeComments(fileName);
 
     FILE *fp;
     // Opening file in reading mode
-    fp = fopen("commentRemoval.txt", "r");
+    fp = fopen(fileName, "r");
     if (fp == NULL)
     {
         printf("Can't open the file. Try again");
