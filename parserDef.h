@@ -2,6 +2,9 @@
 #include<stdio.h>
 #include"grammar.h"
 
+#ifndef parserTable
+#define parserTable
+
 
 typedef struct ParserTable{
     Rule*** table;
@@ -85,3 +88,6 @@ static void fillParserTable(ParserTable* table, HashMapI* iToStruct, Rule* synRu
         }
     }
 }
+
+
+#endif

@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include"grammar.h"
 #include"lexer.h"
-#include"ParserTable.h"
+#include"parserDef.h"
 
 #ifndef parser
 #define parser
