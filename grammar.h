@@ -202,14 +202,14 @@ static void mainGenerateNextToSets(HashMapI* iToStruct){
         }
         else{
             NonTerminals* curr = iToStruct->vals[i]->value;
-            // printf("%s\n", curr->name);
+            
             for(int j = 0;j<curr->size;j++) {
                 generateNextToSets(curr->grammar_rules[j]);
             }
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
                 curr = head->val->value;
-                // printf("%s\n", curr->name);
+            
                 for(int j = 0;j<curr->size;j++) {
                     generateNextToSets(curr->grammar_rules[j]);
                 }
@@ -223,10 +223,10 @@ static NonTerminals** generateFollowSets(NonTerminals* curr) {
     if(curr->follow_in_process) return curr->follow_set;
     if(curr->follow_set_ind != 0) return curr->follow_set;
     curr->follow_in_process = true;
-    // printf("%d\n", curr->name);
+
     for(int i = 0;i<curr->nextTo_ind;i++) {
         NonTerminals* child = curr->nextTo[i];
-        // printf("%s\n", child->name);
+
         for(int j = 0;j<child->first_set_ind;j++) if(!checkDuplicacyFollowset(curr, child->first_set[j])) curr->follow_set[curr->follow_set_ind++] = child->first_set[j];
     }
     for(int i = 0;i<curr->lhsFollow_ind;i++) {
@@ -251,15 +251,12 @@ static void mainGenerateFollowSets(HashMapI* iToStruct){
         }
         else{
             generateFollowSets(iToStruct->vals[i]->value);
-            // printf("%s\n", curr->name);
+            
             LinkedListI* head = iToStruct->collision_buckets[i];
             while(head){
-                // curr = head->val->value;
+              
                 generateFollowSets(head->val->value);
-                // printf("%s\n", curr->name);
-                // for(int j = 0;j<curr->size;j++) {
-                //     generateNextToSets(curr->grammar_rules[j]);
-                // }
+                
                 head = head->next;
             }
         }
