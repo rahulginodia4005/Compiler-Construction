@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "token.h"
 
+int charactersProcessed = 0;
 int currLine = 1;
 int buffer_used = 1;
 int currState = 0;
@@ -36,6 +37,8 @@ int getStream(FILE *fp)
     {
         memset(TwinBuffer->buffer + 1024, '\0', 1024 * sizeof(char));
         char_read = fread(TwinBuffer->buffer + 1024, 1, 1024, fp);
+        TwinBuffer->fwd = TwinBuffer->fwd % 2048;
+        TwinBuffer->back = TwinBuffer->back % 2048;
     }
     return char_read;
 }
@@ -253,17 +256,25 @@ struct tokenDetails *getNextToken(FILE *f)
         // printf("IN \n");
 
         currChar = currBuffer[TwinBuffer->fwd];
+        charactersProcessed++;
         // printf("CurrState: %d\n", currState);
         // printf("CurrChar: %c\n", currChar);
         // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
         // printf("Back pointer: %d\n", TwinBuffer->back);
 
+        // printf("CurrChar: %c\n", currChar);
+        // printf("CurrState: %d\n", currState);
+        // printf("Fwd: %d\n", TwinBuffer->fwd);
+        // printf("Back: %d\n", TwinBuffer->back);
+
+        
         if ((TwinBuffer->fwd == 1024 && buffer_used == -1) || (TwinBuffer->fwd == 2047 && buffer_used == 1))
         {
             return dummyToken("Dummy");
         }
         if (currChar == '\0')
         {
+            printf("curr Line: %d\n", currLine);
             stopFlag = true;
             return dummyToken("Dummy");
         }
@@ -679,6 +690,7 @@ struct tokenDetails *getNextToken(FILE *f)
             break;
 
         case 18: // Return Token TK_ID
+
             TwinBuffer->fwd = checkPointer(--TwinBuffer->fwd);
             return setToken("TK_ID");
             break;
@@ -1164,9 +1176,10 @@ TdNode *createLinkedList(char *fileName)
         int characters = 0;
         int i = 0;
         memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
-        while (1 && !stopFlag)
+        while (!stopFlag)
         {
-            printf("---------Reading buffer %d time----------\n", i++);
+            // printf("---------Reading buffer %d time----------\n", i++);
+            
             characters = getStream(fp);
             if (characters < 1024)
             {
@@ -1175,26 +1188,40 @@ TdNode *createLinkedList(char *fileName)
                 TwinBuffer->buffer[characters + where + 1] = ' ';
                 characters += 1;
             }
-            int fwd_curr = TwinBuffer->fwd;
+            int fwd_curr;
             buffer_used *= -1;
             if (characters == 0)
                 break;
-           
+
+            if(buffer_used == -1){
+                fwd_curr = 0;
+            }else{
+                fwd_curr = 1024;
+            }
+            charactersProcessed = 0;
+
+            // printf("Characters read = %d\n", characters);
             while (1 && !stopFlag)
             {
                 
                 struct TokenDetails *t = getNextToken(NULL);
                 // printStruct(t);
                 tokenList = addNewNode(tokenList, t);
-                
-                int characters_processed = TwinBuffer->fwd - fwd_curr;
-                
-                if (characters - characters_processed <= 1)
-                {
-                    
+                // printf("characters processed = %d\n", charactersProcessed);
+                int charactersProcessed2 = TwinBuffer->fwd - fwd_curr;
+                // printf("charactersProcessed2 = %d\n", charactersProcessed2);
+                // printf("TwinBuffer->fwd = %d\n", TwinBuffer->fwd);
+                // printf("fwd_curr = %d\n", fwd_curr);
+                if(characters-charactersProcessed2<=1){
                     break;
-                }
+                } 
+                // if (charactersProcessed >= characters)
+                // {
+                //     break;
+                // }
             }
+
+            printf("Stop Flag: %d\n",stopFlag);
         }
         list = tokenList;
         return list;
