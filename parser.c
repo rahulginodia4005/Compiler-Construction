@@ -318,7 +318,6 @@ void parseInputSourceCode(char *fileName) {
             continue;
         }
         else if(!syn_needed) {
-            Rule* temp_rule = rule;
             
             if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
@@ -327,6 +326,7 @@ void parseInputSourceCode(char *fileName) {
                     continue;
                 //printf("row-%d col-%d",row,col);
             }
+            Rule* temp_rule = rule;
             NodeT* popped = pop(st);
             printf("Matched with: %s\n", token_seen);
             printf("Rule found. Popped %d\t%s\n", popped->name_rule, HMI_search(iToStr, popped->name_rule));
