@@ -1175,7 +1175,7 @@ TdNode *createLinkedList(char * fileName)
     TwinBuffer->fwd = 0;
     TwinBuffer->back = 0;
 
-    removeComments("t2.txt");
+    removeComments(fileName);
 
     FILE *fp;
     // Opening file in reading mode
