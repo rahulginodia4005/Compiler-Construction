@@ -5,12 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-
-    // char* file_name = (char)malloc(100 * sizeof(char));
-    // printf("Welcome to the menu driven program\n");
-    // printf("%s\n",argv[1]);
-    // // memset(file_name, '\0', 100);
-    // // strcpy(file_name, argv[1]);
     char *file_name = argv[1];
     int choice;
     printf("%s\n",file_name);

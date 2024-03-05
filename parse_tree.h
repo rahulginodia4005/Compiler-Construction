@@ -115,16 +115,12 @@ static void giveValuesToFile(FILE* fp, NodeT* nt) {
 
 static void inorder(NodeT* nt,HashMapI* iToStr, FILE *fp){
     if(nt->countOfChild == 0){
-        //printf("%d",nt->terminal);
-        printf("%s\t",HMI_search(iToStr,nt->name_rule));
         giveValuesToFile(fp, nt);
         return;
     }
     inorder(nt->children[0],iToStr, fp);
-    printf("%s\t",HMI_search(iToStr,nt->name_rule));
     giveValuesToFile(fp, nt);
     for(int i =1;i<nt->countOfChild;i++){
-        //printf("yo");
         inorder(nt->children[i],iToStr, fp);
     }
 }
@@ -151,17 +147,8 @@ static void inorderDriver(NodeT* nt, HashMapI* iToStr) {
     fprintf(fp, "NodeSymbol");
     fprintf(fp, "\n");
     fprintf(fp, "\n");
-    // printf("\t\t");
-    // printf("Lexeme\t\t");
-    // printf("Line Number\t\t");
-    // printf("Token Name\t\t");
-    // printf("ValueIfNumber\t\t");
-    // printf("ParentNodeSymbol\t\t");
-    // printf("isLeafNode\t\t");
-    // printf("NodeSymbol\n");
     inorder(nt, iToStr, fp);
     fclose(fp);
 }
-
 
 #endif
