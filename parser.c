@@ -7,7 +7,11 @@
 #include"stackImplementation.h"
 const int MAX_SIZE = 1000;
 
-void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, HashMapI* iToStr) {
+HashMap *strToI;
+HashMapI *iToStr, *iToStruct, *ruleMapFirst;
+ParserTable* table;
+
+void readGrammar() {
     FILE* fp = fopen("intAllocation.txt", "r");
     if(fp == NULL) {
         perror("Error in intAllocation File");
@@ -134,16 +138,21 @@ void readGrammar(HashMap* strToI, HashMapI* ruleMapFirst, HashMapI* iToStruct, H
     curr->follow_set[curr->follow_set_ind++] = HMI_search(iToStruct, 76);
 }
 
-void produce_first_set(HashMapI* iToStruct, HashMapI* ruleMapFirst) {
+void produce_first_set() {
     mainGenerateFirstSets(iToStruct, ruleMapFirst);
 }
 
-void produce_follow_set(HashMapI* iToStruct) {
+void produce_follow_set() {
     mainGenerateNextToSets(iToStruct);
     mainGenerateFollowSets(iToStruct);
 }
 
-ParserTable* create_parser_table(HashMapI* iToStruct, HashMapI* iToStr, HashMap* strToI) {
+void ComputeFirstAndFollowSets() {
+    produce_first_set();
+    produce_follow_set();
+}
+
+ParserTable* create_parser_table() {
     ParserTable* table = create(53, 58);
     fillParserTable(table, iToStruct);
     HMI_insert(iToStr, 200, "syn");
@@ -151,52 +160,12 @@ ParserTable* create_parser_table(HashMapI* iToStruct, HashMapI* iToStr, HashMap*
     return table;
 }
 
-int main() {
-    HashMap* strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
-    HashMapI* ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
-    HashMapI* iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
-    HashMapI* iToStr = create_tableI(MAX_SIZE);
-    readGrammar(strToI, ruleMapFirst, iToStruct, iToStr);
-    produce_first_set(iToStruct, ruleMapFirst);
-    produce_follow_set(iToStruct);
-    ParserTable* table = create_parser_table(iToStruct, iToStr, strToI);
-    // TdNode *list = createLinkedList();
-    // printLinkedList(list);
-    // printf("Error,");
-    // for(int j = 0;j<58;j++) {
-    //     printf("%s", HMI_search(iToStr, j + 54));
-    //     if(j != 57) printf(",");
-    // }
-    // printf("\n");
-    
-    // for(int i = 0;i<53;i++) {
-    //     printf("%s,", HMI_search(iToStr, i + 1));
-    //     for(int j = 0;j<58;j++) {
-    //         Rule* curr = table->table[i][j];
-    //         if(curr == NULL) {
-    //             printf("Error");
-    //         }
-    //         else printf("%s", HMI_search(iToStr, curr->nt->name));
-    //         if(j != 57) printf(",");
-    //     }
-    //     printf("\n");
-    // }
-    // for(int i = 0;i<iToStruct->size;i++) {
-    //     if(iToStruct->vals[i] == NULL) continue;
-    //     else {
-    //         NonTerminals* curr = iToStruct->vals[i]->value;
-    //         for(int j = 0;j<curr->first_set_ind;j++) {
-    //             printf("%s ", curr->first_set[j])
-    //         }
-    //     }
-    // }
-
+void parseInputSourceCode(char *fileName) {
     NodeT* root = createRootNodeT();
     Stack* st = createStack();
     push(st, root->name_rule); 
-
     // I need linked list of tokens.
-    TdNode* ll = createLinkedList();
+    TdNode* ll = createLinkedList(fileName);
     
     TdNode* ll_temp = ll;
 
@@ -273,4 +242,19 @@ int main() {
             // printf("--------\n");
         }
     }  
+}
+
+void init(char *fileName) {
+    strToI = create_table(MAX_SIZE); //will be used once, to map string to integer allocated
+    ruleMapFirst = create_tableI(MAX_SIZE); //check whose first sets has been calculated
+    iToStruct = create_tableI(MAX_SIZE); //main mapping from integer allocated to struct formed
+    iToStr = create_tableI(MAX_SIZE);
+    readGrammar();
+    ComputeFirstAndFollowSets();
+    table = create_parser_table();
+    parseInputSourceCode(fileName);
+}
+
+void printParseTree(char *fileName) {
+    init(fileName);
 }
