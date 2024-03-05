@@ -1252,6 +1252,20 @@ void printTokens(char *fileName)
 {
     TdNode *list = createLinkedList(fileName);
     printLinkedList(list);
+    // Free all pointers of list
+
+    TdNode *temp = list;
+    while (temp != NULL)
+    {
+        TdNode *temp2 = temp;
+        temp = temp->next;
+        free(temp2->tokenDet);
+        free(temp2);
+    }
+
+    free(list);
+
+
 }
 
 // int main(){
