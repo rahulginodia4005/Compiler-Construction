@@ -182,8 +182,17 @@ ParserTable* create_parser_table() {
     ParserTable* table = create(53, 58);
     HMI_insert(iToStr, 200, "syn");
     HM_insert(strToI, "syn", 200);
+    NonTerminals* syn = create_terminal(200);
+    Rule* synRule = NULL;
+    synRule = addToRule(synRule, syn);
+    HMI_insert(iToStruct, 200, syn);
     int synAdd[9] = {28, 10, 31, 46, 13, 36, 47, 22, 33};
-    fillParserTable(table, iToStruct, synAdd);
+    fillParserTable(table, iToStruct, synRule);
+    for(int j = 0;j<9;j++) {
+        for(int i = 0;i<53;i++) {
+            insert(table, synRule, i, synAdd[j]);
+        }
+    }
     return table;
 }
 
@@ -192,13 +201,13 @@ void parseInputSourceCode(char *fileName) {
     NodeT* parent = root;
     Stack* st = createStack();
     push(st, root); 
-    // printf("%d", table->table[1][10]->nt->name);
+    printf("%d", table->table[27][28]->nt->name);
 
     // I need linked list of tokens.
     TdNode* ll = createLinkedList(fileName);
     
-    TdNode* ll_temp = NULL;
-    printparsetree = 0;
+    TdNode* ll_temp = ll;
+    printparsetree = 1;
     //I need pareser table
     bool syn_needed = false;
     while(ll_temp!=NULL){
@@ -273,18 +282,15 @@ void parseInputSourceCode(char *fileName) {
         //         ll_temp=ll_temp->next;
         //     }
         // }
-        if(rule == NULL || syn_needed) {
+        if(rule == NULL) {
             if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
                 printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
-                ll_temp=ll_temp->next;
             }
             else if(strcmp(ll_temp->tokenDet->token,"TK_UNKNOWN")==0){
                 printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
-                ll_temp=ll_temp->next;
             }
             else if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_SIZE")==0){
                 printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
-                ll_temp=ll_temp->next;
             }
             else{
                 char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
@@ -292,11 +298,11 @@ void parseInputSourceCode(char *fileName) {
                 for(int i=0;i<strlen(ll_temp->tokenDet->lexeme);i++){
                     prevToken[i]=ll_temp->tokenDet->lexeme[i];
                 }
-                ll_temp = ll_temp->next;
                 syn_needed = true;
                 // printf("4Error occured. Cannot parse %s.\n", token_seen);
                 printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
             } 
+            ll_temp = ll_temp->next;
             printparsetree=0;
             // printf("--------\n");
             continue;
@@ -311,7 +317,7 @@ void parseInputSourceCode(char *fileName) {
             printparsetree=0;
             continue;
         }
-        else{
+        else if(!syn_needed) {
             Rule* temp_rule = rule;
             
             if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_PATTERN")==0){
@@ -360,6 +366,29 @@ void parseInputSourceCode(char *fileName) {
             // }
             free(token_seen);
             printf("--------\n");
+        }
+        else{
+            if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_PATTERN")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+            }
+            else if(strcmp(ll_temp->tokenDet->token,"TK_UNKNOWN")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+            }
+            else if(strcmp(ll_temp->tokenDet->token,"TK_INVALID_SIZE")==0){
+                printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->errMessage);
+            }
+            else{
+                char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+                memset(prevToken,'\0',sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
+                for(int i=0;i<strlen(ll_temp->tokenDet->lexeme);i++){
+                    prevToken[i]=ll_temp->tokenDet->lexeme[i];
+                }
+                syn_needed = true;
+                // printf("4Error occured. Cannot parse %s.\n", token_seen);
+                printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
+            } 
+            ll_temp = ll_temp->next;
+            printparsetree=0;
         }
     }
 }
