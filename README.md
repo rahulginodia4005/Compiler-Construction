@@ -38,5 +38,5 @@ To run the project, use the following command and replace <input_file name> with
 5. Print time
 
 ## Project Output
-Output for Remove Comments -> commentRemoval.txt
-Output for Parse Tree -> parseOutput.txt
+1. Output for Remove Comments -> commentRemoval.txt
+2. Output for Parse Tree -> parseOutput.txt
