@@ -37,7 +37,6 @@ struct tokenDetails *getNextToken(FILE *f);
 
 void removeComments(char *testcaseFile);
 
-// void printTwinBuffer(struct twinBuffer *TwinBuffer);
 
 void fillLookupTable();
 

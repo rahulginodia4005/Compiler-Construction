@@ -91,9 +91,9 @@ struct tokenDetails *setToken(char *tokenName)
         if (lookupSearch == NULL)
         {
             HM_insert(lookupTable, lexeme, "TK_FIELDID");
-            // strcpy(ptr->token, lookupSearch);
+         
             strcpy(ptr->token, tokenName);
-            // printf("Inserted %s\n", lexeme);
+            
         }
         else
         {
@@ -107,7 +107,6 @@ struct tokenDetails *setToken(char *tokenName)
         {
             HM_insert(lookupTable, lexeme, "TK_ID");
             strcpy(ptr->token, tokenName);
-            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -122,7 +121,6 @@ struct tokenDetails *setToken(char *tokenName)
             HM_insert(lookupTable, lexeme, "TK_FUNID");
             strcpy(ptr->token, tokenName);
 
-            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -136,7 +134,6 @@ struct tokenDetails *setToken(char *tokenName)
         {
             HM_insert(lookupTable, lexeme, "TK_RUID");
             strcpy(ptr->token, tokenName);
-            // printf("Inserted %s\n", lexeme);
         }
         else
         {
@@ -186,7 +183,6 @@ struct tokenDetails *dummyToken(char *tokenName)
     ptr->lineNumber = currLine;
     strcpy(ptr->lexeme, "Dummy");
     strcpy(ptr->errMessage, " ");
-    // TwinBuffer->back = TwinBuffer->fwd;
     currState = 0;
     return ptr;
 }
@@ -243,9 +239,7 @@ void printStruct(struct tokenDetails *ptr)
 {
     printf("Lexeme: ---%s---\t\t", ptr->lexeme);
     printf("Token : %s \n", ptr->token);
-    // printf("Line Number: %d\n", ptr->lineNumber);
-    // printf("Error: %d\n", ptr->err);
-    // printf("Error Message: %s\n", ptr->errMessage);
+ 
 }
 
 struct tokenDetails *getNextToken(FILE *f)
@@ -256,8 +250,7 @@ struct tokenDetails *getNextToken(FILE *f)
     char currChar = currBuffer[TwinBuffer->fwd];
     char beginChar = currBuffer[TwinBuffer->back];
 
-    // printf("CurrChar: %c\n", currChar);
-    // printf("BeginChar: %c\n", beginChar);
+   
 
     while (1 || currChar != EOF)
     {
@@ -266,15 +259,7 @@ struct tokenDetails *getNextToken(FILE *f)
 
         currChar = currBuffer[TwinBuffer->fwd];
         charactersProcessed++;
-        // printf("CurrState: %d\n", currState);
-        // printf("CurrChar: %c\n", currChar);
-        // printf("Fwd pointer: %d\n", TwinBuffer->fwd);
-        // printf("Back pointer: %d\n", TwinBuffer->back);
-
-        // printf("CurrChar: %c\n", currChar);
-        // printf("CurrState: %d\n", currState);
-        // printf("Fwd: %d\n", TwinBuffer->fwd);
-        // printf("Back: %d\n", TwinBuffer->back);
+       
 
         
         if ((TwinBuffer->fwd == 1024 && buffer_used == -1) || (TwinBuffer->fwd == 2047 && buffer_used == 1))
@@ -389,9 +374,7 @@ struct tokenDetails *getNextToken(FILE *f)
             case '\n':
                 currState = 47;
                 TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
-                // TwinBuffer->back++;
-                // currLine++;
-                // Return Token
+
                 break;
 
             case '%':
@@ -513,7 +496,7 @@ struct tokenDetails *getNextToken(FILE *f)
             break;
 
         case 1:
-            // printf("Reached Here");
+           
             if (currChar >= '0' && currChar <= '9')
             {
                 currState = 1;
@@ -530,8 +513,7 @@ struct tokenDetails *getNextToken(FILE *f)
 
             break;
 
-        case 2: // Return Token TK_NUM
-            // int tempFwd = TwinBuffer->fwd - 1;
+        case 2: 
             TwinBuffer->fwd = checkPointer(--TwinBuffer->fwd);
 
             return setToken("TK_NUM");
@@ -955,8 +937,7 @@ struct tokenDetails *getNextToken(FILE *f)
             }
             TwinBuffer->back++;
             TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
-            // printf("Forward pointer at 45: %d\n",TwinBuffer->fwd);
-            // printf("Back pointer at 45: %d\n",TwinBuffer->back);
+            
 
             break;
 
@@ -970,19 +951,17 @@ struct tokenDetails *getNextToken(FILE *f)
 
             currState = 0;
             currLine++;
-            // printf("HERE in State 47");
+            
 
             TwinBuffer->back = TwinBuffer->fwd;
-            // TwinBuffer->fwd = (TwinBuffer->fwd+1)%2048;
-            // TwinBuffer->back++;
+           
             break;
 
         case 48:
             if (currChar == '\n')
             {
-                // currLine++
                 currState = 49;
-                // return
+               
             }
             else
             {
@@ -996,7 +975,7 @@ struct tokenDetails *getNextToken(FILE *f)
             currState = 0;
             TwinBuffer->back = TwinBuffer->fwd;
             break;
-            // Increase Line
+           
 
         case 50:
             // Return TK_SQR
@@ -1113,7 +1092,6 @@ void removeComments(char *testcaseFile)
     // printf("done");
 }
 
-// Print Twin Buffer Structure
 void printTwinBuffer(struct twinBuffer *TwinBuffer)
 {
     printf("Size: %d\n", TwinBuffer->size);
@@ -1187,7 +1165,6 @@ TdNode *createLinkedList(char *fileName)
         memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
         while (!stopFlag)
         {
-            // printf("---------Reading buffer %d time----------\n", i++);
             
             characters = getStream(fp);
             if (characters < 1024)
@@ -1209,28 +1186,20 @@ TdNode *createLinkedList(char *fileName)
             }
             charactersProcessed = 0;
 
-            // printf("Characters read = %d\n", characters);
             while (1 && !stopFlag)
             {
                 
                 struct TokenDetails *t = getNextToken(NULL);
-                // printStruct(t);
                 tokenList = addNewNode(tokenList, t);
-                // printf("characters processed = %d\n", charactersProcessed);
                 int charactersProcessed2 = TwinBuffer->fwd - fwd_curr;
-                // printf("charactersProcessed2 = %d\n", charactersProcessed2);
-                // printf("TwinBuffer->fwd = %d\n", TwinBuffer->fwd);
-                // printf("fwd_curr = %d\n", fwd_curr);
+               
                 if(characters-charactersProcessed2<=1){
                     break;
                 } 
-                // if (charactersProcessed >= characters)
-                // {
-                //     break;
-                // }
+             
             }
 
-            // printf("Stop Flag: %d\n",stopFlag);
+          
         }
         list = tokenList;
         return list;
@@ -1241,93 +1210,5 @@ TdNode *createLinkedList(char *fileName)
 void printTokens(char *fileName)
 {
     printLinkedList(createLinkedList(fileName));
-    // free(list);
+    
 }
-
-// int main(){
-//     printTokens("t2.txt");
-// }
-// int main() {
-//     TdNode *list = createLinkedList("t2.txt");
-//     printLinkedList(list);
-// }
-
-// int main()
-// {
-
-//     TdNode *tokenList = createNewLinkedList();
-//     lookupTable = create_table(1000);
-//     fillLookupTable();
-//     TwinBuffer = (struct twinBuffer *)malloc(sizeof(struct twinBuffer));
-//     TwinBuffer->size = 2048;
-//     TwinBuffer->fwd = 0;
-//     TwinBuffer->back = 0;
-
-//     removeComments("t2.txt");
-
-//     FILE *fp;
-//     // Opening file in reading mode
-//     fp = fopen("commentRemoval.txt", "r");
-//     if (fp == NULL)
-//     {
-//         printf("Can't open the file. Try again");
-//         return 0;
-//     }
-
-//     int characters = 0;
-//     int i = 0;
-//     memset(TwinBuffer->buffer, '\0', 2048 * sizeof(char));
-//     while (1 && !stopFlag)
-//     {
-//         printf("---------Reading buffer %d time----------\n", i++);
-//         characters = getStream(fp);
-//         // printf("Characters read = %d\n", characters);
-//         if (characters < 1024)
-//         {
-//             int where = (buffer_used == 1) ? 0 : 1024;
-//             // printf("--%d--\n",where+characters);
-//             TwinBuffer->buffer[characters + where] = ' ';
-//             TwinBuffer->buffer[characters + where+1] = ' ';
-//             // printf("Character at end = %d\n", TwinBuffer->buffer[characters+where]);
-//             characters += 1;
-//         }
-//         // printf("Characters read = %d\n", characters);
-//         int fwd_curr = TwinBuffer->fwd;
-//         buffer_used *= -1;
-//         // printf("Characters read = %d\n", characters);
-//         // printf("%s", TwinBuffer->buffer);
-//         // printf("Fwd token = %d\n", TwinBuffer->fwd);
-//         // printf("back token = %d\n", TwinBuffer->back);
-//         if (characters == 0)
-//             break;
-//         // continue;
-//         while (1 && !stopFlag)
-//         {
-//             TdNode* t = (getNextToken(NULL)); // not using currently
-//             tokenList = addNewNode(tokenList, t);
-//             // getNextToken(NULL);
-//             // printStruct(getNextToken(NULL)); // not using currently
-//             // getNextToken(NULL);
-//             int characters_processed = TwinBuffer->fwd - fwd_curr;
-//             // printf("forward pointer = %d\t", TwinBuffer->fwd);
-//             // printf("back pointer = %d\n", TwinBuffer->back);
-//             if (characters - characters_processed <= 1)
-//             {
-//                 // printf("breaking");
-//                 break;
-//             }
-//         }
-
-//         // printf("%c\n",TwinBuffer->buffer[2042]);
-//         // printf("%c\n",TwinBuffer->buffer[2043]);
-//         // printf("%c\n",TwinBuffer->buffer[2044]);
-//         // printf("%c\n",TwinBuffer->buffer[2045]);
-//         // printf("%c\n",TwinBuffer->buffer[2046]);
-//         // printf("%c\n",TwinBuffer->buffer[2047]);
-//         // printf("%c\n",TwinBuffer->buffer[204];)
-//         // printf("---Done processing----\n");
-//         // break;
-//     }
-
-//     printLinkedList(tokenList);
-// }

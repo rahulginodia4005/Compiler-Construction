@@ -43,9 +43,7 @@ void readGrammar() {
         for(int i = 0;i<ind;i++) newStr[i] = data[i];
         HM_insert(strToI, newStr, line_number);
         HMI_insert(iToStr, line_number, newStr);
-        // if(line_number == 16) printf("%s", newStr);
-        // printf("%s\t%d\t%d\n", newStr, HM_search(strToI, newStr), strlen(newStr));
-    }
+           }
     fclose(fp);
     fp = fopen("grammarText.txt", "r");
     if(fp == NULL) {
@@ -92,8 +90,7 @@ void readGrammar() {
                 }
                 HMI_insert(ruleMapFirst, indNT, false);
                 prev = newNT;
-                // printf("%d\t%d\n", indNT, newNT->name);
-                // printf("%d\t%d\n", line_number, HM_search(strToI, newNonTerminal));
+               
                 free(non_terminal);
             }
             else if(data[i] == 'T' || data[i] == 'e') {
@@ -116,15 +113,14 @@ void readGrammar() {
                     HMI_insert(iToStruct, indT, newT);
                 }
                 else newT = HMI_search(iToStruct, indT);
-                // printf("%d\t%d\n", indT, newT->name);
-                // printf("%d\t%d\n", line_number, HM_search(strToI, newTerminal));
+                
                 newRule = addToRule(newRule, newT);
                 prev = newT;
                 HMI_insert(ruleMapFirst, indT, false);
                 free(terminal);
             }
             else if(data[i] == '|') {
-                // printf("%d\t", prev->name);
+                
                 if(!checkDuplicacyLhsFollowset(prev, lhsNT)) prev->lhsFollow[prev->lhsFollow_ind++] = lhsNT;
                 addRuleToNonTerminal(lhsNT, newRule);
                 newRule = NULL;
@@ -207,12 +203,11 @@ bool parseInputSourceCode(char *fileName) {
         }
         int stack_top = peek(st);
         int tp = HM_search(strToI,token_seen);
-        // printf("Top of stack: %d\n",stack_top);
+        
         if(peek(st) >= 54) {
             if(peek(st) == 111) {
                 int popped = pop(st)->name_rule;
-                //NodeT* popped = pop(st);
-                // printf("1Terminal found: %s\n", HMI_search(iToStr, popped));
+                
                 continue;
             }
             char* prevToken = (char*) malloc(sizeof(char)*strlen(ll_temp->tokenDet->lexeme));
@@ -222,7 +217,7 @@ bool parseInputSourceCode(char *fileName) {
             }
             
             if(peek(st) != tp) {
-                //printf("%s-----\t", prevToken);
+               
                 if(strcmp(ll_temp->tokenDet->token, "TK_INVALID_SIZE")==0){
                     printf("Line %d\tError: %s\n",ll_temp->tokenDet->lineNumber ,ll_temp->tokenDet->errMessage);
                     ll_temp=ll_temp->next;
@@ -251,7 +246,7 @@ bool parseInputSourceCode(char *fileName) {
             NodeT* popped = pop(st);
             if(strcmp(HMI_search(iToStr,popped->name_rule), "TK_NUM") == 0 || strcmp(HMI_search(iToStr,popped->name_rule), "TK_RNUM") == 0) passingLexeme(popped, ll_temp->tokenDet->lexeme, true);
             else passingLexeme(popped, ll_temp->tokenDet->lexeme, false);
-            // printf("3Terminal found: %s\n", HMI_search(iToStr, popped->name_rule));
+           
             ll_temp = ll_temp->next;
             continue;
         }
@@ -275,19 +270,18 @@ bool parseInputSourceCode(char *fileName) {
                     prevToken[i]=ll_temp->tokenDet->lexeme[i];
                 }
                 syn_needed = true;
-                // printf("4Error occured. Cannot parse %s.\n", token_seen);
+                
                 printf("Line %d\tError: The token %s for lexeme %s does not match with the expected token %s\n",ll_temp->tokenDet->lineNumber, token_seen, prevToken, HMI_search(iToStr,peek(st)));
             } 
             ll_temp = ll_temp->next;
             printparsetree=false;
-            // printf("--------\n");
+            
             continue;
         }
         else if(rule->nt->name == 200){
             syn_needed = false;
             int popped = pop(st)->name_rule;
-            // printf("MisMatched with: %s\n", token_seen);
-            // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
+            
             printf("Line %d\tError: Invalid token %s encountered with value %s stack top %s\n",ll_temp->tokenDet->lineNumber,ll_temp->tokenDet->token,ll_temp->tokenDet->lexeme,HMI_search(iToStr,popped));
             printparsetree=false;
             continue;
@@ -305,7 +299,7 @@ bool parseInputSourceCode(char *fileName) {
                     ll_temp=ll_temp->next;
                     printparsetree=false;
                     continue;
-                //printf("row-%d col-%d",row,col);
+              
             }
             Rule* temp_rule = rule;
             NodeT* popped = pop(st);
@@ -395,14 +389,7 @@ void init(char *fileName) {
         produce_first_set();
         produce_follow_set();
     } 
-    // ComputeFirstAndFollowSets();
-    
-    // free(strToI);
-    // free(ruleMapFirst);
-    // free(iToStruct);
-    // free(iToStr);
-    // free(root);
-    // free(table);
+   
 }
 
 void printParseTree(char *fileName) {

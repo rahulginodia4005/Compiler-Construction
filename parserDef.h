@@ -49,21 +49,17 @@ static void fillParserTable(ParserTable* table, HashMapI* iToStruct, Rule* synRu
         }
         else{
             NonTerminals* curr = (NonTerminals*)iToStruct->vals[i]->value;
-            // printf("%s\n", curr->name);
             if(!curr->terminal) {
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    // printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
                     insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
                 if(curr->derive_eps != -1) {
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, curr->derive_eps);
                         insert(table, curr->grammar_rules[curr->derive_eps], curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
                 else{
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
@@ -77,18 +73,18 @@ static void fillParserTable(ParserTable* table, HashMapI* iToStruct, Rule* synRu
                     continue;
                 }
                 for(int j = 0;j<curr->first_set_ind;j++) {
-                    // printf("%d\t%d\t%d\n", curr->name, curr->first_set[j]->name, curr->first_set_to_grammar[j]);
+                    
                     insert(table, curr->grammar_rules[curr->first_set_to_grammar[j]], curr->name - 1, curr->first_set[j]->name - 54);
                 }
                 if(curr->derive_eps != -1) {
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, curr->derive_eps);
+                      
                         insert(table, curr->grammar_rules[curr->derive_eps], curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
                 else{
                     for(int j = 0;j<curr->follow_set_ind;j++) {
-                        // printf("%d\t%d\t%d\n", curr->name, curr->follow_set[j]->name, synRule->nt->name);
+                        
                         insert(table, synRule, curr->name - 1, curr->follow_set[j]->name - 54);
                     }
                 }
