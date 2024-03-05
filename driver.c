@@ -32,12 +32,7 @@ int main(int argc, char *argv[])
     scanf("%c", &choice);
     while (choice != '0')
     {
-        printf("Enter your choice:\n");
-        printf("0 : For exit \n");
-        printf("1. Remove comments\n");
-        printf("2. Print tokens\n");
-        printf("3.Print Errors and parse tree\n");
-        printf("4. Print time\n");
+
         if (choice == '1')
         {
             removeComments(file_name);
@@ -59,5 +54,13 @@ int main(int argc, char *argv[])
         {
             printf("Invalid choice\n");
         }
+
+        printf("Enter your choice:\n");
+        printf("0 : For exit \n");
+        printf("1. Remove comments\n");
+        printf("2. Print tokens\n");
+        printf("3.Print Errors and parse tree\n");
+        printf("4. Print time\n");
+        scanf("%c", &choice);
     }
 }

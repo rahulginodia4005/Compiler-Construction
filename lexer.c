@@ -359,7 +359,7 @@ struct tokenDetails *getNextToken(FILE *f)
                 currState = 47;
                 TwinBuffer->fwd = (TwinBuffer->fwd + 1) % 2048;
                 // TwinBuffer->back++;
-                currLine++;
+                // currLine++;
                 // Return Token
                 break;
 
