@@ -5,7 +5,7 @@
 #ifndef hashmap_int
 #define hashmap_int
 
-unsigned long hash_functionI(unsigned long x) {
+static unsigned long hash_functionI(unsigned long x) {
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = (x >> 16) ^ x;
@@ -29,12 +29,12 @@ typedef struct HashMapI{
     int size;
 } HashMapI;
 
-LinkedListI* allocate_listI() {
+static LinkedListI* allocate_listI() {
     LinkedListI* newList = (LinkedListI*) malloc(sizeof(LinkedListI));
     return newList;
 }
 
-LinkedListI* list_insertI(LinkedListI* list, HMIValues* val) {
+static LinkedListI* list_insertI(LinkedListI* list, HMIValues* val) {
     if(!list) {
         LinkedListI* head = allocate_listI();
         head->val = val;
@@ -60,13 +60,13 @@ LinkedListI* list_insertI(LinkedListI* list, HMIValues* val) {
     return list;
 }
 
-LinkedListI** create_collision_bucketsI(HashMapI* hm) {
+static LinkedListI** create_collision_bucketsI(HashMapI* hm) {
     LinkedListI** collision_buckets = (LinkedListI**) calloc(hm->size, sizeof(LinkedListI*));
     for(int i = 0;i<hm->size;i++) collision_buckets[i] = NULL;
     return collision_buckets;
 }
 
-HMIValues* create_valueI(int key, void* val) {
+static HMIValues* create_valueI(int key, void* val) {
     HMIValues* newVal = (HMIValues*) malloc(sizeof(HMIValues));
     // printf("%d\t%s\n", strl(key) key);
     newVal->key = key;
@@ -74,7 +74,7 @@ HMIValues* create_valueI(int key, void* val) {
     return newVal;
 }
 
-HashMapI* create_tableI(int size){
+static HashMapI* create_tableI(int size){
     HashMapI* newHM = (HashMapI*) malloc(sizeof(HashMapI));
     newHM->size = size;
     newHM->count = 0;
@@ -86,7 +86,7 @@ HashMapI* create_tableI(int size){
     return newHM;
 }
 
-void handle_collisionI(HashMapI* hm, unsigned long index, HMIValues* val) {
+static void handle_collisionI(HashMapI* hm, unsigned long index, HMIValues* val) {
     LinkedListI* head = hm->collision_buckets[index];
     if(head == NULL) {
         head = allocate_listI();
@@ -98,7 +98,7 @@ void handle_collisionI(HashMapI* hm, unsigned long index, HMIValues* val) {
     }
 }
 
-void HMI_insert(HashMapI* HM, int key, void* val) {
+static void HMI_insert(HashMapI* HM, int key, void* val) {
     // printf("%d %s\n", strlen(key), key);
     HMIValues* newVal = create_valueI(key, val);
 
@@ -120,7 +120,7 @@ void HMI_insert(HashMapI* HM, int key, void* val) {
     }
 }
 
-void* HMI_search(HashMapI* hm, int key) {
+static void* HMI_search(HashMapI* hm, int key) {
     // printf("index is: %d", index);
     // printf("%s\t", key);
     int index = hash_functionI(key)%hm->size;

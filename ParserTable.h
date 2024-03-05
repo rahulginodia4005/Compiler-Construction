@@ -8,7 +8,7 @@ typedef struct ParserTable{
     int rows, cols;
 } ParserTable;
 
-ParserTable* create(int rows, int cols) {
+static ParserTable* create(int rows, int cols) {
     ParserTable* newPT = (ParserTable*) malloc(sizeof(ParserTable));
     newPT->table = (Rule***) malloc(rows * sizeof(Rule**));
     newPT->rows = rows;
@@ -24,12 +24,12 @@ ParserTable* create(int rows, int cols) {
     return newPT;
 }
 
-void insert(ParserTable* pt, Rule* rule, int row, int col) {
+static void insert(ParserTable* pt, Rule* rule, int row, int col) {
     if(pt->table[row][col] != NULL) return;
     pt->table[row][col] = rule;
 }
 
-void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
+static void fillParserTable(ParserTable* table, HashMapI* iToStruct) {
     NonTerminals* syn = create_terminal(200);
     Rule* synRule = NULL;
     synRule = addToRule(synRule, syn);
