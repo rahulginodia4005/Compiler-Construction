@@ -138,7 +138,7 @@ struct tokenDetails *setToken(char *tokenName)
     {
         ptr->err = true;
         strcpy(ptr->errMessage, "Variable Identifier is longer than the prescribed length of 20 characters.");
-        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->token, "TK_INVALID_SIZE");
         strcpy(ptr->lexeme, lexeme);
         TwinBuffer->back = TwinBuffer->fwd;
         currState = 0;
@@ -149,7 +149,7 @@ struct tokenDetails *setToken(char *tokenName)
     {
         ptr->err = true;
         strcpy(ptr->errMessage, "Function Identifier is longer than the prescribed length of 30 characters.");
-        strcpy(ptr->token, "TK_INVALID_PATTERN");
+        strcpy(ptr->token, "TK_INVALID_SIZE");
         strcpy(ptr->lexeme, lexeme);
         TwinBuffer->back = TwinBuffer->fwd;
         currState = 0;
