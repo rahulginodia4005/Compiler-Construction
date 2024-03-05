@@ -348,6 +348,7 @@ bool parseInputSourceCode(char *fileName) {
         }
     }
     if(printparsetree == false) return false;
+    return true;
 }
 void ComputeFirstAndFollowSets(char *fileName) {
     if(iToStr == NULL) {

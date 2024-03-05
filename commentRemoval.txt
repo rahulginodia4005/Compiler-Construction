@@ -2,131 +2,27 @@
 
 
 
- 
-_myFunction123 input parameter list[int c7, real d2, real c3, int d4]
-output parameter list [real c5, #newtype d6];
-	record #marks
-		type #int : getan; 
-		type #fbdbs: pfbn; 
-		type #fgnd: chevnsonSV;
-	endrecord
-	type int : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		b4dd <--- (4+5.55E+10);
-		b2 <--- b5c;
-		if (~((b4 >= c5) &&& (~((b4 >= c5) &&& (c4bd55==d4cc)))))
-		then
-			while(d5.b != d4cc)
-				b4dd <--- ((c3cc*3.44 - d4)-(c5dd-5))*4.45E-45;
-			endwhile
-		endif
-	endwhile
-	return [c5, d6];
-end
-
-_function1 input parameter list [int c2, int d2cd] 
-output parameter list [int b5d, int d3]; 
-	type int: b4d333; 
-	type int : c3ddd34; type int:c2d3; type int c2d4; 
-	b5d<---c2+234-d2cd; 
-	d3<---b5d+20; 
-	
-	read(b4d333); read(c3ddd34); 
-	[c2d3, c2d4]<--- call _function1 with parameters [b4d333, c3ddd34]; 
-	write(c2d3); write(c2d4); 
-
-	return [b5d, d3]; 
+_sumN  input parameter list [int d5cc34] 
+output parameter list[real d3];
+	type int : b5b567;
+	b5b567 <--- 1;
+	d3 <--- 0.00;
+	while ( b5b567 <= d5cc34)
+		read( c3bd);
+		d3 <--- d3 + c3bd;
+		b5b567 <--- b5b567 + 1; 
+	endwhile 
+	return [d3]; 
 end
 
 
-_newFunction input parameter list[int c7, real d2, real c3, int d4]
-output parameter list [real c5, #newtype d6];
-	type real : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		b4dd <--- (4+5.55E+10);
-		b2 <--- b5c;
-		call _function1 with parameters [b4d333, c3ddd34];
-	endwhile
-	return [c5, d6];
-end
-
-_anotherFunction input parameter list[int c7, real d2, real c3, int d4, real c3, int d4]
-output parameter list [real c5, #newtype d6];
-	type real : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		b4dd <--- (4+5.55E+10);
-		b2 <--- b5c;
-		if (~((b4 >= c5) &&& (~((b4 >= c5) &&& (c4bd55==d4cc)))))
-		then
-			while(d5.b != d4cc)
-				if(c7>=d2dc) 
-				then 
-					write(c7); 
-				else 
-					write (d2dc);
-				endif  
-			endwhile
-		endif
-	endwhile
-	return [c5, d6];
-end
-
-_yet another input parameter list[int c7]
-output parameter list [real c5, #newtype d6];
-	type real : d4cbcd5677;
-	type real : c4bbb;
-	c6 <--- 5000.79;
-	d4cbcd5677<--- ((c3 + 2*c4)-(c5-5))/ 4;
-	while(d7cbc>10)
-		while(c2d3 <=d2c3) 
-			c2d3 = c2d3+1; 
-			write (c2d3); 
-		endwhile 
-	endwhile
-	return [c5, d6];
-end
 
 
 _main 
-	type record #finance : d5; 
-	type record #finance : c4; 
-	type record #finance : c3; 
-	c3 <--- c4 + d5; 
-
-	union #marks
-		type int : maths; 
-		type #fbdbs: pfbn; 
-		type #fgnd: chevnsonSV;
-	endunion
-	type int: b4d333; 
-	type int : c3ddd34; type int:c2d3; type int c2d4; 
-	type record #book b2; 
-	type record #book c2; 
-	type record #book d2; 
-	type record #new b7bc34; 
-	b2.edition <--- 3; 	
-	b2.price <--- 24.95; 
-	c2.edition <--- 2; 
-	c2.price <--- 98.80; 
-	
-	d2<--- b2+ c2; 
-	
-	
-	[d2]<--- call _recordDemo with parameters[b2,c2]; 
-	write(d2);
-	read(b4d333); read(c3ddd34); 
-	[c2d3, c2d4]<--- call _function1 with parameters [b4d333, c3ddd34]; 
-	write(c2d3); write(c2d4); 
-	[b5cd] <--- call _myFunn123 with parameters [b5bcd];
-	write(c3);
+	type int :b3;
+	type real :c4bd56;
+	b3 <--- 7; 
+	[c4bd56]<--- call _sumN with parameters [b3]; 
+	write(c4bd56);
 	return;
 end
