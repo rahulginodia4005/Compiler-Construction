@@ -1221,7 +1221,7 @@ TdNode *createLinkedList(char *fileName)
                 // }
             }
 
-            printf("Stop Flag: %d\n",stopFlag);
+            // printf("Stop Flag: %d\n",stopFlag);
         }
         list = tokenList;
         return list;
