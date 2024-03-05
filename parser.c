@@ -162,13 +162,15 @@ ParserTable* create_parser_table() {
 
 void parseInputSourceCode(char *fileName) {
     NodeT* root = createRootNodeT();
+    NodeT* parent = root;
     Stack* st = createStack();
-    push(st, root->name_rule); 
+    push(st, root); 
+
     // I need linked list of tokens.
     TdNode* ll = createLinkedList(fileName);
     
     TdNode* ll_temp = ll;
-
+    bool printparsetree = 1;
     //I need pareser table
 
     while(ll_temp!=NULL){
@@ -184,21 +186,24 @@ void parseInputSourceCode(char *fileName) {
             token_seen[i] = ll_temp->tokenDet->token[i];
         }
         int stack_top = peek(st);
+        //printf("%d\n",stack_top);
         int tp = HM_search(strToI,token_seen);
         if(peek(st) >= 54) {
             if(peek(st) == 111) {
-                int popped = pop(st);
-                printf("Terminal found: %s\n", HMI_search(iToStr, popped));
+                int popped = pop(st)->name_rule;
+                //NodeT* popped = pop(st);
+                printf("1Terminal found: %s\n", HMI_search(iToStr, popped));
                 continue;
             }
             ll_temp = ll_temp->next;
             if(peek(st) != tp) {
-                printf("Error occured. Cannot parse %s.\n", token_seen);
+                printf("2Error occured. Cannot parse %s.\n", token_seen);
+                printparsetree=0;
                 printf("--------\n");
                 continue;
             }
-            int popped = pop(st);
-            printf("Terminal found: %s\n", HMI_search(iToStr, popped));
+            int popped = pop(st)->name_rule;
+            printf("3Terminal found: %s\n", HMI_search(iToStr, popped));
             continue;
         }
         int col = tp - 54;
@@ -207,40 +212,64 @@ void parseInputSourceCode(char *fileName) {
 
         if(rule == NULL) {
             ll_temp = ll_temp->next;
-            printf("Error occured. Cannot parse %s.\n", token_seen);
+            printf("4Error occured. Cannot parse %s.\n", token_seen);
+            printparsetree=0;
             // printf("--------\n");
             continue;
         }
         else if(rule->nt->name == 200){
-            int popped = pop(st);
+            int popped = pop(st)->name_rule;
             // printf("MisMatched with: %s\n", token_seen);
             // printf("Synch token captured. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
             // printf("--------\n");
+            printparsetree=0;
             continue;
         }
         else{
             Rule* temp_rule = rule;
-            int popped = pop(st);
-            // printf("Matched with: %s\n", token_seen);
-            // printf("Rule found. Popped %d\t%s\n", popped, HMI_search(iToStr, popped));
+            NodeT* popped = pop(st);
+            //printf("Matched with: %s\n", token_seen);
+            //printf("Rule found. Popped %d\t%s\n", popped->name_rule, HMI_search(iToStr, popped->name_rule));
             int rules[10];
             int i=0;
             while(temp_rule!=NULL){
                 rules[i++] = temp_rule->nt->name;
                 temp_rule = temp_rule->next;
             }
-            for(int j=i-1;j>=0;j--){
-                // printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
-                push(st, rules[j]);
+            NodeT* reversal[i];
+            // for(int j=0;j<i;j++){
+            //     reversal[j] = (NodeT*) malloc(sizeof(NodeT));
+            // }
+            for(int j=0;j<i;j++){
+                //printf("Pushed %d\t%s\n", rules[j], HMI_search(iToStr, rules[j]));
+                NodeT* treeEntry;
+                if(popped->name_rule>=54){
+                    treeEntry = createTerminalNodeT(rules[j],popped);
+                }
+                else{
+                    treeEntry  = createNodeT(rules[j],popped);
+                    //printf("%d\n",treeEntry->name_rule);
+                }
+                reversal[j] = treeEntry;
+                
+                //push(st, treeEntry);
             }
 
-            if(peek(st) == tp) {
-                // printf("Matched with: %s\n", token_seen);
-                // ll_temp = ll_temp->next;
+            for(int j =i-1;j>=0;j--){
+                //printf("Pushed %d\t%s\n", reversal[j]->name_rule, HMI_search(iToStr, reversal[j]->name_rule));
+                push(st,reversal[j]);
             }
+
+            // if(peek(st) == tp) {
+            //     // printf("Matched with: %s\n", token_seen);
+            //     // ll_temp = ll_temp->next;
+            // }
             free(token_seen);
             // printf("--------\n");
         }
+    }
+    if(printparsetree==1){
+        inorder(root,iToStr);
     }  
 }
 

@@ -13,7 +13,7 @@ typedef struct NodeT{
     int terminal;
 }NodeT;
 
-NodeT* createRootNodeT(){
+static NodeT* createRootNodeT(){
     NodeT* rootNodeT = (NodeT*) malloc(sizeof(NodeT));
     rootNodeT->name_rule=1;
     for(int i =0;i<10;i++){
@@ -24,7 +24,7 @@ NodeT* createRootNodeT(){
     rootNodeT->terminal=0;
     return rootNodeT;
 }
-NodeT* createNodeT(int name,NodeT* parent){
+static NodeT* createNodeT(int name,NodeT* parent){
     NodeT* nt = (NodeT*)malloc(sizeof(NodeT));
     nt->name_rule = name;
     for(int i =0;i<10;i++){
@@ -37,7 +37,7 @@ NodeT* createNodeT(int name,NodeT* parent){
     return nt;
 }
 
-NodeT* createTerminalNodeT(int name,NodeT* parent){
+static NodeT* createTerminalNodeT(int name,NodeT* parent){
     NodeT* nt = (NodeT*)malloc(sizeof(NodeT));
     nt->name_rule = name;
     for(int i =0;i<10;i++){
@@ -49,17 +49,18 @@ NodeT* createTerminalNodeT(int name,NodeT* parent){
     parent->children[parent->countOfChild++] = nt;
     return nt;
 }
-void inorder(NodeT* nt){
-    if(nt->terminal==1){
+
+static void inorder(NodeT* nt,HashMapI* iToStr){
+    if(nt->countOfChild == 0){
         //printf("%d",nt->terminal);
-        printf("%d",nt->name_rule);
+        printf("%s\t",HMI_search(iToStr,nt->name_rule));
         return;
     }
-    inorder(nt->children[0]);
-    printf("%d",nt->name_rule);
+    inorder(nt->children[0],iToStr);
+    printf("%s\t",HMI_search(iToStr,nt->name_rule));
     for(int i =1;i<nt->countOfChild;i++){
         //printf("yo");
-        inorder(nt->children[i]);
+        inorder(nt->children[i],iToStr);
     }
 }
 
